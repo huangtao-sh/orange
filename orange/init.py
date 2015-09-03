@@ -48,6 +48,13 @@ class TestSample(unittest.TestCase):
 '''
 
 def py_init(project='',author='',email=''):
+    '''
+    初始化程序版本
+    系统会在当前目录下生成包文件、安装文件和测试文件
+    project:项目名称
+    author:作者姓名
+    email:作者的电子邮件
+    '''
     prj_name=os.path.split(os.path.abspath('.'))[-1]
     ver_file='%s/__version__.py'%(prj_name)
     pkg_file='%s/__init__.py'%(prj_name)
@@ -89,7 +96,7 @@ init_cmd={
         'help':'项目描述'},
     '-a --author':{
         'default':'huangtao',
-        'help':'作者'},
+        'help':'作者姓名'},
     '-e --email':{
         'default':'hunto@163.com',
         'help':'电子邮件'
