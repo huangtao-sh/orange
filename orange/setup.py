@@ -17,7 +17,8 @@ def exec_cmd(cmd,argument,sudo=False):
         cmdline='sudo %s'%(cmdline)
     exec_shell(cmdline)
 
-python_setup=lambda argv=None:parse_args(setup_cmd,argv,allow_empty=True)
+def python_setup(argv=None):
+    parse_args(setup_cmd,argv,allow_empty=True)
 
 def py_setup(packages,path,download):
     path=abspath(path)
