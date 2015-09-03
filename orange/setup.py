@@ -6,10 +6,8 @@
 # 创建：2015-09-03 16:02
 import os
 import sys
-from stdlib import exec_shell,parse_args
-from stdlib.pytools import get_package
-def real_path(path):
-    return os.path.abspath(os.path.expanduser(path))
+from stdlib import exec_shell,parse_args,abspath
+from stdlib.pytools import get_package,pyclean
 
 def exec_cmd(cmd,argument,sudo=False):
     if os.name=='posix':
@@ -19,12 +17,10 @@ def exec_cmd(cmd,argument,sudo=False):
         cmdline='sudo %s'%(cmdline)
     exec_shell(cmdline)
 
-def python_setup(argv=None):
-    proc=setup_cmd.pop('proc')
-    parse_args(setup_cmd,argv,allow_empty=True,proc=proc)
+python_setup=lambda argv=None:parse_args(setup_cmd,argv,allow_empty=True)
 
 def py_setup(packages,path,download):
-    path=real_path(path)
+    path=abspath(path)
     if download:
         exec_cmd('pip','install -d %s %s'%(path,
                              " ".join(packages)))
@@ -41,6 +37,7 @@ def py_setup(packages,path,download):
         else:
             if os.path.isfile('setup.py'):
                 exec_cmd('python','setup.py install',sudo=True)
+                pyclean()
             else:
                 print('Can''t find the file setup.py!')
             
