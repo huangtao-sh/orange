@@ -6,7 +6,7 @@
 # 创建：2015-09-03 16:02
 import os
 import sys
-from stdlib import exec_shell
+from stdlib import exec_shell,parse_args
 from stdlib.pytools import get_package
 def real_path(path):
     return os.path.abspath(os.path.expanduser(path))
@@ -18,6 +18,10 @@ def exec_cmd(cmd,argument,sudo=False):
     if sudo and sys.platform.startswith('linux'):
         cmdline='sudo %s'%(cmdline)
     exec_shell(cmdline)
+
+def python_setup(argv=None):
+    proc=setup_cmd.pop('proc')
+    parse_args(setup_cmd,argv,allow_empty=True,proc=proc)
 
 def py_setup(packages,path,download):
     path=real_path(path)

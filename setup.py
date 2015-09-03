@@ -1,8 +1,14 @@
 #!/usr/bin/env python3
 from setuptools import setup,find_packages
 from orange.__version__ import version
-console_scripts=['pytool=orange:main',
-                 ]
+import os.path
+import sysconfig
+import glob
+console_scripts=['pytool=orange:main',]
+script_path=sysconfig.get_path('scripts')
+if not glob.glob('%s/pysetup*'%(script_path)):
+    console_scripts.append('pysetup=orange.setup:python_setup')
+
 setup(
         name='orange',
         version=version,
