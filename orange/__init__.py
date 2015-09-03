@@ -4,7 +4,7 @@
 # 创建：2015-9-2
 from stdlib import parse_args
 from .init import init_cmd
-from .setup import setup_cmd
+from .pysetup import setup_cmd
 
 parsers={'init':init_cmd,
          'setup':setup_cmd,}

@@ -17,7 +17,7 @@ def exec_cmd(cmd,argument,sudo=False):
         cmdline='sudo %s'%(cmdline)
     exec_shell(cmdline)
 
-def python_setup(argv=None):
+def main(argv=None):
     parse_args(setup_cmd,argv,allow_empty=True)
 
 def py_setup(packages,path,download):
@@ -51,4 +51,6 @@ setup_cmd={
                  'default':'~/OneDrive/pylib',},
     '-d --download':{'help':'下载指定的包',
                      'action':'store_true',}}
-        
+
+if __name__=="__main__":
+    main()
