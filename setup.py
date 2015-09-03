@@ -2,7 +2,7 @@
 from setuptools import setup,find_packages
 from orange.__version__ import version
 console_scripts=['pytool=orange:main',]
-scripts=['orange/pysetup.py']
+scripts=['orange/pysetup.py','orange/pytest.py']
 setup(
         name='orange',
         version=version,

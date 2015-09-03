@@ -47,9 +47,9 @@ setup_cmd={
     'packages':{'help':'python包',
                 'nargs':'*',
                 'metavar':'package',},
-    '-p --path':{'help':'指定的路径',
+    '-p --path':{'help':'指定目录',
                  'default':'~/OneDrive/pylib',},
-    '-d --download':{'help':'下载指定的包',
+    '-d --download':{'help':'下载指定包',
                      'action':'store_true',}}
 
 if __name__=="__main__":
