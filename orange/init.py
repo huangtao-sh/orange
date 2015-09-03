@@ -29,6 +29,7 @@ setup(
             # 'cmd_name=package:function',
             ]}},
         packages=find_packages(exclude=['testing']),
+        url='https://github.com/huangtao-sh/{prj_name}.git',
         license='GPL',
         )
 '''
