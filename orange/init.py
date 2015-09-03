@@ -49,8 +49,8 @@ class TestSample(unittest.TestCase):
 
 def py_init(project='',author='',email=''):
     '''
-    初始化程序版本
-    系统会在当前目录下生成包文件、安装文件和测试文件
+    初始化项目文件
+    自动在当前目录下生成包文件、初始版本号文件、安装文件和测试文件
     project:项目名称
     author:作者姓名
     email:作者的电子邮件
