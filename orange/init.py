@@ -2,12 +2,13 @@
 # 模块：工具包
 # 作者：黄涛
 # 创建：2015-9-2
+# 修订：2015-9-3 添加setup.py以及testing的相关初始化
 
 import datetime
 import os
 import stdlib
 
-INITIAL_VERSION='version="0.1"'
+INITIAL_VERSION='version="0.1"\n'
 INITIAL_FILE='''# 项目：{project}
 # 作者：{author}
 # 邮件：{email}
@@ -24,9 +25,9 @@ setup(
         platforms='any',
         description='{project}',
         long_description='{project}',
-        entry_points={'console_scripts':[
+        entry_points={{'console_scripts':[
             # 'cmd_name=package:function',
-            ]},
+            ]}},
         packages=find_packages(exclude=['testing']),
         license='GPL',
         )
@@ -35,7 +36,7 @@ TESTING_PKG='''from .test_sample import *
 '''
 TEST_SAMPLE='''import unittest
 class TestSample(unittest.TestCase):
-    def setUp(self)):
+    def setUp(self):
         pass
 
     def tearDown(self):
@@ -73,20 +74,24 @@ def py_init(project='',author='',email=''):
         stdlib.write_file(pkg_file,contents)
         print('已初始化包文件')
 
+    # 生成测试模板文件
     if not os.path.isdir('testing'):
         os.mkdir('testing')
         stdlib.write_file(os.path.join('testing','__init__.py'),
                           TESTING_PKG)
         stdlib.write_file(os.path.join('testing','test_sample.py'),
-                          TESTING_SAMPLE)       
+                          TEST_SAMPLE)       
+        print('已创建测试模板文件')
         
 init_cmd={
     'proc':py_init,
     '-p --project':{
         'help':'项目描述'},
     '-a --author':{
+        'default':'huangtao',
         'help':'作者'},
     '-e --email':{
+        'default':'hunto@163.com',
         'help':'电子邮件'
         },}
     
