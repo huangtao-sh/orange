@@ -16,10 +16,10 @@ INITIAL_FILE='''# 项目：{project}
 '''
 SETUP_FILE='''#!/usr/bin/env python3
 from setuptools import setup,find_packages
-from {prj_name}.__version__ import version
+import {prj_name}.__version__
 setup(
         name='{prj_name}',
-        version=version,
+        version={prj_name}.__version__.version,
         author='{author}',
         author_email='{email}',
         platforms='any',
