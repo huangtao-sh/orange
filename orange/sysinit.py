@@ -22,12 +22,13 @@ POSIX_LINKS=[('conf/vimrc_mac','.vimrc'),
 def proc():
     LINKS.extend(WINDOWS_LINKS if os.name=='nt' else POSIX_LINKS)
     home=Path(os.path.expanduser('~')).resolve()
-    drive=home / 'OneDrive'
+    drive=home/'OneDrive'
     for source,target in LINKS:
-        s=drive / source
-        d=home / target
-        if not d.exists():
+        s=drive/source
+        d=home/target
+        if not d.exists()and s.exists():
             d.symlink_to(s,s.is_dir())
+            print('创建连接文件：%s->%s'%(d,s))
 
 if __name__=='__main__':
     proc
