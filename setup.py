@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 from setuptools import setup,find_packages
 import orange.__version__
-console_scripts=['pytool=orange:main',]
+console_scripts=['pytool=orange:main',
+                 'sysinit=orange.sysinit:proc']
 scripts=['orange/pysetup.py','orange/pytest.py']
 setup(
         name='orange',
