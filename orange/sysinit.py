@@ -9,7 +9,7 @@ from pathlib import *
 LINKS=[('bin','bin'),
     ('emacsd/emacs','.emacs'),
     ('conf/gitconfig','.gitconfig'),
-    ('ssh','.ssh'),
+    ('conf/ssh','.ssh'),
     ('conf/pip','.pip')
     ]
     
