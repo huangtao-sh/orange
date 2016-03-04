@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 from setuptools import setup,find_packages
-import orange.__version__
+from orange import get_ver
 console_scripts=['pytool=orange:main',
                  'sysinit=orange.sysinit:proc']
 scripts=['orange/pysetup.py','orange/pytest.py']
 setup(
         name='orange',
-        version=orange.__version__.version,
+        version=get_ver(),
         author='Huang tao',
         author_email='huangtao.jh@gmail.com',
         platforms='any',
