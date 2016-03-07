@@ -3,7 +3,7 @@
 # 创建：2016-3-3
 
 import os
-from pathlib import *
+from stdlib import Path
 
 # 需要创建符号连接的文件
 LINKS=[('bin','bin'),
@@ -21,7 +21,7 @@ POSIX_LINKS=[('conf/vimrc_mac','.vimrc'),
     
 def proc():
     LINKS.extend(WINDOWS_LINKS if os.name=='nt' else POSIX_LINKS)
-    home=Path(os.path.expanduser('~')).resolve()
+    home=Path('~')
     drive=home/'OneDrive'
     for source,target in LINKS:
         s=drive/source
