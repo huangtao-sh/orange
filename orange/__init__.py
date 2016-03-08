@@ -4,12 +4,10 @@
 # 创建：2015-9-2
 from stdlib import parse_args
 from .init import init_cmd
-from .pysetup import setup_cmd
 
 __all__=['get_ver']
 
-parsers={'init':init_cmd,
-         'setup':setup_cmd,}
+parsers={'init':init_cmd}
 template={'parsers':parsers}
 
 def main(argv=None):
