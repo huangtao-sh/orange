@@ -2,7 +2,7 @@
 from stdlib._setup import setup
 console_scripts=['pytool=orange:main',
                  'sysinit=orange.sysinit:proc']
-scripts=['orange/pysetup.py','orange/pytest.py']
+scripts=['orange/pytest.py']
 setup(
         name='orange',
         platforms='any',
