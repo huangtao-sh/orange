@@ -6,8 +6,11 @@
 # 创建：2015-09-03 16:02
 import os
 import sys
-from stdlib import exec_shell,parse_args,abspath
-from stdlib.pytools import get_package,pyclean
+from stdlib import exec_shell,parse_args,abspath,Path
+from stdlib.pytools import pyclean
+from distutils.version import StrictVersion as Ver
+
+Pattern=re.compile(r'(?P<name>.*?\-(?P<version>\d+(\.\d+)*([ab](\d+))?)')
 
 def exec_cmd(cmd,argument,sudo=False):
     if os.name=='posix':
@@ -21,14 +24,20 @@ def main(argv=None):
     parse_args(setup_cmd,argv,allow_empty=True)
 
 def py_setup(packages,path,download):
-    path=abspath(path)
+    path=Path(path)
     if download:
-        exec_cmd('pip','install -d %s %s'%(path,
+        exec_cmd('pip','install -d %s %s'%(str(path),
                              " ".join(packages)))
     else:
         if packages:
             pkgs=[]
             for pkg in packages:
+                pkg_file,pkg_ver=None,Ver('0.0')
+                for file in path.glob("%s*"%(pkg)):
+                    p=Pattern.match(file.name)
+                    if p:
+                        ver=Ver(p.groupdict()['version'])
+                        if 
                 pkg_path=get_package(pkg,path)
                 if pkg_path:
                     pkgs.append('"%s"'%(pkg_path))
@@ -36,7 +45,7 @@ def py_setup(packages,path,download):
                     pkgs.append(pkg)
             exec_cmd('pip','install %s'%(" ".join(pkgs)))
         else:
-            if os.path.isfile('setup.py'):
+            if Path('setup.py').exists():
                 exec_cmd('python','setup.py install',sudo=True)
                 pyclean()
             else:
