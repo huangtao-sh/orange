@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 from stdlib._setup import setup
 console_scripts=['pytool=orange:main',
+                 'dos2uix=orange.path:Dos2Unix.main',
                  'sysinit=orange.sysinit:proc']
 scripts=['orange/pytest.py']
 setup(

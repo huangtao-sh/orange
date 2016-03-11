@@ -8,6 +8,7 @@
 import pathlib
 import os
 from codecs import BOM_UTF8,BOM_LE,BOM_BE
+from .argparser import Parser,Arg
 
 BOM_CODE={
     BOM_UTF8:'utf_8',
@@ -77,4 +78,10 @@ class PosixPath(Path,pathlib.PurePosixPath):
 class WindowsPath(Path,pathlib.PureWindowsPath):
     __slot__=()
 
-
+class Dos2Unix(Parser):
+    arguments=[Arg('files',nargs='*',help='待转换的文件',metavar='file')]
+    @classmethod
+    def run(cls,files):
+        for file in files:
+            Path(file).write(*Path(file).lines)
+            print('转换文件 %s 成功'%(file))
