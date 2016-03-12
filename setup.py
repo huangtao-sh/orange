@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 from orange.deploy import setup
-console_scripts=['dos2uix=orange.path:Dos2Unix.main',
+console_scripts=['dos2unix=orange.path:Dos2Unix.main',
                  'sysinit=orange.sysinit:proc']
 setup(
         name='orange',

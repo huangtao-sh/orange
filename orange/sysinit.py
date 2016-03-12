@@ -3,7 +3,7 @@
 # 创建：2016-3-3
 
 import os
-from stdlib import Path
+from orange import Path
 
 # 需要创建符号连接的文件
 LINKS=[('bin','bin'),
@@ -31,5 +31,5 @@ def proc():
             print('创建连接文件：%s->%s'%(d,s))
 
 if __name__=='__main__':
-    proc
+    proc()
     
