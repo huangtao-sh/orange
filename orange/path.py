@@ -61,6 +61,10 @@ class Path(pathlib.Path):
     def lines(self):
         return decode(self.read('rb'))
 
+    @lines.setter
+    def write_lines(self,lines):
+        self.write(*lines)
+        
     def write(self,*lines,text=None,data=None,encoding='utf8',parents=False):
         if parents:
             self.parent.ensure()

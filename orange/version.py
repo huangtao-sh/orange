@@ -20,7 +20,7 @@ def get_ver():
 
 def upgrade_ver(ver,segment='#'):
     if not isinstance(ver,Ver):
-        v=Ver(ver)
+        ver=Ver(ver)
     if isinstance(segment,str):
         segment={'major':0,
                  'm':0,
@@ -31,21 +31,21 @@ def upgrade_ver(ver,segment='#'):
                  'dev':3,
                  'd':3,
                  '#':4,}.get(segment.lower(),4)
-    if(v.prelease and segment<4)or(not v.prelease and segment>=4):
+    if(ver.prerelease and segment<3)or(not ver.prerelease and segment>=3):
         raise Exception('版本升级失败')
-    if segment==5:
-        v.prelease=v.prelease[0],v.prelease[1]+1
-    elif segment==4:
-        if v.prelease[0]=='a':
-            v.prelease='b',1
-        else
-            v.prelease=None
-    else
-        v.prelease='a',1
-        v.version=v.version[:segment],v.version[segment]+1,(0,0,0).version[segment:]
-    return v
+    if segment==4:
+        ver.prerelease=ver.prerelease[0],ver.prerelease[1]+1
+    elif segment==3:
+        if ver.prerelease[0]=='a':
+            ver.prerelease='b',1
+        else:
+            ver.prerelease=None
+    else:
+        ver.prerelease='a',1
+        nv=[0,0,0]
+        nv[:segment+1]=ver.version[:segment+1]
+        nv[segment]+=1
+        ver.version=tuple(nv)
+    return ver
         
             
-        
-            
-    
