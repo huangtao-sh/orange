@@ -12,9 +12,16 @@ class TestVer(unittest.TestCase):
                                 ):
             self.assertEqual(upgrade_ver(ver,seg),new_ver)
     def test_debug(self):
+        '''
         from orange.debug import trace
         @trace
         def abc(a,b):
             return a+b            
 
         abc(1,20)
+        '''
+    def test_datetime(self):
+        import datetime as dt
+        from orange.dateutils import now,datetime
+        
+
