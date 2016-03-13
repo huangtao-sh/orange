@@ -7,7 +7,6 @@
 # 修改：2016-03-12 18:53
 
 import datetime as dt
-import re
 
 ZERO = dt.timedelta(0)
 
