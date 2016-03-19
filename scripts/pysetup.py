@@ -71,10 +71,12 @@ pysetup=Parser(
         nargs='*',
         metavar='package'),
     Argument('-p','--path',
+             default=RootPath,
              help='指定的目录'),
     Argument('-d','--download',
              help='默认的包目录',
              action='store_true'),
-    proc=py_setup)
+    proc=py_setup,
+    allow_empty=True)
 if __name__=="__main__":
     pysetup()
