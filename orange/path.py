@@ -16,7 +16,23 @@ BOM_CODE={
     BOM_BE:'utf_16_be',
     }
     
-DEFAULT_CODES=['utf8','gbk','utf16','big5']
+DEFAULT_CODES='utf8','gbk','utf16','big5'
+
+def is_installed(file_name):
+    '''
+    确认指定的文件是否已被安装。
+    '''
+    from sysconfig import get_path
+    paths=[get_path(name) for name in ('platlib','scripts')]
+    if os.name=='nt':
+        file_name=file_name.lower()
+        paths=[path.lower() for path in paths]
+    return any([file_name.startswith(path) for path in paths])
+
+def is_dev(cmd=None):
+    import sys
+    cmd=cmd or sys.argv[0]
+    return 'test' in cmd or (not is_installed(cmd))
 
 def decode(d):
     '''
@@ -90,4 +106,5 @@ def convert(files):
 
 dos2unix=Parser(
     Argument('files',nargs='*',help='待转换的文件',metavar='file'),
-    description='Windows 格式文件转换为 Unix 文件格式')
+    description='Windows 格式文件转换为 Unix 文件格式',
+    proc=convert)
