@@ -101,7 +101,7 @@ class WindowsPath(Path,pathlib.PureWindowsPath):
 
 def convert(files):
     for file in files:
-        Path(file).lines=Path(file).lines
+        Path(file).write(*Path(file).lines)
         print('转换文件"%s"成功'%(file))
 
 dos2unix=Parser(
