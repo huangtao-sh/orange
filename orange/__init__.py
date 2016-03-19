@@ -5,12 +5,11 @@
 from stdlib import parse_args
 from .init import init_cmd
 from .path import Path
-from .argparser import Parser,Argument,Arg
 from .version import *
 from .deploy import *
 from .debug import *
 
-__all__=['get_ver','Path','Parser','Argument','Arg',
+__all__=['get_ver','Path',
          'first','last',
          'setup','decorator','trace',
          ]

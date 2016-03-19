@@ -8,7 +8,7 @@
 import pathlib
 import os
 from codecs import BOM_UTF8,BOM_LE,BOM_BE
-from .args import Parser,Argument
+from .parseargs import Parser,Argument
 
 BOM_CODE={
     BOM_UTF8:'utf_8',
