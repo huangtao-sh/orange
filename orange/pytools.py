@@ -20,6 +20,12 @@ version_re = re.compile(r'(\d+) \. (\d+) (\. (\d+))? ([ab](\d+))?',
 lib_path='~/OneDrive/pylib'
 package_exts=('.tar.gz','.whl','.zip')
 
+
+def pytest():
+    import unittest
+    sys.path.append('.')
+    unittest.main('testing')
+
 def parse_package(path):
     def split(pkg_name):
         k=version_re.search(pkg_name)

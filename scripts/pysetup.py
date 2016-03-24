@@ -60,7 +60,7 @@ def py_setup(packages,path,download):
         else:
             if Path('setup.py').exists():
                 exec_cmd('python','setup.py install',sudo=True)
-                pyclean()
+                #pyclean()
             else:
                 print('Can''t find the file setup.py!')
 
