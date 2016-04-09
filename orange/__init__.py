@@ -11,8 +11,15 @@ from .debug import *
 __all__=['get_ver','Path',
          'first','last',
          'setup','decorator','trace',
+         'classproperty',
          ]
 
-            
+class classproperty:
+    def __init__(self,getter):
+        self.getter=getter
+
+    def __get__(self,instance,kclass):
+        return self.getter(kclass)
+                    
         
         
