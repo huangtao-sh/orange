@@ -60,8 +60,8 @@ class Path(pathlib.Path):
         args.insert(0,path)
         self = cls._from_parts(args, init=False)
         if not self._flavour.is_supported:
-            raise NotImplementedError("cannot instantiate %r on your system"
-                                      % (cls.__name__,))
+            raise NotImplementedError("cannot instantiate %r on "\
+                "your system"% (cls.__name__,))
         self._init()
         return self
 
@@ -81,7 +81,8 @@ class Path(pathlib.Path):
     def lines(self,lines):
         self.write(*lines)
         
-    def write(self,*lines,text=None,data=None,encoding='utf8',parents=False):
+    def write(self,*lines,text=None,data=None,encoding='utf8',
+              parents=False):
         if parents:
             self.parent.ensure()
         if lines:
