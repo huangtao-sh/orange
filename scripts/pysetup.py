@@ -11,6 +11,8 @@ from orange.stdlib import exec_shell
 from orange.path import Path
 from orange.debug import *
 from orange.parseargs import *
+from orange import Ver
+import logging as log
 # from stdlib.pytools import pyclean
 import re
 
@@ -48,7 +50,7 @@ def py_setup(packages,path,download):
                         pkg_path=file
                         pkg_ver=ver
                 if pkg_path:
-                    if fileext(pkg_path,True) in ('.zip','.whl','.gz'):
+                    if Path(pkg_path).suffix.lower() in ('.zip','.whl','.gz'):
                         pkgs.append('"%s"'%(pkg_path))
                         log.info('Add file %s'%(pkg_path.name))
                     else:

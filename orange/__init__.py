@@ -9,7 +9,7 @@ from .deploy import *
 from .debug import *
 
 __all__=['get_ver','Path',
-         'first','last',
+         'first','last','Ver',
          'setup','decorator','trace',
          ]
 
