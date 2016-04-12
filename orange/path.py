@@ -78,7 +78,7 @@ class Path(pathlib.Path):
         return decode(self.read('rb'))
 
     @lines.setter
-    def write_lines(self,lines):
+    def lines(self,lines):
         self.write(*lines)
         
     def write(self,*lines,text=None,data=None,encoding='utf8',parents=False):
