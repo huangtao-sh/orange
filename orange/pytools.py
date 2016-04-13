@@ -6,6 +6,14 @@
 # 创建：2015-08-09 07:50
 # 修订：2016-03-19
 
+import sys
+
+def pytest():
+    import unittest
+    sys.path.insert(0,'.')
+    unittest.main('testing')
+    
+"""
 import os
 import re
 import sys
@@ -176,6 +184,5 @@ def _pysetup(argv=None):
              'help':'从互联网下载并安装',}
            ]
     parse_args(args,argv=argv,func=py_setup,print_usage=False)
-    
 
-
+"""
