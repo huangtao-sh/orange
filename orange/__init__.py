@@ -3,23 +3,16 @@
 # 作者：黄涛
 # 创建：2015-9-2
 
-from .path import Path
+from .path import *
 from .version import *
 from .deploy import *
 from .debug import *
+from .htutil import *
 
-__all__=['get_ver','Path',
-         'first','last','Ver',
-         'setup','decorator','trace',
-         'classproperty',
-         ]
-
-class classproperty:
-    def __init__(self,getter):
-        self.getter=getter
-
-    def __get__(self,instance,kclass):
-        return self.getter(kclass)
-                    
-        
-        
+__all__='get_ver','Path',\
+  'first','last','Ver','decode',\
+  'setup','decorator','trace','config_log','ensure','info',\
+  'classproperty','is_installed','is_dev',\
+  'read_shell','write_shell','exec_shell','wlen',\
+  'encrypt','decrypt','get_py',
+  

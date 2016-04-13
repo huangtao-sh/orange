@@ -4,6 +4,7 @@
 # License:GPL
 # Email:huangtao.sh@icloud.com
 # 创建：2016-03-11 12:21
+# 修改：2016-04-13 21:01
 
 import pathlib
 import os
@@ -51,19 +52,15 @@ def decode(d):
     raise Exception('解码失败')
 
 class Path(pathlib.Path):
-    def __new__(cls,path,*args,**kwargs):
+    def __new__(cls,*args,**kwargs):
         if cls is Path:
             cls = WindowsPath if os.name == 'nt' else PosixPath
-        if isinstance(path,str)and path.startswith('~'):
-            path=os.path.expanduser(path)
-        args=list(args)
-        args.insert(0,path)
         self = cls._from_parts(args, init=False)
         if not self._flavour.is_supported:
             raise NotImplementedError("cannot instantiate %r on "\
                 "your system"% (cls.__name__,))
         self._init()
-        return self
+        return self.expanduser()
 
     def read(self,*args,**kwargs):
         with self.open(*args,**kwargs)as fn:
@@ -92,6 +89,10 @@ class Path(pathlib.Path):
         if data:
             with self.open('wb')as fn:
                 fn.write(data)
+
+    def rmtree(self):
+        import shutil
+        shutil.rmtree(str(self))
         
 class PosixPath(Path,pathlib.PurePosixPath):
     __slot__=()
@@ -99,10 +100,9 @@ class PosixPath(Path,pathlib.PurePosixPath):
 class WindowsPath(Path,pathlib.PureWindowsPath):
     __slot__=()
 
-
 def convert(files):
     for file in files:
-        Path(file).write(*Path(file).lines)
+        Path(file).lines=Path(file).lines
         print('转换文件"%s"成功'%(file))
 
 dos2unix=Parser(

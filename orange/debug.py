@@ -10,7 +10,7 @@ import logging
 import sys
 from .path import is_dev
 
-__all__=('decorator','trace','log_config','ensure','info')
+__all__='decorator','trace','config_log','ensure','info'
 
 info=logging.info
 
@@ -30,7 +30,7 @@ def trace(func,*args,**kwargs):
     print('The result is %s'%(result))
     return result
 
-def log_config(**kwargs):
+def config_log(**kwargs):
     kwargs.setdefault('datefmt','%Y-%m-%d %H:%M:%S')
     kwargs.setdefault('format','%(levelname)-9s %(message)s')
     kwargs.setdefault('level',10 if is_dev() else 30)
