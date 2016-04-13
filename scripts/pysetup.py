@@ -13,8 +13,16 @@ from orange.debug import *
 from orange.parseargs import *
 from orange import Ver
 import logging as log
-# from stdlib.pytools import pyclean
 import re
+from shutil import rmtree
+from glob import glob
+    
+def pyclean():
+    dirs=glob('build')
+    dirs.extend(glob('dist'))
+    dirs.extend(glob('*egg-info'))
+    for _dir in dirs:
+        rmtree(_dir)
 
 RootPath='~/OneDrive/pylib'
 Pattern=re.compile(r'\d+(\.\d+)*([ab]\d+)?')
@@ -62,7 +70,7 @@ def py_setup(packages,path,download):
         else:
             if Path('setup.py').exists():
                 exec_cmd('python','setup.py install',sudo=True)
-                #pyclean()
+                pyclean()
             else:
                 print('Can''t find the file setup.py!')
 
