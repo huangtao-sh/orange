@@ -38,7 +38,7 @@ def exec_cmd(cmd,argument,sudo=False):
 def py_setup(packages,path,download):
     root=Path(path)
     if download:
-        exec_cmd('pip','install -d %s %s'%(path,
+        exec_cmd('pip','download -d %s %s'%(Path(path),
                              " ".join(packages)))
     else:
         if packages:
