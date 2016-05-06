@@ -45,7 +45,7 @@ def py_setup(packages,path,download):
             pkgs=[]
             for pkg in packages:
                 pkg_path,pkg_ver=None,Ver('0.0')
-                for file in root.glob('%s*'%(pkg)):
+                for file in root.glob('%s-*'%(pkg)):
                     info('Process file %s'%(file.name))
                     ver=find_ver(file)
                     info('Get ver %s'%(ver))
