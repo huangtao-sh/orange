@@ -33,7 +33,8 @@ def is_installed(file_name):
 def is_dev(cmd=None):
     import sys
     cmd=cmd or sys.argv[0]
-    return 'test' in cmd or (not is_installed(cmd))
+    return 'test' in cmd or (not is_installed(cmd)) or \
+      (not 'mod' in cmd)
 
 def decode(d):
     '''

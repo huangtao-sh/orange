@@ -7,6 +7,9 @@
 # 修改：2016-03-12 18:53
 
 import datetime as dt
+import re
+
+__all__='UTC','LOCAL','now','datetime','FixedOffset'
 
 ZERO = dt.timedelta(0)
 
@@ -30,7 +33,12 @@ class FixedOffset(dt.tzinfo):
     def dst(self, dt):
         return ZERO
 
-utc=FixedOffset(0,'UTC')
+    def __repr__(self):
+        timezone=self.__offset.seconds//3600
+        return "UTC%+i"%(timezone) if timezone else "UTC"
+        
+
+UTC=FixedOffset(0,'UTC')
 
 # A class capturing the platform's idea of local time.
 
@@ -68,33 +76,31 @@ class LocalTimezone(dt.tzinfo):
         stamp = _time.mktime(tt)
         tt = _time.localtime(stamp)
         return tt.tm_isdst > 0
+    
+    def __repr__(self):
+        return "UTC%+i"%(STDOFFSET.seconds//3600)
 
-Local = LocalTimezone()
+LOCAL = LocalTimezone()
 
-def now(tz=Local):
-    return datetime.now(tz)
+def now(tz=LOCAL):
+    return dt.datetime.now(tz)
 
-class datetime(dt.datetime):
-    def __new__(cls, year, month=None, day=None, hour=0,
-                    minute=0, second=0,microsecond=0, tzinfo=Local):
-        if isinstance(month,int)and isinstance(day,int):
-            return super().__new__(cls,year,month,day,hour,minute,
-                                   second,microsecond,tzinfo)
-        elif isinstance(year,(float,int)):
-            return cls.fromtimestamp(year,tzinfo)
-        elif isinstance(year,str):
-            args=re.findall(r'\d{1,}',year)
-            if len(args)>=5:
-                args=[int(x) for x in args]
-                return super().__new__(cls,*args,tzinfo=tzinfo)
-        elif isinstance(year,(dt.datetime,dt.time)):
-            tzinfo=year.tzinfo if year.tzinfo else tzinfo
-            return cls.fromtimestamp(year.timestamp(),tzinfo)
-
-    @property
-    def utctime(self):
-        return self.astimezone(utc)
-
-    @property
-    def localtime(self):
-        return self.astimezone(Local)
+def datetime(*args,**kwargs):
+    tzinfo=kwargs.get('tzinfo',LOCAL)
+    if len(args)==1:
+        d=args[0]
+        if isinstance(d,(dt.datetime,dt.time)):
+            if not d.tzinfo:
+                d.replace(tzinfo=tzinfo)
+            return d
+        elif isinstance(d,str):
+            args=[int(x) for x in re.findall('\d+',d)]
+            return dt.datetime(*args,tzinfo=tzinfo)
+        elif isinstance(d,(float,int)):
+            return dt.datetime.fromtimestamp(d,tzinfo)
+    else:
+        kwargs['tzinfo']=tzinfo
+        return dt.datetime(*args,**kwargs)
+        
+            
+    

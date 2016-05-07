@@ -39,4 +39,5 @@ def config_log(**kwargs):
 def ensure(cond,msg,level="error"):
     if not cond:
         getattr(logging,level)(msg)
-        
+        if level in ('error','critical','fatal'):
+            raise Exception(msg)
