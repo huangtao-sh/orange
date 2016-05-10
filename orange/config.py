@@ -1,130 +1,84 @@
-# 项目：标准库函数模块
-# 模块：配置程序
+# 项目：标准库函数
+# 模块：参数配置模块
 # 作者：黄涛
 # License:GPL
 # Email:huangtao.sh@icloud.com
-# 创建：2015-05-26 16:12
+# 创建：2016-05-10 11:34
 
-import os
-import sys
-import sysconfig
-from configparser import ConfigParser
-from orange import encrypt,decrypt,Path,is_dev
+from orange import encrypt,decrypt,Path
+from configparser import *
+from contextlib import contextmanager
 
-class Config:
-    def __init__(self,config_path=None,data_path=None,
-                 dev=None,project=None):
-        if is_dev is None:
-            self.is_dev=is_dev()
-        else:
-            self.is_dev=is_dev
-        if project is None:
-            self.project=Path(sys.argv[0]).with_suffix('').name
-        else:
-            self.project=project
-        self.os_name=os.name
-        if self.os_name=='posix':
-            config_ext='.conf'
-            self.config_path=os.path.expanduser(
-                "~/.%s"%(self.project))
-        else:
-            config_ext='.ini'
-            self.config_path=os.path.join(os.getenv("APPDATA"),
-                                          self.project)
-        if self.is_dev:
-            self.config_path=os.path.abspath("appdata")
-        else:
-            if config_path:
-                self.config_path=config_path
-        if not hasattr(self,"data_path"):
-            self.data_path=self.config_path
-        self.config_file=os.path.join(self.data_path,
-                            self.project+config_ext)
-        self.modified=False
-        
-    def load_config(self,files=None):
-        if files is None:
-            files=self.config_file
-        if not hasattr(self,'parser'):
-            self.parser=ConfigParser()
-        self.parser.clear()
-        self.parser.read(files,encoding='utf8')
-        self.modified=False
-        if isinstance(files,str):
-            self.cur_file=files
-        else:
-            self.cur_file=files[-1]
+class Section:
+    def __init__(self,cofig,parser,name):
+        self.__dict__['_config']=config
+        self.__dict__['_name']=name
+        self.__dict__['_parser']=parser
 
     @property
-    def sections(self):
-        return self.parser.sections()
-    
-    def get(self,section):
-        if self.parser.has_section(section):
-            d={}
-            for option,value in self.parser.items(section):
-                if self.is_passwd(option):
-                    value=decrypt(value)
-                d[option]=value
-            return d
+    def options(self):
+        return self._parser.options(self._name)
 
-    def update(self,section,data):
-        self.modified=True
-        if not self.parser.has_section(section):
-            self.parser.add_section(section)
-        for option,value in data.items():
-            if self.is_passwd(option):
-                value=encrypt(value)
-            self.parser.set(section,option,str(value))
+    def __getattr__(self,name):
+        value=self._parser.get(self._name,name)
+        if name in ('passwd','password'):
+            value=decrypt(value)
+        return value
+
+    def __setattr__(self,name,value):
+        if name in ('passwd','password'):
+            value=encrypt(value)
+        self._parser.set(self._name,name,value)
+        if self._config.autosave:
+            self._config.save()
+
+    def __repr__(self):
+        return 'Section("%s")'%(self._name)
+
+    def __iter__(self):
+        for option in self.options:
+            yield option,getattr(self,option)
+
+    def items(self):
+        return {option:value for option,value in self}
+    
+class Config:
+    def __init__(self):
+        self.__dict__['parser']=ConfigParser()
+        self.__dict__['autosave']=True
+
+    def __getattr__(self,name):
+        if not self.parser.has_section(name):
+            self.parser.add_section(name)
+        return Section(self,self.parser,name)
+
+    __getitem__=__getattr__
+    
+    @contextmanager
+    def update(self,section=None):
+        try:
+            self.__dict__['autosave']=False
+            yield self[section] if section else self
+        finally:
+            self.__dict__['autosave']=True
+            self.save()
+
+    def save(self):
+        print('save')
+        self.parser.write(Path('~/a.ini').open('w',encoding='utf8'))
         
-    def get_many(self,*sections):
-        return dict([(section,self.get(section)) for section in sections])
-    
-    def update_many(self,datas):
-        for section,data in datas.items():
-            self.update(section,data)
-            
-    def is_passwd(self,key):
-        return key.lower() in ('passwd','password')        
+config=Config()
+config.database.host='13'
 
-    def save_config(self):
-        ensure_path(os.path.dirname(self.cur_file))
-        if self.modified:
-            with open(self.cur_file,'w',encoding='utf8')as fn:
-                self.parser.write(fn)
+with config.update('database') as db:
+    db.host='localhost'
+    db.user='hunter'
 
-    def init_logging(self):
-        import logging
-        file_name=os.path.join(self.data_path,
-                               self.project+'.log')
-        if self.is_dev:
-            level='DEBUG'
-        else:
-            level='WARN'
-        default={
-            'filename':file_name,
-            'level':level,
-            'format':'%(asctime)s %(levelname)s\t%(message)s',
-            'datefmt':'%Y-%m-%d %H:%M'}
-        default.update(self.get('logging'))
-        logging.basicConfig(**default)
+def ab(**kw):
+    for i,k in kw.items():
+        print('%s--%s'%(i,k))
 
 
-if __name__=='__main__':
-    config=Config()
-    print(config.config_file)
-    config.load_config()
-    d={
-        'hello':{'host':'123456',
-                 'name':'fsda',
-                 'passwd':'123456',
-                 }
-                 }
-    config.update_many(d)
-    f=config.get_many('hello','world')
-    uri='%(DRIVER)s://%(USER)s:%(PASSWD)s@%(HOST)s/%(DB)s'%(
-        config.get('world'))
-    
-    print(uri)
-    config.save_config()
-    
+
+ab(**config.database.items())
+config.database.host='abc'
