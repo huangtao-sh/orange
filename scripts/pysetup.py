@@ -53,7 +53,7 @@ def py_setup(packages,path,download):
                         pkg_path=file
                         pkg_ver=ver
                 if pkg_path:
-                    if Path(pkg_path).suffix.lower() in ('.zip','.whl','.gz'):
+                    if Path(pkg_path).suffix.lower() in ('.zip','.whl','.gz','.tar'):
                         pkgs.append('"%s"'%(pkg_path))
                         info('Add file %s'%(pkg_path.name))
                     else:
