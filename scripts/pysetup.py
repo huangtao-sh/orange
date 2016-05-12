@@ -62,7 +62,7 @@ def py_setup(packages,path,download):
                     pkgs.append(pkg)
                     info('Add pkg %s'%(pkg))
             os.chdir('%s'%(root))
-            print(root.cwd)
+            print(root.cwd())
             exec_cmd('pip','install %s'%(" ".join(pkgs)))
         else:
             if Path('setup.py').exists():
