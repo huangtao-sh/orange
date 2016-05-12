@@ -5,13 +5,28 @@
 # Email:huangtao.sh@icloud.com
 # 创建：2015-08-09 07:50
 # 修订：2016-03-19
-
+# 修订：2016-5-12
 import sys
+import os
+from orange import Path,exec_shell
 
 def pytest():
     import unittest
     sys.path.insert(0,'.')
     unittest.main('testing')
+
+def pysdist():
+    if Path('setup.py').is_file():
+        cmd='setup.py sdist --formats tar --dist-dir "%s"'%(Path('~/OneDrive/pylib'))
+        if os.name!='nt':
+            cmd='python3 %s'%(cmd)
+        exec_shell(cmd)
+        for path in Path('.').glob('*.egg-info'):
+            print('Path %s has beed deleted!'%(path))
+            if path.is_dir():
+                path.rmtree()
+    else:
+        print('没有找到setup.py文件！')
     
 """
 import os

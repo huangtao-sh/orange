@@ -2,6 +2,7 @@
 from orange import setup
 console_scripts=['dos2unix=orange.path:dos2unix',
                  'pytest=orange.pytools:pytest',
+                 'pysdist=orange.pytools:pysdist',
                  'sysinit=orange.sysinit:proc']
 setup(
         name='orange',
