@@ -34,8 +34,8 @@ class FixedOffset(dt.tzinfo):
         return ZERO
 
     def __repr__(self):
-        timezone=self.__offset.seconds//3600
-        return "UTC%+i"%(timezone) if timezone else "UTC"
+        timezone=self.__offset.total_seconds()//60
+        return "UTC%+i:%02i"%(divmod(timezone,60)) if timezone else "UTC"
         
 
 UTC=FixedOffset(0,'UTC')
@@ -78,7 +78,8 @@ class LocalTimezone(dt.tzinfo):
         return tt.tm_isdst > 0
     
     def __repr__(self):
-        return "UTC%+i"%(STDOFFSET.seconds//3600)
+        offset=STDOFFSET.total_seconds()//60
+        return "UTC%+i:%02i"%(divmod(offset,60))
 
 LOCAL = LocalTimezone()
 

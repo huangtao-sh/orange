@@ -22,6 +22,6 @@ class TestVer(unittest.TestCase):
         '''
     def test_datetime(self):
         import datetime as dt
-        from orange.dateutils import now,datetime
+
         
 
