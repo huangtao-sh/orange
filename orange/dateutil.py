@@ -103,7 +103,7 @@ def datetime(*args,**kwargs):
             from xlrd.xldate import xldate_as_datetime
             d=xldate_as_datetime(d,None)
             if not d.tzinfo:
-                d.replace(tzinfo=tzinfo)
+                d=d.replace(tzinfo=tzinfo)
             return d
     else:
         kwargs['tzinfo']=tzinfo
