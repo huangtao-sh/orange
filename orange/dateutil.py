@@ -92,7 +92,7 @@ def datetime(*args,**kwargs):
         d=args[0]
         if isinstance(d,(dt.datetime,dt.time)):
             if not d.tzinfo:
-                d.replace(tzinfo=tzinfo)
+                d=d.replace(tzinfo=tzinfo)
             return d
         elif isinstance(d,str):
             args=[int(x) for x in re.findall('\d+',d)]
