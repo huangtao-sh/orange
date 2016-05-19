@@ -97,8 +97,11 @@ def datetime(*args,**kwargs):
         elif isinstance(d,str):
             args=[int(x) for x in re.findall('\d+',d)]
             return dt.datetime(*args,tzinfo=tzinfo)
-        elif isinstance(d,(float,int)):
+        elif isinstance(d,int):
             return dt.datetime.fromtimestamp(d,tzinfo)
+        elif isinstance(d,float):
+            from xlrd.xldate import xldate_as_datetime
+            return xldate_as_datetime(d,None)
     else:
         kwargs['tzinfo']=tzinfo
         return dt.datetime(*args,**kwargs)
