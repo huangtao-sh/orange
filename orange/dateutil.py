@@ -101,7 +101,10 @@ def datetime(*args,**kwargs):
             return dt.datetime.fromtimestamp(d,tzinfo)
         elif isinstance(d,float):
             from xlrd.xldate import xldate_as_datetime
-            return xldate_as_datetime(d,None)
+            d=xldate_as_datetime(d,None)
+            if not d.tzinfo:
+                d.replace(tzinfo=tzinfo)
+            return d
     else:
         kwargs['tzinfo']=tzinfo
         return dt.datetime(*args,**kwargs)
