@@ -17,7 +17,7 @@ def pytest():
 
 def pysdist():
     if Path('setup.py').is_file():
-        cmd='setup.py sdist --formats tar --dist-dir "%s"'%(Path('~/OneDrive/pylib'))
+        cmd='setup.py sdist --dist-dir "%s"'%(Path('~/OneDrive/pylib'))
         if os.name!='nt':
             cmd='python3 %s'%(cmd)
         exec_shell(cmd)
