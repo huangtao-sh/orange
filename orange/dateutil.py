@@ -91,20 +91,27 @@ def datetime(*args,**kwargs):
     if len(args)==1:
         d=args[0]
         if isinstance(d,(dt.datetime,dt.time)):
+            '''
+            如果是datetime或time类型，检查是否有tzinfo信息，
+            如无，则设为LOCAL，否则直接返回
+            '''
             if not d.tzinfo:
                 d=d.replace(tzinfo=tzinfo)
             return d
         elif isinstance(d,str):
+            '''将字符串转换为datetime类型'''
             args=[int(x) for x in re.findall('\d+',d)]
             return dt.datetime(*args,tzinfo=tzinfo)
-        elif isinstance(d,int):
-            return dt.datetime.fromtimestamp(d,tzinfo)
-        elif isinstance(d,float):
+        elif isinstance(d,(int,float)):
+            '''将整数或浮点数转换成日期类型
+            如果小于100000，则按Excel的格式转换；
+            否则按unix timestamp 来转换'''
             from xlrd.xldate import xldate_as_datetime
-            d=xldate_as_datetime(d,None)
-            if not d.tzinfo:
-                d=d.replace(tzinfo=tzinfo)
-            return d
+            if d<100000:
+                dd=xldate_as_datetime(d,None).replace(tzinfo=tzinfo)
+            else:
+                dd=dt.datetime.fromtimestamp(d,tzinfo)
+            return dd
     else:
         kwargs['tzinfo']=tzinfo
         return dt.datetime(*args,**kwargs)
