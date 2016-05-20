@@ -19,6 +19,8 @@ class Argument():
     def add(self,parser):
         parser.parser.add_argument(*self.args,**self.kwargs)
 
+Arg=Argument
+
 class Parser():
     def __init__(self,*items,proc=None,allow_empty=False,**kwargs):
         self.items=items
