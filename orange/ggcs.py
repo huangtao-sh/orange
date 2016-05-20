@@ -19,7 +19,7 @@ def query_canshu(category,query):
         print('file "%s" was selected!'%(filename.name))
         for line in filename.lines:
             if query in line:
-                print(",".join([x.strip() for x in line.split(',')])
+                print(",".join([x.strip() for x in line.split(',')]))
 
 canshu=Parser(
     Argument('-c','--category'),
