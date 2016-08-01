@@ -7,6 +7,12 @@
 
 from orange.parseargs import *
 from orange import *
+import re
+
+def extract_str(s):
+    if s.startswith('"')and s.endswith('"'):
+        s=s[1:-1]
+    return s.strip()
 
 def query_canshu(category,query):
     TYPE={'jym':'transactions_output.csv',
@@ -19,7 +25,8 @@ def query_canshu(category,query):
         print('file "%s" was selected!'%(filename.name))
         for line in filename.lines:
             if query in line:
-                print(",".join([x.strip() for x in line.split(',')]))
+                print(",".join([extract_str(x)for x in\
+                                line.split(',')]))
 
 canshu=Parser(
     Argument('-c','--category'),

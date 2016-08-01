@@ -17,10 +17,28 @@ DefaultFormats=(('currency',{'num_format':'#,##0.00'}),
                 ('timestamp',{'num_format':'yyyy-mm-dd hh:mm:ss.0'}))
 
 class XlsxReport():
+    '''
+    导出Excel报表，主要的用法：
+    data=(('data11','data12'),
+          ('data21','data22'))
+    columns=[{'header':'标题1',
+              'width':11,},
+             {'header':'标题2',
+              'width':13,
+              'format':'currency'}]
+    with XlsxReport('xlsx_name')as rpt:
+        rpt.add_table('A1','sheetname',columns=columns,data=data)
+    '''
     def __init__(self,*args,**kwargs):
         self.book=Workbook(*args,**kwargs)
         self.formats={}
         self.add_formats(DefaultFormats)
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self,_type,value,trace):
+        self.close()
         
     def close(self):
         self.book.close()
