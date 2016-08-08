@@ -52,7 +52,11 @@ class XlsxReport():
     @convert_range_args
     def add_table(self,first_row,first_col,last_row,last_col,\
                   sheetname,**kwargs):
-        sheet=self.book.add_worksheet(sheetname)
+        for sheet in self.book.worksheets():
+            if sheet.name==sheetname:
+                break
+        else:
+            sheet=self.book.add_worksheet(sheetname)
         columns=kwargs.get('columns')
         if columns:
             new_columns=[]
