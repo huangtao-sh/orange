@@ -4,6 +4,7 @@ console_scripts=['dos2unix=orange.path:dos2unix',
                  'pytest=orange.pytools:pytest',
                  'pysdist=orange.pytools:pysdist',
                  'canshu=orange.ggcs:canshu',
+                 'mongodb=orange.mongodb:main',
                  'sysinit=orange.sysinit:proc']
 setup(
         name='orange',
