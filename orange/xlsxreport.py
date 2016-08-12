@@ -5,14 +5,17 @@
 
 from xlsxwriter.utility import xl_col_to_name
 from xlsxwriter import Workbook
-from xlsxwriter.worksheet import convert_range_args
+from xlsxwriter.worksheet import convert_range_args,Worksheet
 
 # 预定义格式
 DefaultFormats=(('currency',{'num_format':'#,##0.00'}),
                 ('rate',{'num_format':'0.0000%'}),
+                ('title',{'font_name':'黑体','font_size':16,
+                          'align':'center'}),
                 ('percent',{'num_format':'0.00%'}),
                 ('date',{'num_format':'yyyy-mm-dd'}),
                 ('time',{'num_format':'hh:mm:ss'}),
+                ('number',{'num_format':'#,##0'}),
                 ('datetime',{'num_format':'yyyy-mm-dd hh:mm:ss'}),
                 ('timestamp',{'num_format':'yyyy-mm-dd hh:mm:ss.0'}))
 
@@ -39,6 +42,15 @@ class XlsxReport():
 
     def __exit__(self,_type,value,trace):
         self.close()
+
+    def get_sheet(self,sheetname):
+        if isinstance(sheetname,Worksheet):
+            return sheetname
+        for sheet in self.book.worksheets():
+            if sheet.name==sheetname:break
+        else:
+            sheet=self.book.add_worksheet(sheetname)
+        return sheet
         
     def close(self):
         self.book.close()
@@ -52,11 +64,7 @@ class XlsxReport():
     @convert_range_args
     def add_table(self,first_row,first_col,last_row,last_col,\
                   sheetname,**kwargs):
-        for sheet in self.book.worksheets():
-            if sheet.name==sheetname:
-                break
-        else:
-            sheet=self.book.add_worksheet(sheetname)
+        sheet=self.get_sheet(sheetname)
         columns=kwargs.get('columns')
         if columns:
             new_columns=[]
