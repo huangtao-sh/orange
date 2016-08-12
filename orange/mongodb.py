@@ -36,7 +36,7 @@ def proc(file=None):
         dir=max(list(INSTALL_PATH.glob('mongodb-osx*')))
         if TARGET.exists():
             TARGET.unlink()
-        TARGET.symlink_to(dir)
+        TARGET.symlink_to(dir.name)
 
         if not START_FILE.exists():
             START_FILE.lines=START_LINES.split('\n')
