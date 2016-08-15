@@ -12,7 +12,9 @@ DefaultFormats=(('currency',{'num_format':'#,##0.00'}),
                 ('rate',{'num_format':'0.0000%'}),
                 ('title',{'font_name':'黑体','font_size':16,
                           'align':'center'}),
-                ('h2',{'font_name':'黑体','font_size':14,
+                ('h2',{'font_name':'黑体','font_size':12,
+                          'align':'center'}),
+                ('mh2',{'font_name':'黑体','font_size':12,
                           'align':'center'}),
                 ('percent',{'num_format':'0.00%'}),
                 ('date',{'num_format':'yyyy-mm-dd'}),
@@ -38,6 +40,7 @@ class XlsxReport():
         self.book=Workbook(*args,**kwargs)
         self.formats={}
         self.add_formats(DefaultFormats)
+        self.sheet=None
 
     def __enter__(self):
         return self
@@ -52,6 +55,7 @@ class XlsxReport():
             if sheet.name==sheetname:break
         else:
             sheet=self.book.add_worksheet(sheetname)
+        self.sheet=sheet
         return sheet
         
     def close(self):
@@ -65,8 +69,8 @@ class XlsxReport():
                       
     @convert_range_args
     def add_table(self,first_row,first_col,last_row,last_col,\
-                  sheetname,**kwargs):
-        sheet=self.get_sheet(sheetname)
+                  sheet,**kwargs):
+        sheet=self.get_sheet(sheet)
         columns=kwargs.get('columns')
         if columns:
             new_columns=[]
@@ -82,7 +86,6 @@ class XlsxReport():
                     new_columns.append(new_column)
                 else:
                     new_columns.append(column)
-
             kwargs['columns']=new_columns
             last_col=first_col+len(columns)-1
         if 'data' in kwargs:
