@@ -5,7 +5,8 @@
 
 from xlsxwriter.utility import xl_col_to_name
 from xlsxwriter import Workbook
-from xlsxwriter.worksheet import convert_range_args,Worksheet
+from xlsxwriter.worksheet import convert_range_args,Worksheet,\
+     convert_cell_args
 
 # 预定义格式
 DefaultFormats=(('currency',{'num_format':'#,##0.00'}),
@@ -49,6 +50,7 @@ class XlsxReport():
         self.close()
 
     def get_sheet(self,sheetname):
+        '''获取工作表，并设为默认工作表'''
         if isinstance(sheetname,Worksheet):
             return sheetname
         for sheet in self.book.worksheets():
@@ -57,11 +59,35 @@ class XlsxReport():
             sheet=self.book.add_worksheet(sheetname)
         self.sheet=sheet
         return sheet
+
+    @convert_range_args
+    def mwrite(self,first_row,first_col,last_row,last_col,\
+               value,format=None):
+        '''合并写入到默认的工作表中'''
+        if format:
+            format=self.formats.get(format,format=None)
+        self.sheet.merge_range(first_row,first_col,last_row,last_col,
+                               value,format)
+    @convert_cell_args
+    def write(self,row,col,value,format=None):
+        '''单一单元格写入'''
+        if format:
+            format=self.formats.get(format,format)
+        self.sheet.write(row,col,value,format)
+
+    @convert_cell_args
+    def rwrite(self,row,col,values,format=None):
+        '''按行写入'''
+        if format:
+            format=self.formats.get(format,format)
+        self.sheet.write_row(row,col,values,format)
         
     def close(self):
+        '''关闭文件'''
         self.book.close()
 
     def add_formats(self,args):
+        '''添加格式'''
         if isinstance(args,dict):
             args=args.items()
         self.formats.update({name:self.book.add_format(format) for \
@@ -69,8 +95,9 @@ class XlsxReport():
                       
     @convert_range_args
     def add_table(self,first_row,first_col,last_row,last_col,\
-                  sheet,**kwargs):
-        sheet=self.get_sheet(sheet)
+                  sheet=None,**kwargs):
+        '''添加图表，如sheet为空，则使用默认的工作表'''
+        sheet=self.get_sheet(sheet)if sheet else self.sheet
         columns=kwargs.get('columns')
         if columns:
             new_columns=[]
