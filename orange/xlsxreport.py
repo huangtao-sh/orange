@@ -6,7 +6,7 @@
 from xlsxwriter.utility import xl_col_to_name
 from xlsxwriter import Workbook
 from xlsxwriter.worksheet import convert_range_args,Worksheet,\
-     convert_cell_args
+     convert_cell_args,convert_column_args
 
 # 预定义格式
 DefaultFormats=(('currency',{'num_format':'#,##0.00'}),
@@ -60,12 +60,23 @@ class XlsxReport():
         self.sheet=sheet
         return sheet
 
+    def set_row(self,row,height=None,format=None,options={}):
+        if format:
+            format=self.formats.get(format,format)
+        self.sheet.set_row(row,height,format,options)
+
+    @convert_column_args
+    def set_column(self,firstcol,lastcol,width=None,format=None,options={}):
+        if format:
+            format=self.formats.get(format,format)
+        self.sheet.set_column(firstcol,lastcol,width,format,options)
+    
     @convert_range_args
     def mwrite(self,first_row,first_col,last_row,last_col,\
                value,format=None):
         '''合并写入到默认的工作表中'''
         if format:
-            format=self.formats.get(format,format=None)
+            format=self.formats.get(format,format)
         self.sheet.merge_range(first_row,first_col,last_row,last_col,
                                value,format)
     @convert_cell_args
