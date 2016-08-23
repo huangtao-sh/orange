@@ -35,11 +35,18 @@ def exec_cmd(cmd,argument,sudo=False):
         cmdline='sudo %s'%(cmdline)
     exec_shell(cmdline)
 
-def py_setup(packages,path,download):
+def py_setup(packages,path,download,upgrade):
     root=Path(path)
     if download:
         exec_cmd('pip','download -d %s %s'%(Path(path),
                              " ".join(packages)))
+    elif upgrade:
+        pip='pip' if os.name=='nt' else 'pip3'
+        pkglist=read_shell('%s list -o'%(pip))
+        for line in pkglist:
+            pkg=line.split()
+            if pkg:
+                exec_shell('%s install -U %s'%(pip,pkg[0]))
     else:
         if packages:
             pkgs=[]
@@ -82,6 +89,9 @@ pysetup=Parser(
              help='指定的目录'),
     Argument('-d','--download',
              help='默认的包目录',
+             action='store_true'),
+    Argument('-u','--upgrade',
+             help='升级系统中已安装的软件包',
              action='store_true'),
     proc=py_setup,
     allow_empty=True)
