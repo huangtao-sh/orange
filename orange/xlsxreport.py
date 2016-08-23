@@ -66,7 +66,8 @@ class XlsxReport():
         self.sheet.set_row(row,height,format,options)
 
     @convert_column_args
-    def set_column(self,firstcol,lastcol,width=None,format=None,options={}):
+    def set_column(self,firstcol,lastcol,width=None,
+                   format=None,options={}):
         if format:
             format=self.formats.get(format,format)
         self.sheet.set_column(firstcol,lastcol,width,format,options)
@@ -79,6 +80,18 @@ class XlsxReport():
             format=self.formats.get(format,format)
         self.sheet.merge_range(first_row,first_col,last_row,last_col,
                                value,format)
+
+    @convert_range_args
+    def write_formulas(self,*args,**kwargs):
+        
+        pass
+    
+    @convert_cell_args
+    def write_formula(self,row,col,formula,format=None,value=0):
+        if format:
+            format=self.formats.get(format,format)
+        self.sheet.write_formula(row,col,formula,format,value)
+        
     @convert_cell_args
     def write(self,row,col,value,format=None):
         '''单一单元格写入'''
