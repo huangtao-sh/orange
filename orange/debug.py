@@ -42,10 +42,10 @@ def ensure(cond,msg,level="error"):
         if level in ('error','critical','fatal'):
             raise Exception(msg)
 
-def fprint(*args,sep=' ',**kw):
+def fprint(*args,sep=' ',end='\n','**kw):
     '''force print, used in Windows'''
     try:
-        print(*args,sep=sep,**kw)
+        print(*args,sep=sep,end=end,**kw)
     except UnicodeEncodeError:
         s = sep.join(str(x) for x in args)
         for c in s:
