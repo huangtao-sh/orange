@@ -16,4 +16,4 @@ __all__='get_ver','Path',\
   'classproperty','is_installed','is_dev',\
   'read_shell','write_shell','exec_shell','wlen',\
   'encrypt','decrypt','get_py',\
-  'LOCAL','UTC','now','datetime',\
+  'LOCAL','UTC','now','datetime','fprint'

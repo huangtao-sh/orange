@@ -10,7 +10,7 @@ import logging
 import sys
 from .path import is_dev
 
-__all__='decorator','trace','config_log','ensure','info'
+__all__='decorator','trace','config_log','ensure','info','fprint'
 
 info=logging.info
 
@@ -41,3 +41,10 @@ def ensure(cond,msg,level="error"):
         getattr(logging,level)(msg)
         if level in ('error','critical','fatal'):
             raise Exception(msg)
+
+def fprint(*args,**kw):
+    '''force print, used in Windows'''
+    try:
+        print(*args,**kw)
+    except:
+        pass
