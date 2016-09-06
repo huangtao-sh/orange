@@ -5,7 +5,7 @@
 # Email:huangtao.sh@icloud.com
 # 创建：2016-03-11 12:21
 # 修改：2016-04-13 21:01
-# 修改：2016-8-13 新增__iter__功能，和 extractall功能
+# 修改：2016-8-13 新增__iter__ 和 extractall功能
 
 import pathlib
 import os
@@ -43,8 +43,7 @@ def decode(d):
     '''
     for k in BOM_CODE:
         if k==d[:len(k)]:
-            text=d[len(k):].decode(BOM_CODE[k])
-            return text.splitlines()
+            return d[len(k):].decode(BOM_CODE[k])
     for encoding in DEFAULT_CODES:
         try:
             return d.decode(encoding)
