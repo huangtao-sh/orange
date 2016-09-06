@@ -163,7 +163,7 @@ class VersionMgr:
                       'git push --all',
                       'git push --tags',
                       'pysdist',
-                      'pyinstall']
+                      'pysetup']
                 for cmd in cmds:
                     exec_shell(cmd)
 
