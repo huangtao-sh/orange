@@ -47,10 +47,9 @@ def decode(d):
             return text.splitlines()
     for encoding in DEFAULT_CODES:
         try:
-            text=d.decode(encoding)
-            return text.splitlines()
+            return d.decode(encoding)
         except:
-            continue
+            pass
     raise Exception('解码失败')
 
 class Path(pathlib.Path):
@@ -75,12 +74,22 @@ class Path(pathlib.Path):
     def ensure(self,parents=True):
         '''确保目录存在，如果目录不存在则直接创建'''
         if not self.exists():
-            self.mkdir(parents=parents)            
+            self.mkdir(parents=parents)
+            
+    @property
+    def text(self):
+        '''读取文件，并返回字符串'''
+        return decode(self.read_bytes())
+
+    @text.setter
+    def text(self,text):
+        '''写入文本文件'''
+        self.write(text=text)
         
     @property
     def lines(self):
         '''按行读取文件'''
-        return decode(self.read('rb'))
+        return self.text.splitlines()
 
     @lines.setter
     def lines(self,lines):
