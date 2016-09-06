@@ -56,7 +56,7 @@ def wlen(s):
         
         
 def __get_des():
-    from stdlib.pyDes import des,PAD_PKCS5
+    from .pyDes import des,PAD_PKCS5
     return des(key='huangtao',padmode=PAD_PKCS5)
 
 def encrypt(pwd):

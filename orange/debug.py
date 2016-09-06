@@ -42,15 +42,16 @@ def ensure(cond,msg,level="error"):
         if level in ('error','critical','fatal'):
             raise Exception(msg)
 
-def fprint(*args,sep=' ',end='\n',**kw):
-    '''force print, used in Windows'''
+def fprint(*args,sep=' ',end='\n',replace='',**kw):
+    '''force print, used in Windows,解决打印GBK问题
+    其中replace是遇无法打印字符的替代字符'''
     try:
         print(*args,sep=sep,end=end,**kw)
     except UnicodeEncodeError:
         s = sep.join(str(x) for x in args)
         for c in s:
             try:
-                print( c, end='')
+                print(c,end='')
             except UnicodeEncodeError:
-                print( '?', end='')
+                print(replace, end='')
         print(end,end='')

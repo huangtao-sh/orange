@@ -5,13 +5,17 @@
 # Email:huangtao.sh@icloud.com
 # 创建：2015-09-17 13:24
 # 修改：2016-03-12 18:53
+# 修改：2016-9-6 增加 ONEDAY,ONESECOND
 
 import datetime as dt
 import re
 
-__all__='UTC','LOCAL','now','datetime','FixedOffset'
+__all__='UTC','LOCAL','now','datetime','FixedOffset','ONEDAY',\
+        'ONESECOND','date_add'
 
 ZERO = dt.timedelta(0)
+ONEDAY = dt.timedelta(days=1)
+ONESECOND = dt.timedelta(seconds=1)
 
 # A class building tzinfo objects for fixed-offset time zones.
 # Note that FixedOffset(0, "UTC") is a different way to build a
@@ -116,5 +120,10 @@ def datetime(*args,**kwargs):
         kwargs['tzinfo']=tzinfo
         return dt.datetime(*args,**kwargs)
         
-            
-    
+def date_add(date,years=0,months=0,**kw):
+    '''日期及时间的加减,
+    支持的参数有：years,months,days,hours,minutes,seconds'''
+    year,month=date.timetuple()[:2]
+    year,month=divmod((year+years)*12+month+months-1,12)
+    date=date.replace(year=year,month=month+1)
+    return date+dt.timedelta(**kw)

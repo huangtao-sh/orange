@@ -1,6 +1,15 @@
+# 项目：标准库函数
+# 模块：macos的plist生成器
+# 作者：黄涛
+# License:GPL
+# Email:huangtao.sh@icloud.com
+# 创建：2016-09-06 23:27
+
+import sys
 from lxml.etree import *
 from orange.parseargs import *
 from orange import *
+import sys
 
 PATTERN='''<?xml version="1.0"?>  
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">  
@@ -28,27 +37,19 @@ def create_xml(filename,**kw):
     ElementTree(root).write(filename,pretty_print=True,xml_declaration=True,
           encoding='UTF-8')
 
-def create_plist(filename=None,label=None,program=None,args=None):
-    label=label or Path(program[0]).name
-    filename=filename or label
+def create_plist(filename,label,*args):
     filename=str(Path(filename).with_suffix('.plist'))
-    if args:
-        program.extend(args)
-    print(label,filename,*program)
-    return 
     create_xml(filename,KeepAlive=True,ProgramArguments=args,
                Label=label)
 
-def proc(filename=None,label=None,program=None,args=None):
-    print(filename,label,program,args)
+def main():
+    args=sys.argv
+    if len(args)<4:
+        print('Usage:\n'
+        '\t%s plist-file-name label program args'%(args[0]))
+    else:
+        create_plist(*args[1:])
     
-
-main=Parser(
-    Arg('-l','--label',metavar='label',help='程序标签'),
-    Arg('-f','--filename',metavar='filename',help='文件名'),
-    Arg('program',nargs=1,help='程序命令'),
-    Arg('args',nargs='*',metavar='arg',help='程序的参数'),
-    proc=create_plist)
 
 if __name__=='__main__':
     main()
