@@ -3,10 +3,11 @@
 # 作者：黄涛
 # 创建：2015-9-2
 # 修订：2015-9-3 添加setup.py以及testing的相关初始化
+# 修订：2016-9-6 移除stdlib的支持
 
-import datetime
 import os
-import stdlib
+from orange import *
+from orange.parseargs import *
 
 INITIAL_VERSION='version="0.1"\n'
 INITIAL_FILE='''# 项目：{project}
@@ -15,20 +16,25 @@ INITIAL_FILE='''# 项目：{project}
 # 创建：{date:%Y-%m-%d}
 '''
 SETUP_FILE='''#!/usr/bin/env python3
-from setuptools import setup,find_packages
-import {prj_name}.__version__
+from orange import setup
+requires=[
+          ]
+console_scripts=[
+        # 'cmdname=package:function',
+                 ]
+gui_scripts=[
+        # 'cmdname=package:function',
+                 ]
 setup(
         name='{prj_name}',
-        version={prj_name}.__version__.version,
         author='{author}',
         author_email='{email}',
         platforms='any',
         description='{project}',
+        install_requires=requires,
         long_description='{project}',
-        entry_points={{'console_scripts':[
-            # 'cmd_name=package:function',
-            ]}},
-        packages=find_packages(exclude=['testing']),
+        entry_points={{'console_scripts':console_scripts,
+                       'gui_scripts':gui_scripts}},
         url='https://github.com/huangtao-sh/{prj_name}.git',
         license='GPL',
         )
@@ -61,9 +67,9 @@ def py_init(project='',author='',email=''):
     pkg_file='%s/__init__.py'%(prj_name)
     # 生成setup.py文件
     if not os.path.isfile('setup.py'):
-        stdlib.write_file('setup.py',SETUP_FILE.format(\
+        Path('setup.py').text=SETUP_FILE.format(\
             author=author,prj_name=prj_name,
-            project=project,email=email))
+            project=project,email=email)
         print('已生成setup.py')
         
     # 创建包目录
@@ -71,35 +77,27 @@ def py_init(project='',author='',email=''):
         os.mkdir(prj_name)
     # 生成初始化版本文件    
     if not os.path.isfile(ver_file):
-        stdlib.write_file(ver_file,INITIAL_VERSION)
+        Path(ver_file).text=INITIAL_VERSION
         print('当前程序版本初始化为：0.1')
     # 生成初始化包文件
     if not os.path.isfile(pkg_file):
         contents=INITIAL_FILE.format(project=project,
                                       author=author,
                                       email=email,
-                                      date=datetime.datetime.now())
-        stdlib.write_file(pkg_file,contents)
+                                      date=now())
+        Path(pkg_file).text=contents
         print('已初始化包文件')
 
     # 生成测试模板文件
     if not os.path.isdir('testing'):
-        os.mkdir('testing')
-        stdlib.write_file(os.path.join('testing','__init__.py'),
-                          TESTING_PKG)
-        stdlib.write_file(os.path.join('testing','test_sample.py'),
-                          TEST_SAMPLE)       
+        testing=Path('testing')
+        testing.ensure()
+        (testing / '__init__.py').text=TESTING_PKG
+        (testing / 'test_sample.py').text=TEST_SAMPLE
         print('已创建测试模板文件')
-        
-init_cmd={
-    'proc':py_init,
-    '-p --project':{
-        'help':'项目描述'},
-    '-a --author':{
-        'default':'huangtao',
-        'help':'作者姓名'},
-    '-e --email':{
-        'default':'hunto@163.com',
-        'help':'电子邮件'
-        },}
-    
+
+main=Parser(Arg('-p','--project',help='项目描述'),
+            Arg('-a','--author',help='作者姓名',default='黄涛'),
+            Arg('-e','--email',help='电子邮件',
+                default='hunto@163.com'),
+            proc=py_init)

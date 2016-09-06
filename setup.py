@@ -10,6 +10,7 @@ console_scripts=['dos2unix=orange.path:dos2unix',
                  'canshu=orange.ggcs:canshu',
                  #'mongodb=orange.mongodb:main',
                  'pyver=orange.pyver:main',
+                 'pyinit=orange.init:main',
                  'sysinit=orange.sysinit:proc']
 setup(
         name='orange',
