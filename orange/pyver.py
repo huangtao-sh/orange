@@ -150,7 +150,7 @@ class VersionMgr:
               'develop':3}
 
         if self.ver:
-            new_ver=upgrade_ver(self.ver,function[self.upgrade])
+            new_ver=str(upgrade_ver(self.ver,function[self.upgrade]))
             print('版本号由%s升级到%s'%(self.ver,new_ver))
             self.write_version_file(new_ver)
             ver=Version(new_ver)
@@ -170,7 +170,8 @@ class VersionMgr:
     @classmethod
     def proc(cls,show=None,upgrade=None,commit=None):
         obj=cls()
-        try:
+        if obj:
+        #try:
             if show:
                 obj.show_version()
             if commit:
@@ -179,8 +180,8 @@ class VersionMgr:
             if upgrade:
                 obj.upgrade=upgrade
                 obj.upgrade_ver()
-        except Exception as e:
-            print(e)
+        #except Exception as e:
+        #    print(e)
 
     ''' This method is no longer used.
     @classmethod
