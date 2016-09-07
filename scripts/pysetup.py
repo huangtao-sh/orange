@@ -6,12 +6,14 @@
 # 创建：2015-09-03 16:02
 # 修改：2016-03-08 16:47
 # 修改：2016-04-13 21:07
+# 修改：2016-9-7 将通过shell调用pip命令调整为直接引入pip模块
 
 import os
 import sys
 import re
 from orange import *
 from orange.parseargs import *
+from pip import main as pip
 
 def pyclean():
     for path in ('build','dist','*egg-info'):
@@ -38,8 +40,9 @@ def exec_cmd(cmd,argument,sudo=False):
 def py_setup(packages,path,download,upgrade):
     root=Path(path)
     if download:
-        exec_cmd('pip','download -d %s %s'%(Path(path),
-                             " ".join(packages)))
+        pip(['download','-d',str(root),*packages])
+        #exec_cmd('pip','download -d %s %s'%(Path(path),
+        #                      " ".join(packages)))
     elif upgrade:
         pip='pip' if os.name=='nt' else 'pip3'
         pkglist=read_shell('%s list -o'%(pip))
