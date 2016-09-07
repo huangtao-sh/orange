@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 from orange import setup
 requires=['xlrd',
-          'lxml',
+          # 'lxml',  这个包需要手动安装
           'pypinyin',
     ]
 console_scripts=['dos2unix=orange.path:dos2unix',

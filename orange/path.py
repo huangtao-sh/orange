@@ -78,7 +78,7 @@ class Path(pathlib.Path):
     @property
     def text(self):
         '''读取文件，并返回字符串'''
-        return decode(self.read_bytes())
+        return decode(self.read('rb'))
 
     @text.setter
     def text(self,text):
