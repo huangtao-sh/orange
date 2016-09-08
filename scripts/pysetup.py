@@ -6,13 +6,19 @@
 # 创建：2015-09-03 16:02
 # 修改：2016-03-08 16:47
 # 修改：2016-04-13 21:07
+# 修改：2016-9-7 将通过shell调用pip命令调整为直接引入pip模块
 
 import os
 import sys
 import re
+import pip
 from orange import *
 from orange.parseargs import *
+from orange.deploy import run_setup
 
+def run_pip(*args):
+    pip.main(list(args))
+        
 def pyclean():
     for path in ('build','dist','*egg-info'):
         for p in Path('.').glob(path):
@@ -38,8 +44,9 @@ def exec_cmd(cmd,argument,sudo=False):
 def py_setup(packages,path,download,upgrade):
     root=Path(path)
     if download:
-        exec_cmd('pip','download -d %s %s'%(Path(path),
-                             " ".join(packages)))
+        run_pip('download','-d',str(root),*packages)
+        #exec_cmd('pip','download -d %s %s'%(Path(path),
+        #                      " ".join(packages)))
     elif upgrade:
         pip='pip' if os.name=='nt' else 'pip3'
         pkglist=read_shell('%s list -o'%(pip))
@@ -69,10 +76,11 @@ def py_setup(packages,path,download,upgrade):
                     pkgs.append(pkg)
                     info('Add pkg %s'%(pkg))
             os.chdir('%s'%(root))
-            exec_cmd('pip','install %s'%(" ".join(pkgs)))
+            run_pip('install',*pkgs)
+            # exec_cmd('pip','install %s'%(" ".join(pkgs)))
         else:
             if Path('setup.py').exists():
-                exec_cmd('python','setup.py install',sudo=True)
+                run_setup('install')
                 pyclean()
             else:
                 print('Can''t find the file setup.py!')

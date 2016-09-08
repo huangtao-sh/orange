@@ -5,12 +5,16 @@
 # Email:huangtao.sh@icloud.com
 # 创建：2016-03-12 18:05
 
-import setuptools
+import distutils.core
 import os
 from orange import Path,get_ver
+import setuptools
+
+def run_setup(*args):
+    distutils.core.run_setup('setup.py',args)
 
 def setup(version=None,packages=None,
-          scripts=None,
+          scripts=None,install_requires=None,
           **kwargs):
     kwargs.setdefault('author','huangtao') # 设置默认的用户
     # 设置默认邮箱
@@ -26,18 +30,25 @@ def setup(version=None,packages=None,
     if not version:
         # 自动获取版本
         version=get_ver()
+    if not install_requires:
+        requires=[*fn.lines for fn in  Path('.').\
+                  rglob('requires.txt')]
+        requires=[x.strip() for x in requires if not \
+                  x.strip().startswith('#')]
     if not scripts:
         scripts=[str(path) for path in Path('.').glob('scripts/*')]
     # 安装程序 
-    setuptools.setup(scripts=scripts,packages=packages,
-                     version=version,**kwargs)
+    d=distutils.core.setup(scripts=scripts,packages=packages,
+            install_requires=install_requires,
+            version=version,**kwargs)
     # 处理脚本
-    if scripts and os.name=='posix':
+    if 'install' in d.has_run() and os.name=='posix'\
+      and scripts:
         from sysconfig import get_path
         prefix=Path(get_path('scripts'))
         for script in scripts:
             script_name=prefix/Path(script).name
             if script_name.suffix.lower() in ['.py','.pyw']\
               and script_name.exists():
-                script_name.replace(script_name.with_suffix(''))
+                script_name.replace(script_name.pname)
 

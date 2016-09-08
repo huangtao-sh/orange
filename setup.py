@@ -14,7 +14,7 @@ console_scripts=['dos2unix=orange.path:dos2unix',
                  'pyinit=orange.init:main',
                  'sysinit=orange.sysinit:proc']
 setup(
-        name='orange',
+        name='orange-kit',
         platforms='any',
         description='orange',
         install_requires=requires,
