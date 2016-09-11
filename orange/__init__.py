@@ -10,7 +10,7 @@ from .debug import *
 from .htutil import *
 from .dateutil import *
 
-__all__='get_ver','Path',\
+__all__='get_ver','Path','get_path',\
   'first','last','Ver','decode',\
   'setup','decorator','trace','config_log','ensure','info',\
   'classproperty','is_installed','is_dev',\

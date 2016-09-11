@@ -34,8 +34,9 @@ def is_installed(file_name):
 def is_dev(cmd=None):
     import sys
     cmd=cmd or sys.argv[0]
-    return 'test' in cmd or (not is_installed(cmd)) or \
-      (not 'mod' in cmd)
+    if('wsgi' in cmd):
+        return False
+    return 'test' in cmd or (not is_installed(cmd))
 
 def decode(d):
     '''
@@ -52,6 +53,7 @@ def decode(d):
     raise Exception('解码失败')
 
 class Path(pathlib.Path):
+    __slots__=()
     def __new__(cls,*args,**kwargs):
         if cls is Path:
             cls = WindowsPath if os.name == 'nt' else PosixPath
@@ -170,10 +172,10 @@ class Path(pathlib.Path):
         shutil.rmtree(str(self))
         
 class PosixPath(Path,pathlib.PurePosixPath):
-    __slot__=()
+    __slots__=()
 
 class WindowsPath(Path,pathlib.PureWindowsPath):
-    __slot__=()
+    __slots__=()
 
 def convert(files):
     for file in files:

@@ -11,14 +11,10 @@
 import os
 import sys
 import re
-import pip
 from orange import *
 from orange.parseargs import *
-from orange.deploy import run_setup
+from orange.deploy import *
 
-def run_pip(*args):
-    pip.main(list(args))
-        
 def pyclean():
     for path in ('build','dist','*egg-info'):
         for p in Path('.').glob(path):
@@ -33,14 +29,6 @@ def find_ver(path):
     if v:
         return Ver(v.group())
 
-def exec_cmd(cmd,argument,sudo=False):
-    if os.name=='posix':
-        cmd='%s3'%(cmd)
-    cmdline='%s %s'%(cmd,argument)
-    if sudo and sys.platform.startswith('linux'):
-        cmdline='sudo %s'%(cmdline)
-    exec_shell(cmdline)
-
 def py_setup(packages,path,download,upgrade):
     root=Path(path)
     if download:
@@ -53,7 +41,7 @@ def py_setup(packages,path,download,upgrade):
         for line in pkglist:
             pkg=line.split()
             if pkg:
-                exec_shell('%s install -U %s'%(pip,pkg[0]))
+                run_pip('install','-U',pkg[0])
     else:
         if packages:
             pkgs=[]

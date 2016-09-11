@@ -7,48 +7,79 @@
 
 import distutils.core
 import os
-from orange import Path,get_ver
 import setuptools
+import pip
+from orange import Path,Ver
 
+def get_path(pkg,user=True):
+    if os.name=='posix':
+        if user:
+            root=Path('~')
+            return root,root/ ('.%s'%(pkg))
+        else:
+            root=Path('/usr/local')
+            return root/'etc',root/'var'/pkg
+    else:
+        if user:
+            root=Path(os.getenv('AppData')) 
+            return root / 'Roaming' , root / 'Local' / pkg
+        else:
+            root=Path(os.getenv('ProgramData')) / pkg
+            return root,root
+            
+def run_pip(*args):
+    pip.main(list(args))
+    
 def run_setup(*args):
     distutils.core.run_setup('setup.py',args)
 
-def setup(version=None,packages=None,
+DEFAULT={'author':'huangtao',
+         'author_email':'huangtao.sh@icloud.com',
+         'platforms':'any',
+         'license':'GPL',}
+
+def _get_requires():
+    result=[]
+    for fn in Path('.').glob('*/requires.txt'):
+        for row in fn.lines:
+            i=row.find('#')
+            if i>-1:
+                row=row[:i]
+            row=row.strip()
+            if row:
+                result.append(row)
+    return result
+            
+def setup(version=None,packages=None,after_install=None,
           scripts=None,install_requires=None,
           **kwargs):
-    kwargs.setdefault('author','huangtao') # 设置默认的用户
-    # 设置默认邮箱
-    kwargs.setdefault('author_email','huangtao.sh@icloud.com')
-    # 设置默认平台
-    kwargs.setdefault('platforms','any')
-    # 设置默认授权
-    kwargs.setdefault('license','GPL')
+    for k,v in DEFAULT.items():
+        kwargs.setdefault(k,v)
     if not packages:
         # 自动搜索包
         packages=setuptools.find_packages(exclude=('testing',
                                                    'scripts'))
     if not version:
         # 自动获取版本
-        version=get_ver()
-    if not install_requires:
-        requires=[*fn.lines for fn in  Path('.').\
-                  rglob('requires.txt')]
-        requires=[x.strip() for x in requires if not \
-                  x.strip().startswith('#')]
+        version=str(Ver.read_file())
+    if not install_requires: # 从repuires.txt 中获取依赖包
+        install_requires=_get_requires()
     if not scripts:
         scripts=[str(path) for path in Path('.').glob('scripts/*')]
     # 安装程序 
-    d=distutils.core.setup(scripts=scripts,packages=packages,
+    dist=distutils.core.setup(scripts=scripts,packages=packages,
             install_requires=install_requires,
             version=version,**kwargs)
     # 处理脚本
-    if 'install' in d.has_run() and os.name=='posix'\
+
+    if 'install' in dist.have_run and os.name=='posix' \
       and scripts:
         from sysconfig import get_path
         prefix=Path(get_path('scripts'))
         for script in scripts:
-            script_name=prefix/Path(script).name
-            if script_name.suffix.lower() in ['.py','.pyw']\
+            script_name=prefix/(Path(script).name)
+            if script_name.lsuffix in ['.py','.pyw']\
               and script_name.exists():
-                script_name.replace(script_name.pname)
-
+                script_name.replace(script_name.with_suffix(''))
+    if 'install' in dist.have_run and after_install:
+        after_install(dist)

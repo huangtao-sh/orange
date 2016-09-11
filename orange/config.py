@@ -11,15 +11,12 @@ import sysconfig
 from configparser import ConfigParser
 # from stdlib import encrypt,decrypt,ensure_path
 from orange import *
+import orange
 class Config:
     def __init__(self,config_path=None,data_path=None,
                  is_dev=None,project=None):
         if is_dev is None:
-            self.is_dev=(not sys.argv[0].startswith(
-                sysconfig.get_path("scripts")))or \
-            ('test' in sys.argv[0])
-            if 'mod_wsgi' in sys.argv[0]:
-                self.is_dev=False
+            self.is_dev=orange.is_dev()
         else:
             self.is_dev=is_dev
         if project is None:
