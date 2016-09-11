@@ -72,14 +72,14 @@ class VersionMgr:
                 self.proc_git()
 
     def write_version_file(self,ver):
-        self.ver.wrie_file()
+        self.ver.write_file()
         
     def show_version(self):     # 显示版本号与git状态
         if self.repository:
             print('\n当前分支： %s'%(self.branch))
             print('远程版本最否最新：%s'%(self.up_to_date))
             print('工作区是否干净：%s'%(self.is_clean))
-            if self.ver_file:
+            if self.ver:
                 print('当前版本文件名：%s'%(self.ver.filename))
                 print('当前程序版本：%s'%(self.ver))
         else:
@@ -90,7 +90,7 @@ class VersionMgr:
             raise Exception('错误：当前git分支必须不能为master')
         if self.is_clean:
             raise Exception('错误：当前工作区无待提交的更改')
-        if not self.prerelease: 
+        if not self.ver.prerelease: 
             raise Exception('错误：当前版本为最终版')
         if self.untracted_files:
             print('下面的文件没有被纳入git监控:')
