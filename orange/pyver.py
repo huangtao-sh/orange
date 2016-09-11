@@ -115,9 +115,10 @@ class VersionMgr:
             
         if self.to_be_commited:
             if self.ver:
-                new_ver=self.ver.upgrade()
-                print('版本号由%s升级到%s'%(self.ver,new_ver))
-                self.write_version_file(new_ver)
+                ver=str(self.ver)
+                self.ver.upgrade()
+                print('版本号由%s升级到%s'%(ver,self.ver))
+                self.ver.write_file()
                 exec_shell('git commit -a -m "%s"'%(self.commit))
                 exec_shell('git push --all')
                     
