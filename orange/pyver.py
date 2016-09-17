@@ -11,8 +11,11 @@
 import os
 import sys
 from orange import *
-from orange.version import upgrade_ver
+from orange.version import Ver
 from orange.parseargs import *
+
+'''
+This function is no longer used.
 
 def get_ver():
     ver_file=first(list(Path(".").glob("*/__version__.py")))
@@ -20,6 +23,7 @@ def get_ver():
         for line in ver_file.lines:
             if line.startswith('version'):
                 return ver_file,line.split('"')[1]
+'''
 
 class VersionMgr:
     branch=None   # 当前git分支
@@ -30,7 +34,6 @@ class VersionMgr:
     is_clean=False      # 工作区是否干净
     ver=None            # 当前程序版本
     repository=True     # 是否纳入git版本管理
-    ver_file=None       # 版本号文件
     file_type=None
     def proc_git(self):
         from re import compile
@@ -64,21 +67,20 @@ class VersionMgr:
 
     def __init__(self):
         if Path('.git').is_dir():
-            a=get_ver()
-            if a:
-                self.ver_file,self.ver=get_ver()
+            self.ver=Ver.read_file()
+            if self.ver:
                 self.proc_git()
 
     def write_version_file(self,ver):
-        Path(self.ver_file).text='version="%s"\n'%(ver)
+        self.ver.write_file()
         
     def show_version(self):     # 显示版本号与git状态
         if self.repository:
             print('\n当前分支： %s'%(self.branch))
             print('远程版本最否最新：%s'%(self.up_to_date))
             print('工作区是否干净：%s'%(self.is_clean))
-            if self.ver_file:
-                print('当前版本文件名：%s'%(self.ver_file))
+            if self.ver:
+                print('当前版本文件名：%s'%(self.ver.filename))
                 print('当前程序版本：%s'%(self.ver))
         else:
             print('没有纳入GIT管理')
@@ -88,7 +90,7 @@ class VersionMgr:
             raise Exception('错误：当前git分支必须不能为master')
         if self.is_clean:
             raise Exception('错误：当前工作区无待提交的更改')
-        if not('a' in self.ver or 'b' in self.ver): 
+        if not self.ver.prerelease: 
             raise Exception('错误：当前版本为最终版')
         if self.untracted_files:
             print('下面的文件没有被纳入git监控:')
@@ -113,24 +115,24 @@ class VersionMgr:
             
         if self.to_be_commited:
             if self.ver:
-                new_ver=upgrade_ver(self.ver)
-                print('版本号由%s升级到%s'%(self.ver,new_ver))
-                self.write_version_file(new_ver)
-                exec_shell('git add "%s"'%(self.ver_file))
+                ver=str(self.ver)
+                self.ver.upgrade()
+                print('版本号由%s升级到%s'%(ver,self.ver))
+                self.ver.write_file()
                 exec_shell('git commit -a -m "%s"'%(self.commit))
                 exec_shell('git push --all')
                     
     def upgrade_ver(self):
         from distutils.version import StrictVersion as Version
-        ver=Version(self.ver)
+        ver=self.ver
         if self.branch=='master':
             raise Exception('错误：当前git分支必须不能为master')
 
-        if self.upgrade not in ('major','minor','micro','dev',
+        if self.upgrade not in ('major','minor','micro','dev','p','patch',
                                 'm','n','o','d'):
             raise Exception('错误：参数输入错误')
 
-        if not self.is_clean and self.upgrade in ('d','dev'):
+        if not self.is_clean and self.upgrade in ('d','dev',):
                 raise Exception('错误：当前工作区有待提交的更改')
 
         if self.upgrade in ('d','dev')and ver.prerelease is None:
@@ -139,26 +141,16 @@ class VersionMgr:
         if self.upgrade not in ('d','dev')and ver.prerelease:
             raise Exception('错误：当前版本非最终版')
 
-        function={'major':0,
-              'm':0,
-              'minor':1,
-              'n':1,
-              'micro':2,
-              'o':2,
-              'dev':3,
-              'd':3,
-              'develop':3}
-
         if self.ver:
-            new_ver=str(upgrade_ver(self.ver,function[self.upgrade]))
-            print('版本号由%s升级到%s'%(self.ver,new_ver))
-            self.write_version_file(new_ver)
-            ver=Version(new_ver)
+            self.ver.upgrade(self.upgrade)
+            print('版本号由%s升级到%s'%(ver,self.ver))
+            self.ver.write_file()
+            ver=self.ver
             if ver.prerelease is None:
                 cmds=['git commit -a -m "升级到最终版"',
                       'git checkout master',
                       'git merge %s'%(self.branch),
-                      'git tag ver%s'%(new_ver),
+                      'git tag ver%s'%(self.ver),
                       'git checkout %s'%(self.branch),
                       'git push --all',
                       'git push --tags',
