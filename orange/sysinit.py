@@ -10,8 +10,8 @@ LINKS=[('bin','bin'),
     ('emacsd/emacs','.emacs'),
     ('conf/gitconfig','.gitconfig'),
     ('conf/ssh','.ssh'),
-    ('conf/pip','.pip')
-    ('conf/pypirc','.pypirc')
+    ('conf/pip','.pip'),
+    ('conf/pypirc','.pypirc'),
     ]
     
 WINDOWS_LINKS=[('conf/vimrc_win','.vimrc'),
