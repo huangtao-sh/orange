@@ -56,7 +56,7 @@ def py_setup(packages,path,download,upgrade):
                         pkg_ver=ver
                 if pkg_path:
                     if Path(pkg_path).suffix.lower() in ('.zip','.whl','.gz','.tar'):
-                        pkgs.append('"%s"'%(pkg_path))
+                        pkgs.append(pkg_path)
                         info('Add file %s'%(pkg_path.name))
                     else:
                         print('%s 不是正常的包文件'%(pkg_path.name))
