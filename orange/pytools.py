@@ -24,9 +24,10 @@ def _clear():
         if path.is_dir():
             path.rmtree()
             
-def pyuploaad():
+def pyupload():
     run_setup('test')
-    run_setup('sdist','upload')
+    #run_setup('sdist','upload')
+    run_setup('sdist','--dist-dir',str(Path('~/OneDrive/pylib')),'upload')
     _clear()
 
 def pysdist():
