@@ -9,24 +9,25 @@
 import sys
 import os
 from orange import Path,exec_shell
-
+from orange.deploy import *
 def pytest():
     import unittest
     sys.path.insert(0,'.')
     unittest.main('testing')
 
+def _clear():
+    for path in Path('.').glob('*.egg-info'):
+        print('Path %s has beed deleted!'%(path))
+        if path.is_dir():
+            path.rmtree()
+            
+def pyupload():
+    run_setup('test','sdist','upload')
+    _clear()
+
 def pysdist():
-    if Path('setup.py').is_file():
-        cmd='setup.py sdist --dist-dir "%s"'%(Path('~/OneDrive/pylib'))
-        if os.name!='nt':
-            cmd='python3 %s'%(cmd)
-        exec_shell(cmd)
-        for path in Path('.').glob('*.egg-info'):
-            print('Path %s has beed deleted!'%(path))
-            if path.is_dir():
-                path.rmtree()
-    else:
-        print('没有找到setup.py文件！')
+    run_setup('test','sdist','--dist-dir',str(Path('~/OneDrive/pylib')))
+    _clear()
     
 """
 import os
