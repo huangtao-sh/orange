@@ -25,13 +25,10 @@ def _clear():
             path.rmtree()
             
 def pyupload():
-    run_setup('test')
-    #run_setup('sdist','upload')
     run_setup('sdist','--dist-dir',str(Path('~/OneDrive/pylib')),'upload')
     _clear()
 
 def pysdist():
-    run_setup('test')
     run_setup('sdist','--dist-dir',str(Path('~/OneDrive/pylib')))
     _clear()
 
