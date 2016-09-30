@@ -47,6 +47,10 @@ class R(metaclass=_R):
             flag=n
         self._regex=re.compile(pattern,flag)
 
+    def __eq__(self,s):
+        '''是否完全匹配。'''
+        return self._regex.fullmatch(s)
+        
     def __truediv__(self,s):
         '''返回正则表达式的操作对象'''
         return RegOperation(self._regex,s)
@@ -81,8 +85,7 @@ class RegOperation:
 
     def __bool__(self):
         '''判断是否匹配。'''
-        if self._regex and self._search:
-            return bool(self._regex.match(self._search))
+        return bool(self._regex.match(self._search))
 
     def __iter__(self):
         '''查找所有匹配项。'''
