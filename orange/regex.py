@@ -50,7 +50,11 @@ class R(metaclass=_R):
     def __eq__(self,s):
         '''是否完全匹配。'''
         return self._regex.fullmatch(s)
-        
+
+    def __mod__(self,s):
+        '''搜索匹配的记录'''
+        return self._regex.search(s)
+    
     def __truediv__(self,s):
         '''返回正则表达式的操作对象'''
         return RegOperation(self._regex,s)
