@@ -89,7 +89,7 @@ class RegOperation:
 
     def __bool__(self):
         '''判断是否匹配。'''
-        return bool(self._regex.match(self._search))
+        return bool(self._regex.search(self._search))
 
     def __iter__(self):
         '''查找所有匹配项。'''
