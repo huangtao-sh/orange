@@ -7,6 +7,7 @@ from xlsxwriter.utility import xl_col_to_name
 from xlsxwriter import Workbook
 from xlsxwriter.worksheet import convert_range_args,Worksheet,\
      convert_cell_args,convert_column_args
+from orange import *
 
 # 预定义格式
 DefaultFormats=(('currency',{'num_format':'#,##0.00'}),
@@ -42,12 +43,19 @@ class XlsxReport():
         self.formats={}
         self.add_formats(DefaultFormats)
         self.sheet=None
+        self.sheets={}
 
     def __enter__(self):
         return self
 
     def __exit__(self,_type,value,trace):
         self.close()
+
+    def ensure_sheet(self,sheet):
+        self.get_sheet(sheet)
+        if not sheet in self.sheets:
+            self.sheets[sheet]=Sheet(self)
+        return self.sheets.get(sheet)
 
     def get_sheet(self,sheetname):
         '''获取工作表，并设为默认工作表'''
@@ -83,7 +91,6 @@ class XlsxReport():
 
     @convert_range_args
     def write_formulas(self,*args,**kwargs):
-        
         pass
     
     @convert_cell_args
@@ -144,4 +151,57 @@ class XlsxReport():
             if kwargs.get('total_row',False):
                 last_row+=1
         sheet.add_table(first_row,first_col,last_row,last_col,kwargs)
-                
+
+Pattern=R/r'([A-Z]{1,2})(\d*)([:_]([A-Z]{1,2})(\d*))?'
+
+class Sheet:
+    def __init__(self,rpt):
+        self.rpt=rpt
+        self.row=1
+
+    def write(self,range,value,format=None):
+        if ':' in range and not isinstance(value,(dict,tuple,list)):
+            self.rpt.mwrite(range,value,format)
+        if not ':' in range:
+            if isinstance(value,(list,tuple)):
+                self.rpt.rwrite(range,value)
+            else:
+                if isinstance(value,str) and value.startswith('='):
+                    value=value.format(self.row)
+                self.rpt.write(range,value,format)
+
+    def __add__(self,val):
+        self.row+=val
+        return self
+    
+    def __sub__(self,val):
+        self.row-=val
+        return self
+    
+    def __setitem__(self,name,val):
+        match=Pattern.fullmatch(name)
+        if match:
+            r=list(match.groups())
+            if not r[1]:
+                r[1]=str(self.row)
+            rg=''.join(r[:2])
+            if r[3]:
+                if not r[4]:
+                    r[4]=str(self.row)
+                rg='%s:%s%s'%(rg,r[3],r[4])
+            if not isinstance(val,tuple):
+                val=(val,)
+            self.write(rg,*val)
+        else:
+            raise Exception('单元格格式不正确')
+
+    def __setattr__(self,name,val):
+        try:
+            self[name]=val
+        except:
+            super().__setattr__(name,val)
+
+    def iter_rows(self,count):
+        for i in range(count):
+            yield self
+            self+1
