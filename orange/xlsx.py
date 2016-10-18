@@ -36,30 +36,17 @@ class Book(Workbook):
         super().__init__(filename,**kw)
         self._worksheet=None    # 设置当前的工作表为空
         self._worksheets={}     # 设置当前的工作表清单为空
-        self._formats={name:val for name,val in DefaultFormat}
+        self._formats={}
+        for name,val in DefaultFormat:
+            self.add_format(val,name)
 
-    def _add_format(self,name,value):
-        self._formats[name]=value
-
-    def _iter_cells(self):
-        ''' 遍历所有工作表的单元格，内部使用 '''
-        for sheet in self.worksheets_objs:
-            for r in sheet.table.values():
-                for i,c in r.items():
-                    yield r,i,c
-                    
-    def close(self):
-        ''' 关闭文件时，将以格式名保存的格式转化为真正的格式'''
-        if not self.fileclosed:
-            formats={}
-            for r,i,c in self._iter_cells():
-                fmt=c.format
-                if fmt and isinstance(fmt,str):
-                    if fmt not in formats:
-                        formats[fmt]=self.add_format(self._formats[fmt])
-                    r[i]=c._replace(format=formats[fmt])
-
-        super().close()
+    def add_format(self,properties,name=None):
+        _format=super().add_format(properties)
+        if name:
+            self._formats[name]=_format
+            _format.name=name
+            _format.properties=properties
+        return _format
                 
     def set_columns(self,*columns,width=None,cell_format=None,options=None):
         ''' 设置当前工作表的列属性，允许同时设置多个，使用方法如下：
@@ -90,8 +77,8 @@ class Book(Workbook):
         
     def write(self,range,value,format=None):
         '''写入单元格'''
-        if format:  # 格式代码检查
-            ensure(format in self._formats,'格式码不存在！')
+        if isinstance(format,str):  # 格式代码检查
+            format=self._formats.get(format)
         if ':' in range and not isinstance(value,(dict,tuple,list)):
             self.worksheet.merge_range(range,value,format)
         if ':' not in range:
@@ -171,47 +158,47 @@ class Book(Workbook):
             right=right or border
             bottom=bottom or border
             top=top or border
-        table=self.table
+        table=self.table        
         default_format={"left":inner,"right":inner,"top":inner,
                                "bottom":inner}
-        def _replace(r,c,flag='4',**kw):
+        def _replace(r,c,**kw):
             row=table[r]
             cell=row.get(c,cell_blank_tuple(None))
-            fmt=cell.format or ""
-            name='-'.join([fmt,flag])
+            fmt=cell.format
+            kw['top']=top if r==first_row else inner
+            kw['bottom']=bottom if r==last_row else inner
+            kw['left']=left if c==first_col else inner
+            kw['right']=right if c==last_col else inner
+            name=''.join([str(kw[name]) for name in \
+                          'left top right bottom'.split()])
+            if fmt and hasattr(fmt,'name'):
+                name=name+'-'+fmt.name
             if not name in self._formats:
-                old_fmt=self._formats.get(fmt,None)
-                if old_fmt:
-                    a=old_fmt.copy()
-                    a.update(default_format)
+                if fmt and hasattr(fmt,'properities'):
+                    a=fmt.properities.copy()
+                    a.update(kw)
                 else:
-                    a=default_format.copy()
-                a.update(kw)
-                self._add_format(name,a)
-            row[c]=cell._replace(format=name)
+                    a=kw
+                new_fmt=self.add_format(a,name)
+            else:
+                new_fmt=self._formats.get(name)
+            row[c]=cell._replace(format=new_fmt)
+        [_replace(r,c)for r in range(first_row,last_row+1)\
+         for c in range(first_col,last_col+1)]
         
-        _replace(first_row,first_col,left=left,top=top,flag='0')
-        _replace(first_row,last_col,right=right,top=top,flag='1')            
-        _replace(last_row,first_col,left=left,bottom=bottom,flag='2')
-        _replace(last_row,last_col,right=right,bottom=bottom,flag='3')
-        for r in range(first_row+1,last_row):
-            _replace(r,first_col,left=left,flag='4')
-            _replace(r,last_col,right=right,flag='5')
-            for c in range(first_col+1,last_col):
-                _replace(r,c,flag='6')
-        for c in range(first_col+1,last_col):
-            _replace(first_row,c,top=top,flag='7')
-            _replace(last_row,c,bottom=bottom,flag='8')
-
 if __name__=='__main__':
     with Book('~/test.xlsx') as book:
         book.worksheet='test1'
         book.B2=["test","2","3","4"],'title'
-        book.set_border('B4:G8')
-
         book.worksheet='test2'
         book.row=3
         for a,b in book.iter_rows(range(1,11),range(1,11)):
             book.A=a,'number'
             book.B=b/100,'percent'
-        book.set_border('A3:B12')
+        book.set_border('B3:D4')
+
+        book.set_border('B15')
+        book.set_border('A17:C18',left=6)
+        book.set_border('A20:C20')
+        book.set_border('D23:A22')
+
