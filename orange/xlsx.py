@@ -174,8 +174,8 @@ class Book(Workbook):
             if fmt and hasattr(fmt,'name'):
                 name=name+'-'+fmt.name
             if not name in self._formats:
-                if fmt and hasattr(fmt,'properities'):
-                    a=fmt.properities.copy()
+                if fmt and hasattr(fmt,'properties'):
+                    a=fmt.properties.copy()
                     a.update(kw)
                 else:
                     a=kw
