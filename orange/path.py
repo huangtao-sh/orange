@@ -109,11 +109,21 @@ class Path(pathlib.Path):
         if data:
             with self.open('wb')as fn:
                 fn.write(data)
-                
+
+    def sheets(self,index=None):
+        ''' 用于替代 it_sheets 函数，另外提供读取指定worksheet的功能'''
+        import xlrd
+        book=xlrd.open_workbook(filename=str(self))
+        if isinstance(index,int):
+            sheet=book.sheet_by_index(index)
+        elif isinstance(index,str):
+            sheet=book.sheet_by_name(index)
+        return sheet and sheet._cell_values
+        
     def iter_sheets(self):
         '''如果指定的文件为excel文件，则可以迭代读取本文件的数据。
         返回：表的索引、表名、数据'''
-        import xlrd
+        import xlrd 
         book=xlrd.open_workbook(filename=str(self))
         for index,sheet in enumerate(book.sheets()):
             yield index,sheet.name,sheet._cell_values
