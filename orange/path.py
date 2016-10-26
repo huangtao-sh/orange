@@ -111,7 +111,8 @@ class Path(pathlib.Path):
                 fn.write(data)
 
     def sheets(self,index=None):
-        ''' 用于替代 it_sheets 函数，另外提供读取指定worksheet的功能'''
+        ''' 提供读取指定worksheet的功能，其中index可以为序号，
+            也可以为表的名称。'''
         import xlrd
         book=xlrd.open_workbook(filename=str(self))
         if isinstance(index,int):
@@ -170,7 +171,7 @@ class Path(pathlib.Path):
     def lsuffix(self):
         '''返回小写的扩展名'''
         return self.suffix.lower()
-    
+        
     @property
     def pname(self):
         '''返回不带扩展名的文件名'''
