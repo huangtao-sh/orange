@@ -10,6 +10,8 @@ from .debug import *
 from .htutil import *
 from .dateutil import *
 from .regex import *
+from .mail import *
+
 __all__='get_ver','Path','get_path',\
   'first','last','Ver','decode',\
   'setup','decorator','trace','config_log','ensure','info',\
@@ -17,5 +19,5 @@ __all__='get_ver','Path','get_path',\
   'read_shell','write_shell','exec_shell','wlen',\
   'encrypt','decrypt','get_py',\
   'LOCAL','UTC','now','datetime','fprint','date_add','ONEDAY',\
-  'ONESECOND','R'
+  'ONESECOND','R','sendmail','tsendmail','Mail',
 
