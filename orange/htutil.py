@@ -85,7 +85,7 @@ class _PY(type):
         return get_py(s)
 
     def __or__(self,s):
-        return get_py(style=0,sep=' ')
+        return get_py(s,style=0,sep=' ')
     
 class PY(metaclass=_PY):
     pass
