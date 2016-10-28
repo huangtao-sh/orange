@@ -1,5 +1,7 @@
 import unittest
 from orange.version import *
+from orange import *
+
 class TestVer(unittest.TestCase):
     def test_ver(self):
         for ver,seg,new_ver in (('1.0','o','1.0.1a1'),
@@ -23,5 +25,10 @@ class TestVer(unittest.TestCase):
     def test_datetime(self):
         import datetime as dt
 
+    def test_py(self):
+        self.assertEqual('ht',PY/'黄涛')
+        self.assertEqual('huang tao',PY|'黄涛')
+
+        
         
 

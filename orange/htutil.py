@@ -54,10 +54,14 @@ def wlen(s):
     '''
     return sum([2 if ord(x)>127 else 1 for x in s])
         
-        
+_des=None
+
 def __get_des():
     from .pyDes import des,PAD_PKCS5
-    return des(key='huangtao',padmode=PAD_PKCS5)
+    global _des
+    if _des is None:
+        _des=des(key='huangtao',padmode=PAD_PKCS5)
+    return _des
 
 def encrypt(pwd):
     '''
@@ -88,6 +92,10 @@ class _PY(type):
         return get_py(s,style=0,sep=' ')
     
 class PY(metaclass=_PY):
+    '''以一种高逼格的方式获取拼音
+    获取拼音首字母：  PY/'我们'   ===>   'wm'
+    获取拼音：       PY|'我们'   ===>    'wo men'
+    '''
     pass
 
         
