@@ -73,10 +73,21 @@ def decrypt(code):
     b=__get_des().decrypt(bytes.fromhex(code))
     return b.decode('utf8')
 
-def get_py(s):
+def get_py(s,style=4,sep=''):
     '''
     获取拼音字母。
     '''
     from pypinyin import pinyin
-    return ''.join([x[0] for x in pinyin(s,style=4)])
+    return sep.join([x[0] for x in pinyin(s,style=style)])
 
+class _PY(type):
+    def __truediv__(self,s):
+        return get_py(s)
+
+    def __or__(self,s):
+        return get_py(style=0,sep=' ')
+    
+class PY(metaclass=_PY):
+    pass
+
+        

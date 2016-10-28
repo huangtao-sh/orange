@@ -19,5 +19,5 @@ __all__='get_ver','Path','get_path',\
   'read_shell','write_shell','exec_shell','wlen',\
   'encrypt','decrypt','get_py',\
   'LOCAL','UTC','now','datetime','fprint','date_add','ONEDAY',\
-  'ONESECOND','R','sendmail','tsendmail','Mail',
+  'ONESECOND','R','sendmail','tsendmail','Mail','PY'
 
