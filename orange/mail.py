@@ -13,9 +13,9 @@ from email.header import Header
 from orange import *
 import smtplib
 
-def sendmail(host,user,passwd,*messages):
+def sendmail(*messages):
     '''发送邮件'''
-    with MailClient(host,user,passwd) as client:
+    with MailClient() as client:
         for message in messages:
             message.post(client)
 
@@ -28,7 +28,11 @@ class MailClient(smtplib.SMTP):
     '''构造邮件客户端，使用方法如下：
        client=MailClient(host,user,passwd)
     '''
-    def __init__(self,host,user,passwd,*args,**kw):
+    config={}   # 用于配置发送邮件的想着参数，如：host,user,passwd
+    def __init__(self,host=None,user=None,passwd=None,*args,**kw):
+        host=host or self.config.get('host')
+        user=user or self.config.get('user')
+        passwd=passwd or self.config.get('passwd')
         super().__init__(host,*args,**kw)
         self.login(user,passwd)
 
