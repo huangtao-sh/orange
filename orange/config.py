@@ -4,14 +4,16 @@
 # License:GPL
 # Email:huangtao.sh@icloud.com
 # 创建：2015-05-26 16:12
+# 修订：2016-10-28 增加
 
 import os
 import sys
 import sysconfig
-from configparser import ConfigParser
-# from stdlib import encrypt,decrypt,ensure_path
-from orange import *
 import orange
+import atexit
+from configparser import ConfigParser
+from orange import *
+
 class Config:
     def __init__(self,config_path=None,data_path=None,
                  is_dev=None,project=None):
@@ -57,6 +59,9 @@ class Config:
             self.cur_file=files
         else:
             self.cur_file=files[-1]
+
+    def __setitem__(self,name,data):
+        return self.update(name,data)
 
     @property
     def sections(self):
@@ -113,8 +118,21 @@ class Config:
         default.update(self.get('logging'))
         logging.basicConfig(**default)
 
+_config=None
+
+def config(*args,**kw):
+    global _config
+    if _config is None:
+        _config=Config(*args,**kw)
+    return _config
+
+@atexit.register
+def save_config():
+    if _config and _config.modified:
+        _config.save_config()
+
 if __name__=='__main__':
-    config=Config()
+    config=config()
     print(config.config_file)
     config.load_config()
     d={
@@ -127,5 +145,4 @@ if __name__=='__main__':
     config.update_many(d)
     f=config.get_many('hello')
     print(config.get('hello'))
-    config.save_config()
     
