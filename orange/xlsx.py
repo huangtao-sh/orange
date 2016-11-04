@@ -74,9 +74,28 @@ class Book(Workbook):
             worksheet.row=1
             self._worksheets[name]=worksheet
         self._worksheet=worksheet
-        
-    def write(self,range,value,format=None):
-        '''写入单元格'''
+
+    @convert_range_args
+    def write(self,first_row,first_col,last_row=None,last_col=None,
+               value=None,cell_format=None):
+        if isinstance(cell_format,str):
+            cell_format=self._formats.get(cell_format)
+        if(last_row is None)or(first_row==last_row and \
+                               first_col==last_col):
+            if isinstance(value,(tuple,list)):
+                self.worksheet.write_row(first_row,first_col,
+                                         value,cell_format)
+            else:
+                if isinstance(value,str) and value.startswith('='):
+                    value=Row/value%self._convert   # 使用正则表达式替换
+                self.worksheet.write(first_row,first_col,value,
+                                     cell_format)
+        else:
+            self.worksheet.merge_range(first_row,first_col,last_row,
+                                       last_col,value,cell_format)
+    
+    def _write(self,range,value,format=None):
+        '''写入单元格，这个函数将被放弃，由write替代'''
         if isinstance(format,str):  # 格式代码检查
             format=self._formats.get(format)
         if ':' in range and not isinstance(value,(dict,tuple,list)):
@@ -114,27 +133,34 @@ class Book(Workbook):
     
     def __setitem__(self,name,val):
         '''向指定行写入数据'''
-        match=Pattern.fullmatch(name)
-        if match:
-            r=list(match.groups())
-            if not r[1]:
-                r[1]=str(self.row)
-            rg=''.join(r[:2])
-            if r[3]:
-                if not r[4]:
-                    r[4]=str(self.row)
-                rg='%s:%s%s'%(rg,r[3],r[4])
-            if not isinstance(val,tuple):
-                val=(val,)
-            self.write(rg,*val)
-        else:
-            raise Exception('单元格格式不正确')
+        if not isinstance(val,tuple):
+            val=(val,)
+        if isinstance(name,str):
+            match=Pattern.fullmatch(name)
+            if match:
+                r=list(match.groups())
+                if not r[1]:
+                    r[1]=str(self.row)
+                rg=''.join(r[:2])
+                if r[3]:
+                    if not r[4]:
+                        r[4]=str(self.row)
+                    rg='%s:%s%s'%(rg,r[3],r[4])
+                self.write(rg,*val)
+            else:
+                raise Exception('单元格格式不正确')
+        elif isinstance(name,int):
+            self.write(self.row-1,name,None,None,*val)
+        elif isinstance(name,tuple):
+            args=list(name)
+            args.extend([None]*4)
+            self.write(*args[:4],*val)
 
     def __setattr__(self,name,val):
         '''向指定行写入数据'''
-        try:
+        if Pattern==name:
             self[name]=val
-        except:
+        else:
             super().__setattr__(name,val)
 
     def iter_rows(self,*datas,step=1):

@@ -29,6 +29,19 @@ class TestVer(unittest.TestCase):
         self.assertEqual('ht',PY/'黄涛')
         self.assertEqual('huang tao',PY|'黄涛')
 
-        
-        
+    def test_xlsx(self):
+        from orange.xlsx import Book
+        with Book('a.xlsx') as book:
+            book.worksheet='test'
+            book.A1_D1='Title','mh2'
+            book.A2='hunter','h2'
+            book.B2=1344.33,'currency'
+            book.A3=['adfs',23.4]
+            book.row=4
+            book[0]=['hunter',34.6]
+            book[4,0]=['zhangsan',77.6]
+            book[5,0,5,6]='merge','mh2'
+            book[6,0]=[10,20,30]
+            book.row=7
+            book.D7="=sum(A{0}:C{0})",'currency'
 
