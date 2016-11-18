@@ -10,7 +10,8 @@ console_scripts=['dos2unix=orange.path:dos2unix',
                  'pyver=orange.pyver:main',
                  'plist=orange.plist:main',
                  'pyinit=orange.init:main',
-                 'sysinit=orange.sysinit:proc']
+                 'gclone=orange.gclone:main',
+                 'sysinit=orange.sysinit:main']
 setup(
         name='orange-kit',
         platforms='any',

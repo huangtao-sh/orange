@@ -1,36 +1,37 @@
-# 模块：操作系统初始化
-# 作者：黄涛
-# 创建：2016-3-3
-
+from pathlib import *
 import os
-from orange import Path
+import sys
 
-# 需要创建符号连接的文件
-LINKS=[('bin','bin'),
-    ('emacsd/emacs','.emacs'),
-    ('conf/gitconfig','.gitconfig'),
-    ('conf/ssh','.ssh'),
-    ('conf/pip','.pip'),
-    ('conf/pypirc','.pypirc'),
-    ]
+LINKS={'bin':'bin',
+       'emacsd/emacs':'.emacs',
+       'conf/gitconfig':'.gitconfig',
+       'conf/ssh':'.ssh',
+       'conf/pypirc':'.pypirc',
+       'conf/pip':'.pip',
+       }
     
-WINDOWS_LINKS=[('conf/vimrc_win','.vimrc'),
-               ]
+WIN32_LINKS={'conf/pip':'AppData/Roaming/pip',
+           'conf/vimrc_win':'_vimrc',
+           }
     
-POSIX_LINKS=[('conf/vimrc_mac','.vimrc'),
-             ]
-    
-def proc():
-    LINKS.extend(WINDOWS_LINKS if os.name=='nt' else POSIX_LINKS)
-    home=Path('~')
-    drive=home/'OneDrive'
-    for source,target in LINKS:
-        s=drive/source
-        d=home/target
+DARWIN_LINKS={'conf/vimrc_mac':'.vimrc',}
+
+def main():
+    if sys.platform=='win32':
+        LINKS.update(WIN32_LINKS)
+    elif sys.platform=='darwin':
+        LINKS.update(DARWIN_LINKS)
+
+    home=Path(os.path.expanduser('~'))
+    src=home / 'OneDrive'
+
+    for source,dest in LINKS.items():
+        s= src / source
+        d= home /dest
         if not d.exists()and s.exists():
             d.symlink_to(s,s.is_dir())
-            print('创建连接文件：%s->%s'%(d,s))
+            print('创建连接文件：%s -> %s'%(d,s))
 
 if __name__=='__main__':
-    proc()
-    
+    main()
+
