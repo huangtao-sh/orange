@@ -11,6 +11,7 @@ import pathlib
 import os
 from codecs import BOM_UTF8,BOM_LE,BOM_BE
 from .parseargs import Parser,Argument
+from .regex import *
 
 BOM_CODE={
     BOM_UTF8:'utf_8',
@@ -52,14 +53,22 @@ def decode(d):
             pass
     raise Exception('解码失败')
 
+_Pattern=R/r'\%([A-Za-z]+)\%'
+def _rep(r):
+    return os.getenv(r.groups()[0],r.group())
+
 class Path(pathlib.Path):
     __slots__=()
     def __new__(cls,*args,**kwargs):
         if cls is Path:
             cls = WindowsPath if os.name == 'nt' else PosixPath
-        if len(args) and isinstance(args[0],str)and args[0].startswith('~'):
+        if len(args) and isinstance(args[0],str):
             args=list(args)
-            args[0]=os.path.expanduser(args[0])
+            if args[0].startswith('~'):
+                args[0]=os.path.expanduser(args[0])
+            elif args[0].startswith('%'):
+                args[0]=_Pattern/args[0] % _rep
+                
         self = cls._from_parts(args, init=False)
         if not self._flavour.is_supported:
             raise NotImplementedError("cannot instantiate %r on "\
