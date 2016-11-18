@@ -64,9 +64,9 @@ class Path(pathlib.Path):
             cls = WindowsPath if os.name == 'nt' else PosixPath
         if len(args) and isinstance(args[0],str):
             args=list(args)
-            if args[0].startswith('~'):
+            if args[0].startswith('~'):  # 支持用户目录开头
                 args[0]=os.path.expanduser(args[0])
-            elif args[0].startswith('%'):
+            elif args[0].startswith('%'): # 支持环境变量转义
                 args[0]=_Pattern/args[0] % _rep
                 
         self = cls._from_parts(args, init=False)
