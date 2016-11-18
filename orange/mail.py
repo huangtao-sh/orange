@@ -12,6 +12,7 @@ from email.mime.multipart import MIMEMultipart
 from email.header import Header
 from orange import *
 import smtplib
+import io
 
 def sendmail(*messages):
     '''发送邮件'''
@@ -36,6 +37,12 @@ class MailClient(smtplib.SMTP):
         super().__init__(host,*args,**kw)
         self.login(user,passwd)
 
+    def mail(self,*args,**kw):
+        m=Mail(*args,client=self,**kw)
+        if m.sender is None:
+            m.sender=self.config.get('sender')
+        return m
+
 class Mail:
     '''创建电子邮件，使用方法如下：
     mail=Mail(sender,to,subject,body,cc,bcc)
@@ -49,7 +56,7 @@ class Mail:
     mail.post(client)
     '''
     def __init__(self,sender=None,to=None,subject=None,body=None,
-                 cc=None,bcc=None):
+                 cc=None,bcc=None,client=None):
         '''初绍化邮件'''
         self.attachments=[]
         self.subject=subject
@@ -88,6 +95,10 @@ class Mail:
         self.add_fp(fn.open('rb'),fn.name)
 
     def add_fp(self,fp,filename,encoding='utf8'):
+        if callable(fp):
+            with io.BytesIO() as _fp:
+                fp(_fp)
+            fp=_fp
         fp.seek(0)
         a=MIMEText(fp.read(),'base64',encoding)
         a['Content-Type']='application/octet-stream'
@@ -101,8 +112,10 @@ class Mail:
                 kw['Content-ID']=cid
             self.attachments.append(msg)
 
-    def post(self,mailclient):
-        mailclient.send_message(self.message)
+    def post(self,mailclient=None):
+        mailclient=mailclient or self.client
+        if mailclient:
+            mailclient.send_message(self.message)
 
 if __name__=='__main__':
     body='''
