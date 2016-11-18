@@ -211,6 +211,36 @@ class Book(Workbook):
             row[c]=cell._replace(format=new_fmt)
         [_replace(r,c)for r in range(first_row,last_row+1)\
          for c in range(first_col,last_col+1)]
+         
+    @convert_range_args
+    def add_table(self,first_row,first_col,last_row,last_col,\
+                  sheet=None,**kwargs):
+        '''添加图表，如sheet为空，则使用默认的工作表'''
+        if sheet:
+            self.worksheet=sheet
+        columns=kwargs.get('columns')
+        if columns:
+            new_columns=[]
+            for idx,column in enumerate(columns):
+                if 'width' in column:
+                    sheet.set_column("{0}:{0}".format(
+                        xl_col_to_name(idx+first_col)),\
+                        column.get('width'))
+                format=column.get("format")
+                if format and isinstance(format,str):
+                    new_column=column.copy()
+                    new_column['format']=self._formats.get(format)
+                    new_columns.append(new_column)
+                else:
+                    new_columns.append(column)
+            kwargs['columns']=new_columns
+            last_col=first_col+len(columns)-1
+        if 'data' in kwargs:
+            last_row=first_row+len(kwargs['data'])
+            if kwargs.get('total_row',False):
+                last_row+=1
+        slef.worksheet.add_table(first_row,first_col,last_row,last_col,kwargs)
+
         
 if __name__=='__main__':
     with Book('~/test.xlsx') as book:
