@@ -9,6 +9,7 @@
 
 #from stdlib import parse_args,exec_shell
 from orange.parseargs import *
+from orange import *
 import sys
 
 def proc(repos=None,user=None,protocol='SSH'):
