@@ -223,9 +223,9 @@ class Book(Workbook):
             new_columns=[]
             for idx,column in enumerate(columns):
                 if 'width' in column:
-                    sheet.set_column("{0}:{0}".format(
+                    book.set_columns("{0}:{0}".format(
                         xl_col_to_name(idx+first_col)),\
-                        column.get('width'))
+                        width=column.get('width'))
                 format=column.get("format")
                 if format and isinstance(format,str):
                     new_column=column.copy()
@@ -239,22 +239,12 @@ class Book(Workbook):
             last_row=first_row+len(kwargs['data'])
             if kwargs.get('total_row',False):
                 last_row+=1
-        slef.worksheet.add_table(first_row,first_col,last_row,last_col,kwargs)
-
+        self.worksheet.add_table(first_row,first_col,last_row,last_col,kwargs)
         
 if __name__=='__main__':
-    with Book('~/test.xlsx') as book:
+    with Book('test.xlsx') as book:
         book.worksheet='test1'
-        book.B2=["test","2","3","4"],'title'
-        book.worksheet='test2'
-        book.row=3
-        for a,b in book.iter_rows(range(1,11),range(1,11)):
-            book.A=a,'number'
-            book.B=b/100,'percent'
-        book.set_border('B3:D4')
-
-        book.set_border('B15')
-        book.set_border('A17:C18',left=6)
-        book.set_border('A20:C20')
-        book.set_border('D23:A22')
-
+        columns=[{'header':'title','format':'currency','width':12},
+                     {'header':'name','format':'percent'}]
+        data=[('a','b'),(1,2)]
+        book.add_table('A1',data=data,columns=columns)
