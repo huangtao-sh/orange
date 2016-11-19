@@ -12,6 +12,7 @@ import pip
 from orange import Path,Ver
 
 def get_path(pkg,user=True):
+    ''' 返回指定包的参数配置目录和数据目录'''
     if os.name=='posix':
         if user:
             root=Path('~')
@@ -21,10 +22,10 @@ def get_path(pkg,user=True):
             return root/'etc',root/'var'/pkg
     else:
         if user:
-            root=Path(os.getenv('AppData')) 
-            return root / 'Roaming' , root / 'Local' / pkg
+            root=Path('~/AppData')
+            return root /'Roaming' ,root / 'Local' / pkg
         else:
-            root=Path(os.getenv('ProgramData')) / pkg
+            root=Path('%programdata%') / pkg
             return root,root
             
 def run_pip(*args):

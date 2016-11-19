@@ -5,7 +5,8 @@
 # Email:huangtao.sh@icloud.com
 # 创建：2016-03-11 12:21
 # 修改：2016-04-13 21:01
-# 修改：2016-8-13 新增__iter__ 和 extractall功能
+# 修改：2016-08-13 新增__iter__ 和 extractall功能
+# 修订：2016-11-19 修改Path的实现方式 
 
 import pathlib
 import os
@@ -57,25 +58,18 @@ _Pattern=R/r'\%([A-Za-z]+)\%'
 def _rep(r):
     return os.getenv(r.groups()[0],r.group())
 
-class Path(pathlib.Path):
-    __slots__=()
-    def __new__(cls,*args,**kwargs):
-        if cls is Path:
-            cls = WindowsPath if os.name == 'nt' else PosixPath
-        if len(args) and isinstance(args[0],str):
-            args=list(args)
-            if args[0].startswith('~'):  # 支持用户目录开头
-                args[0]=os.path.expanduser(args[0])
-            elif args[0].startswith('%'): # 支持环境变量转义
-                args[0]=_Pattern/args[0] % _rep
-                
-        self = cls._from_parts(args, init=False)
-        if not self._flavour.is_supported:
-            raise NotImplementedError("cannot instantiate %r on "\
-                "your system"% (cls.__name__,))
-        self._init()
-        return self
+_Parent= pathlib.WindowsPath if os.name=='nt' else pathlib.PosixPath
 
+class Path(_Parent):
+    __slots__=()
+    def __new__(cls,path='.',*args,**kwargs):
+        if isinstance(path,str):
+            if path.startswith('~'):  # 支持用户目录开头
+                path=os.path.expanduser(path)
+            elif path.startswith('%'): # 支持环境变量转义
+                path=_Pattern/path % _rep
+        return super().__new__(cls,path,*args,**kwargs)
+    
     def read(self,*args,**kwargs):
         '''以指定的参数读取文件'''
         with self.open(*args,**kwargs)as fn:
@@ -191,12 +185,6 @@ class Path(pathlib.Path):
         import shutil
         shutil.rmtree(str(self))
         
-class PosixPath(Path,pathlib.PurePosixPath):
-    __slots__=()
-
-class WindowsPath(Path,pathlib.PureWindowsPath):
-    __slots__=()
-
 def convert(files):
     for file in files:
         Path(file).lines=Path(file).lines

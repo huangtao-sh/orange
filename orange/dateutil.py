@@ -5,16 +5,17 @@
 # Email:huangtao.sh@icloud.com
 # 创建：2015-09-17 13:24
 # 修改：2016-03-12 18:53
-# 修改：2016-9-6 增加 ONEDAY,ONESECOND
+# 修改：2016-09-06 增加 ONEDAY,ONESECOND
+# 修改：2016-11-19 将datetime 修改为按类实现
 
 import datetime as dt
 import time as _time
 from .regex import R
 
 __all__='UTC','LOCAL','now','datetime','FixedOffset','ONEDAY',\
-        'ONESECOND','date_add'
+        'ONESECOND','date_add','LTZ'
 
-ZERO = dt.timedelta(0)
+ZERO = dt.timedelta(0)      
 ONEDAY = dt.timedelta(days=1)
 ONESECOND = dt.timedelta(seconds=1)
 
@@ -84,74 +85,45 @@ class LocalTimezone(dt.tzinfo):
         offset=STDOFFSET.total_seconds()//60
         return "UTC%+i:%02i"%(divmod(offset,60))
 
-LOCAL = LocalTimezone()
+LTZ = LocalTimezone()
+LOCAL =LTZ
 
-'''
-def datetime(*args,**kwargs):
-    tzinfo=kwargs.get('tzinfo',LOCAL)
-    if len(args)==1:
-        d=args[0]
-        if isinstance(d,(dt.datetime,dt.time)):
-
-            如果是datetime或time类型，检查是否有tzinfo信息，
-            如无，则设为LOCAL，否则直接返回
-
-            if not d.tzinfo:
-                d=d.replace(tzinfo=tzinfo)
-            return d
-        elif isinstance(d,str):
-            将字符串转换为datetime类型
-            args=[int(x) for x in re.findall('\d+',d)]
-            return dt.datetime(*args,tzinfo=tzinfo)
-        elif isinstance(d,(int,float)):
-            将整数或浮点数转换成日期类型
-            如果小于100000，则按Excel的格式转换；
-            否则按unix timestamp 来转换
-            from xlrd.xldate import xldate_as_datetime
-            if d<100000:
-                dd=xldate_as_datetime(d,None).replace(tzinfo=tzinfo)
-            else:
-                dd=dt.datetime.fromtimestamp(d,tzinfo)
-            return dd
-    else:
-        kwargs['tzinfo']=tzinfo
-        return dt.datetime(*args,**kwargs)
-
-    '''
 class datetime(dt.datetime):
     '''日期类，支持从字符串转换'''
-    def __new__(cls,*args,**kwargs):
-        tzinfo=kwargs.get('tzinfo',LOCAL)
-        if len(args)==1:
-            d=args[0]
-            if isinstance(d,datetime):
-                return d
-            elif isinstance(d,(dt.datetime,dt.time)):
+    def __new__(cls,year,month=0,day=0,hour=0,minute=0,second=0,
+                microsecond=0,tzinfo=None):
+        tzinfo=tzinfo or LTZ
+        if all([year,month,day]):
+            return super().__new__(cls,year,month,day,hour,minute,
+                                   second,microsecond,tzinfo)
+        else:
+            if isinstance(year,datetime):
+                return year
+            elif isinstance(year,(dt.datetime,dt.time)):
                 '''
                 如果是DATETIME或TIME类型，检查是否有TZINFO信息，
-                如无，则设为LOCAL，否则直接返回
+                如无，则设为LTZ，否则直接返回
                 '''
-                args=list(d.timetuple()[:6])
-                args.append(d.microsecond)
-                if d.tzinfo:
-                    tzinfo=d.tzinfo
-            elif isinstance(d,str):
+                args=list(year.timetuple()[:6])
+                if year.tzinfo:
+                    tzinfo=year.tzinfo
+                args.extend([year.microsecond,tzinfo])
+            elif isinstance(year,str):
                 '''将字符串转换为DATETIME类型'''
-                args=[int(x) for x in R/'\d+'/d]
-            elif isinstance(d,(int,float)):
+                args=[int(x) for x in R/'\d+'/year]
+            elif isinstance(year,(int,float)):
                 '''将整数或浮点数转换成日期类型
                 如果小于100000，则按EXCEL的格式转换；
                 否则按UNIX TIMESTAMP 来转换'''
-                if d<100000:
+                if year<100000:
                     from xlrd.xldate import xldate_as_datetime
-                    dd=cls(xldate_as_datetime(d,None))
+                    dd=cls(xldate_as_datetime(year,None))
                 else:
-                    dd=cls.fromtimestamp(d)
+                    dd=cls.fromtimestamp(year)
                 return dd
-        kwargs['tzinfo']=tzinfo
-        if len(args)>7:
-            args=args[:7]
-        return dt.datetime.__new__(cls,*args,**kwargs)
+            if len(args)==8:
+                tzinfo=args.pop(7)
+        return super().__new__(cls,*args,tzinfo=tzinfo)
 
     def add(self,years=0,months=0,**kw):
         '''增加日期，返回一个新的日期实例'''
@@ -177,6 +149,23 @@ class datetime(dt.datetime):
         return self.__add__(-days)
 
     @property
+    def first_day_of_year(self):
+        return datetime(self.year,1,1,tzinfo=LTZ)
+
+    @property
+    def last_day_of_year(self):
+        return datetime(self.year,12,31,tzinfo=LTZ)
+
+    @property
+    def first_day_of_quartor(self):
+        month=(self.quartor-1)*3+1
+        return datetime(self.year,month,1,tzinfo=LTZ)
+
+    @property
+    def last_day_of_quartor(self):
+        return self.first_day_of_quartor.add(months=3)-1
+        
+    @property
     def first_day_of_month(self):
         '''当月第一天'''
         return self.replace(day=1)
@@ -189,43 +178,51 @@ class datetime(dt.datetime):
     @property
     def is_weekend(self):
         '''是否为周末'''
-        return self.weekday() in (5,6)
+        return self.weekday()>4
 
     @property
     def quartor(self):
         '''当前的季度，从1开始'''
         return (self.month-1) // 3 +1
 
-    @property
-    def squartor(self):
-        '''当前季节的字符串'''
-        return '%s-%s'%(self.year,self.quartor)
-    
     def format(self,fmt):
         '''格式化'''
-        return self.strftime(fmt)
+        if '%Q' in fmt:
+            fmt=fmt.replace('%Q','%s-%s'%(self.year,self.quartor))
+        if '%q' in fmt:
+            fmt=fmt.replace('%q',str(self.quartor))
+        return super().strftime(fmt)
 
-    def iter(self,days,fmt=None):
+    strftime=format
+    
+    def iter(self,end,step={'days':1},fmt=lambda x:x):
         '''遍历日期，如果days 为整数，则遍历days 指定的天数,
         若days 为非整数，则days 应为终止的日期,
         fmt 为返回格式：如为字符串，则格式化日期；若为可调用对象，则调用该日期'''
-        _convert=lambda x:x
         if isinstance(fmt,str):
-            _convert=lambda x:x.strftime(fmt)
-        elif callable(fmt):
-            _convert=fmt
-        if isinstance(days,int):
-            end_day=self+days
+            _fmt=fmt
+            fmt=lambda x:x.strftime(_fmt)
+            
+        if isinstance(end,dict):
+            p,a={},{}
+            for k,v in end.items():
+                if k in set(['year','month','day']):
+                    p[k]=v
+                else:
+                    a[k]=v
+            end_day=self.add(**a) if a else self
+            if a:
+                end_day=end_day.replace(**p)
         else:
-            end_day=datetime(days)
+            end_day=datetime(end)
         while self<end_day:
-            yield _convert(self)
-            self+=1
+            yield fmt(self)
+            self=self.add(**step)
 
 def date_add(dt,*args,**kw):
     '''日期及时间的加减,
     支持的参数有：years,months,days,hours,minutes,seconds'''
     return datetime(dt).add(*args,**kw)
 
-def now(tz=LOCAL):
+def now(tz=LTZ):
     return datetime(dt.datetime.now(tz))
