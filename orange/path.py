@@ -160,9 +160,9 @@ class Path(_Parent):
                 if line:
                     yield eval(none_pattern.sub(",None",line))
         elif suffix=='.csv':
-            for line in self.lines:
-                if line:
-                    yield line.split(',')
+            import csv
+            with self.open() as fn:
+                yield from csv.reader(fn)
 
     def extractall(self,path='.',members=None):
         '''如本文件为tar打包文件，则解压缩至指定目录'''
