@@ -16,7 +16,11 @@ WIN32_LINKS={'conf/pip':'AppData/Roaming/pip',
     
 DARWIN_LINKS={'conf/vimrc_mac':'.vimrc',}
 
-def main():
+def win_init():
+    # 修改注册表，增加.PY 和.PYW 为可执行文件
+    pass
+
+def do_link():
     if sys.platform=='win32':
         LINKS.update(WIN32_LINKS)
     elif sys.platform=='darwin':
@@ -31,7 +35,13 @@ def main():
         if not d.exists()and s.exists():
             d.symlink_to(s,s.is_dir())
             print('创建连接文件：%s -> %s'%(d,s))
-
+def main():
+    do_link()
+    if sys.platform=='win32':
+        win_init()
+    elif sys.platform=='darwin':
+        darwin_init()
+        
 if __name__=='__main__':
     main()
 
