@@ -81,8 +81,8 @@ def get_py(s,style=4,sep=''):
     '''
     获取拼音字母。
     '''
-    from pypinyin import pinyin
-    return sep.join([x[0] for x in pinyin(s,style=style)])
+    from pypinyin import lazy_pinyin
+    return sep.join(lazy_pinyin(s,style))
 
 class _PY(type):
     def __truediv__(self,s):

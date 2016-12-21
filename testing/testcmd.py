@@ -8,7 +8,6 @@ class TestCrawser(unittest.TestCase):
         from orange.crawler import Crawler
         with Crawler('localhost') as s:
             q=s.sget('contact',{'query':'黄涛'})
-            fprint(q)
         
 class TestVer(unittest.TestCase):
     def test_ver(self):
@@ -38,6 +37,7 @@ class TestVer(unittest.TestCase):
         self.assertEqual('huang tao',PY|'黄涛')
 
     def test_xlsx(self):
+        return
         from orange.xlsx import Book
         with Book('a.xlsx') as book:
             book.worksheet='test'
