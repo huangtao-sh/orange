@@ -2,6 +2,14 @@ import unittest
 from orange.version import *
 from orange import *
 
+
+class TestCrawser(unittest.TestCase):
+    def test_crawler(self):
+        from orange.crawler import Crawler
+        with Crawler('localhost') as s:
+            q=s.sget('contact',{'query':'黄涛'})
+            fprint(q)
+        
 class TestVer(unittest.TestCase):
     def test_ver(self):
         for ver,seg,new_ver in (('1.0','o','1.0.1a1'),

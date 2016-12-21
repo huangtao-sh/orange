@@ -18,7 +18,14 @@ DARWIN_LINKS={'conf/vimrc_mac':'.vimrc',}
 
 def win_init():
     # 修改注册表，增加.PY 和.PYW 为可执行文件
-    pass
+    from orange.winreg import HKLM,RegKey
+    with RegKey(HKLM,r'SYSTEM\CurrentControlSet\Control\Session Manager\Environment') as key:
+        pathext=key.PATHEXT[0]
+        for ext in ('.PY','.PYW'):
+            if ext not in set(pathext.split(',')):
+                pathext+=ext
+        if pathext
+            
 
 def do_link():
     if sys.platform=='win32':
