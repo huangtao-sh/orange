@@ -6,14 +6,14 @@
 # 创建：2016-12-21 19:54
 
 from requests import *
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup as BS4
 from os.path import join
 
 class Crawler(Session):
     def sget(self,url,params=None,features='lxml',proc=None,**kw):
         reponse=self.get(url,params=params)
         if reponse:
-            soup=BeautifulSoup(reponse.text,features,**kw)
+            soup=BS4(reponse.text,features,**kw)
         if callable(proc):
             proc(soup)
         return soup
