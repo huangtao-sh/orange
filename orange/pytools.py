@@ -14,8 +14,8 @@ from orange import Path,exec_shell
 from orange.deploy import *
 
 def pytest():
-    import unittest
     sys.path.insert(0,'.')
+    import unittest
     unittest.main('testing')
 
 def _clear():
