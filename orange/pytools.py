@@ -25,7 +25,11 @@ def _clear():
             path.rmtree()
             
 def pyupload():
-    run_setup('sdist','--dist-dir',str(Path('~/OneDrive/pylib')),'upload')
+    import os
+    cmd='setup' if os.name=='nt' else 'python3 setup.py'
+    cmd='%s sdist --dist-dir %s upload'%(cmd,Path('~/OneDrive/pylib'))
+    #run_setup('sdist','--dist-dir',str(Path('~/OneDrive/pylib')),'upload')
+    os.system(cmd)
     _clear()
 
 def pysdist():
