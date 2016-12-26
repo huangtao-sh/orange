@@ -13,6 +13,7 @@ from email.header import Header
 from orange import *
 import smtplib
 import io
+import base64
 
 def sendmail(*messages):
     '''发送邮件'''
@@ -37,7 +38,7 @@ class MailClient(smtplib.SMTP):
         super().__init__(host,*args,**kw)
         self.login(user,passwd)
 
-    def mail(self,*args,**kw):
+    def Mail(self,*args,**kw):
         m=Mail(*args,client=self,**kw)
         if m.sender is None:
             m.sender=self.config.get('sender')
@@ -65,6 +66,7 @@ class Mail:
         self.body=body
         self.cc=cc
         self.bcc=bcc
+        self.client=client
 
     @property
     def message(self):
@@ -95,6 +97,8 @@ class Mail:
         self.add_fp(fn.open('rb'),fn.name)
 
     def add_fp(self,fp,filename,encoding='utf8'):
+        filename='=?utf-8?b?%s?='%(base64.b64encode(
+            filename.encode('UTF-8')).decode('utf-8'))
         if callable(fp):
             with io.BytesIO() as _fp:
                 fp(_fp)
@@ -102,7 +106,7 @@ class Mail:
         fp.seek(0)
         a=MIMEText(fp.read(),'base64',encoding)
         a['Content-Type']='application/octet-stream'
-        a['Content-Disposition']='attachment;filename="%s"'%(filename)
+        a['Content-Disposition']='attachment; filename= %s'%(filename)
         self.attachments.append(a)
 
     def add_image(self,filename,cid=None):
