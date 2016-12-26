@@ -17,11 +17,12 @@
 '''
 import asyncio
 
-__all__='start','wait','wait_for','sleep'
+__all__='start','wait','wait_for','sleep','iscorountine'
 
 wait=asyncio.wait
 wait_for=asyncio.wait_for
 sleep=asyncio.sleep
+iscoroutine=asyncio.iscoroutine
 
 def start(*coros):
     # 执行协程，如coro为多个，则全部并发执行。
