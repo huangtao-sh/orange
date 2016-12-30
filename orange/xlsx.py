@@ -223,7 +223,7 @@ class Book(Workbook):
             new_columns=[]
             for idx,column in enumerate(columns):
                 if 'width' in column:
-                    book.set_columns("{0}:{0}".format(
+                    self.set_columns("{0}:{0}".format(
                         xl_col_to_name(idx+first_col)),\
                         width=column.get('width'))
                 format=column.get("format")

@@ -24,8 +24,6 @@ def win_init():
         for ext in ('.PY','.PYW'):
             if ext not in set(pathext.split(',')):
                 pathext+=ext
-        if pathext
-            
 
 def do_link():
     if sys.platform=='win32':

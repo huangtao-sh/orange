@@ -41,9 +41,3 @@ class Crawler(Session):
     def get(self,url,params=None,**kw):
         return super().get(url,params=params,**kw)
     
-    def download(self,url,params=None,filename,**kw):
-        '''下载文件'''
-        reponse=self.get(url,params=params,**kw)
-        if reponse:
-            Path(filename).write(data=reponse.content)
-            
