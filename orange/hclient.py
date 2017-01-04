@@ -17,11 +17,19 @@ class Crawler(ClientSession):
         self.root=root
         super().__init__(*args,**kw)
 
-    async def get(self,url,params=None,proc=None,*args,**kw):
+    def get_url(url):
         if ':' not in url:
             if url.startswith('/'):
                 url=url[1:]
             url='/'.join([self.root,url])
+        return url
+
+    async def post(self,url,data=None,*args,**kw):
+        url=self.get_url(url)
+        return await super().post(url,data=data,*args,**kw)
+        
+    async def get(self,url,params=None,proc=None,*args,**kw):
+        url=self.get_url(url)
         async with await super().get(url,params=params,*args,**kw) as resp:
             if resp.status==200:
                 if proc:
