@@ -17,7 +17,7 @@ class Crawler(ClientSession):
         self.root=root
         super().__init__(*args,**kw)
 
-    def get_url(url):
+    def get_url(self,url):
         if ':' not in url:
             if url.startswith('/'):
                 url=url[1:]
