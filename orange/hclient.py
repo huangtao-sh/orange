@@ -9,12 +9,15 @@ from aiohttp import *
 from orange.coroutine import *
 from orange import *
 
+__all__='Crawler','wait'
+
 class Crawler(ClientSession):
+    root=''
     def __init__(self,root=None,*args,**kw):
-        root=root or ''
-        if root.endswith('/'):
-            root=root[:-1]
-        self.root=root
+        if root:
+            if root.endswith('/'):
+                root=root[:-1]
+            self.root=root
         super().__init__(*args,**kw)
 
     def get_url(self,url):
@@ -44,8 +47,9 @@ class Crawler(ClientSession):
             path=Path(path)
             if path.is_dir():
                 from urllib.parse import unquote
-                filename=resp.headers['Content-Disposition'] # 获取文件名字段
-                filename=filename.split(';')[-1]  # 获取最后一个
+                # 获取文件名字段
+                filename=resp.headers['Content-Disposition'] 
+                filename=filename.split(';')[-1]  # 获取最后一个参数
                 tp,filename=filename.split('=')
                 if tp.strip()=='filename*':
                     filename=(filename.split("'"))[-1]
@@ -55,55 +59,18 @@ class Crawler(ClientSession):
                 path=path / Path(filename).name
             path.write(data=await resp.read())
                     
-    async def get_json(self,url,params=None,proc=None,*args,**kw):
+    async def get_json(self,url,params=None,*args,encoding=None,
+                           **kw):
         async with self.get(url,params=params,*args,**kw)as resp:
-            return await resp.json()
+            return await resp.json(encoding=encoding)
 
-    '''
-        
-    async def get(self,url,params=None,proc=None,*args,**kw):
-        url=self.get_url(url)
-        async with await super().get(url,params=params,*args,**kw) as resp:
-            if resp.status==200:
-                if proc:
-                    r=proc(resp)
-                    if iscoroutine(r):
-                        await r
-                        
-    async def get_text(self,url,params=None,proc=None,*args,**kw):
-        async def _(resp):
-            text=await resp.text()
-            r=proc(text)
-            if iscoroutine(r):
-                await r
-        await self.get(url,params,_ if proc else None,*args,**kw)
-                    
-    async def get_soup(self,url,params=None,proc=None,*args,**kw):
-        from bs4 import BeautifulSoup as BS4
-        async def _(text):
-            r=proc(BS4(text,'lxml'))
-            if iscoroutine(r):
-                await r
-        await self.get_text(url,params,_ if proc else None,*args,**kw)
-        
-    async def download(self,url,params=None,path='.',*args,**kw):
-        from urllib.parse import unquote
-        path=Path(path)
-        async def _(resp):
-            nonlocal path
-            if path.is_dir():
-                filename=resp.headers['Content-Disposition']
-                filename=(R/r'filename="(.*?)"'%filename).group(1)
-                filename=unquote(filename)
-                path=path / Path(filename).name
-            path.write(data=await resp.read())
-        await self.get(url,params,proc=_,*args,**kw)
-        
-    async def get_json(self,url,params=None,proc=None,*args,**kw):
-        async def _(resp):
-            json=await resp.json()
-            r=proc(json)
-            if iscoroutine(r):
-                await r
-        await self.get(url,params,_ if proc else None,*args,**kw)
-'''
+    async def run(self):
+        raise Exception('This function doesn''t exist!')
+
+    @classmethod
+    def start(cls,*args,**kw):
+        async def _main():
+            async with cls(*args,**kw)as sess:
+                await sess.run()
+        start(_main())
+ 

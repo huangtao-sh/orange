@@ -31,10 +31,10 @@ class TestVer(unittest.TestCase):
         self.assertEqual('huang tao',PY|'黄涛')
 
     def test_crawler(self):
-        from orange.hclient import Crawler,start
-        url='http://www.jianshu.com/p/3373506a41f9'
-        url='http://localhost/vacation/2017'
-        async def _():
-            async with Crawler()as sess:
-                soup=await sess.get_json(url)
-        start(_())
+        from orange.hclient import Crawler,wait
+        class CrawlerTest(Crawler):
+            async def run(self):
+                url='https://kyfw.12306.cn/otn/leftTicket/queryA?leftTicketDTO.train_date=2017-01-10&leftTicketDTO.from_station=SHH&leftTicketDTO.to_station=HZH&purpose_codes=ADULT'
+                x=await self.get_json(url)
+                print(x)
+        CrawlerTest.start()
