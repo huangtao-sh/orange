@@ -24,9 +24,41 @@ class Crawler(ClientSession):
             url='/'.join([self.root,url])
         return url
 
-    async def post(self,url,data=None,*args,**kw):
-        url=self.get_url(url)
-        return await super().post(url,data=data,*args,**kw)
+    def post(self,url,data=None,*args,**kw):
+        return super().post(self.get_url(url),*args,data=data,**kw)
+
+    def get(self,url,params=None,*args,**kw):
+        return super().get(self.get_url(url),*args,params=params,**kw)
+
+    async def get_text(self,url,params=None,*args,**kw):
+        async with self.get(url,*args,params=params,**kw)as resp:
+            return resp.text()
+
+    def get_soup(self,url,params=None,*args,**kw):
+        from bs4 import BeautifulSoup as BS4
+        return BS4(self.get_text(url,params=params,*args,**kw),'lxml')
+
+    async def download(self,url,params=None,path='.',*args,**kw):
+        async with self.get(url,params=params,*args,**kw)as resp:
+            path=Path(path)
+            if path.is_dir():
+                from urllib.parse import unquote
+                filename=resp.headers['Content-Disposition'] # 获取文件名字段
+                filename=filename.split(';')[-1]  # 获取最后一个
+                tp,filename=filename.split('=')
+                if tp.strip()=='filename*':
+                    filename=(filename.split("'"))[-1]
+                if filename.startswith('"'):
+                    filename=filename[1:-1]
+                filename=unquote(filename)
+                path=path / Path(filename).name
+            path.write(data=await resp.read())
+                    
+    async def get_json(self,url,params=None,proc=None,*args,**kw):
+        async with self.get(url,params=params,*args,**kw)as resp:
+            return resp.json()
+
+    '''
         
     async def get(self,url,params=None,proc=None,*args,**kw):
         url=self.get_url(url)
@@ -73,3 +105,4 @@ class Crawler(ClientSession):
             if iscoroutine(r):
                 await r
         await self.get(url,params,_ if proc else None,*args,**kw)
+'''
