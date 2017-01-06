@@ -24,17 +24,11 @@ class TestVer(unittest.TestCase):
         abc(1,20)
         '''
     def test_datetime(self):
-        import datetime as dt
+        d=datetime.today()
+        self.assertEqual(d%'%Y-%m-%d',d.strftime('%Y-%m-%d'))
 
     def test_py(self):
         self.assertEqual('ht',PY/'黄涛')
         self.assertEqual('huang tao',PY|'黄涛')
 
-    def test_crawler(self):
-        from orange.hclient import Crawler,wait
-        class CrawlerTest(Crawler):
-            async def run(self):
-                url='https://kyfw.12306.cn/otn/leftTicket/queryA?leftTicketDTO.train_date=2017-01-10&leftTicketDTO.from_station=SHH&leftTicketDTO.to_station=HZH&purpose_codes=ADULT'
-                x=await self.get_json(url)
-                print(x)
-        CrawlerTest.start()
+

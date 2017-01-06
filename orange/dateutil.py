@@ -193,7 +193,8 @@ class datetime(dt.datetime):
             fmt=fmt.replace('%q',str(self.quartor))
         return super().strftime(fmt)
 
-    strftime=format
+    # 使用date%'%Y-%m-%d'的语法来格式化日期
+    __mod__= strftime = format
     
     def iter(self,end,step={'days':1},fmt=lambda x:x):
         '''遍历日期，如果days 为整数，则遍历days 指定的天数,
