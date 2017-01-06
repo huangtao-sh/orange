@@ -32,10 +32,9 @@ class TestVer(unittest.TestCase):
 
     def test_crawler(self):
         from orange.hclient import Crawler,start
-        url='http://localhost/exchange/download'
-        async def download():
-            async with Crawler() as sess:
-                await sess.download(url)
-                print('下载文件成功')
-
-        start(download())
+        url='http://www.jianshu.com/p/3373506a41f9'
+        url='http://localhost/vacation/2017'
+        async def _():
+            async with Crawler()as sess:
+                soup=await sess.get_json(url)
+        start(_())

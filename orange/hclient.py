@@ -32,11 +32,12 @@ class Crawler(ClientSession):
 
     async def get_text(self,url,params=None,*args,**kw):
         async with self.get(url,*args,params=params,**kw)as resp:
-            return resp.text()
+            return await resp.text()
 
-    def get_soup(self,url,params=None,*args,**kw):
+    async def get_soup(self,url,params=None,*args,**kw):
         from bs4 import BeautifulSoup as BS4
-        return BS4(self.get_text(url,params=params,*args,**kw),'lxml')
+        text=await self.get_text(url,params=params,*args,**kw)
+        return BS4(text,'lxml')
 
     async def download(self,url,params=None,path='.',*args,**kw):
         async with self.get(url,params=params,*args,**kw)as resp:
@@ -56,7 +57,7 @@ class Crawler(ClientSession):
                     
     async def get_json(self,url,params=None,proc=None,*args,**kw):
         async with self.get(url,params=params,*args,**kw)as resp:
-            return resp.json()
+            return await resp.json()
 
     '''
         
