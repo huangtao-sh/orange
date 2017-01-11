@@ -8,8 +8,9 @@
 from aiohttp import *
 from orange.coroutine import *
 from orange import *
+from bs4 import BeautifulSoup as BS4
 
-__all__='Crawler','wait'
+__all__='Crawler','wait','BS4'
 
 class Crawler(ClientSession):
     root=''
@@ -38,7 +39,6 @@ class Crawler(ClientSession):
             return await resp.text()
 
     async def get_soup(self,url,params=None,*args,**kw):
-        from bs4 import BeautifulSoup as BS4
         text=await self.get_text(url,params=params,*args,**kw)
         return BS4(text,'lxml')
 
