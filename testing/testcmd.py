@@ -31,4 +31,5 @@ class TestVer(unittest.TestCase):
         self.assertEqual('ht',PY/'黄涛')
         self.assertEqual('huang tao',PY|'黄涛')
 
-
+    def test_regex(self):
+        self.assertEqual('test_case',convert_cls_name('TestCase'))

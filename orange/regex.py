@@ -9,7 +9,7 @@ import re
 
 _FLAGS='AILUMSX'
 
-__all__='R',
+__all__='R','convert_cls_name'
 
 class _R(type):
     '''Regex类的元类，在使用R/pattern时被调用，调用生成R类。
@@ -102,3 +102,9 @@ class RegOperation:
         else:
             count=0
         return self._regex.sub(repl,self._search,count)
+
+# 将类名由 TestCase 格式转换为 test_case
+convert_cls_name = lambda name:'_'.join([x.lower() for x in \
+            R/'[A-Z][a-z0-9]*'/name])
+
+            

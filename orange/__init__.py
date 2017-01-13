@@ -19,5 +19,6 @@ __all__='get_ver','Path','get_path',\
   'read_shell','write_shell','exec_shell','wlen',\
   'encrypt','decrypt','get_py',\
   'LOCAL','UTC','now','datetime','fprint','date_add','ONEDAY','LTZ',\
-  'ONESECOND','R','sendmail','tsendmail','Mail','PY','MailClient',
+  'ONESECOND','R','sendmail','tsendmail','Mail','PY','MailClient',\
+  'convert_cls_name',
 
