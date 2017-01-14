@@ -10,7 +10,7 @@ import logging
 import sys
 from .path import is_dev
 
-__all__='decorator','trace','config_log','ensure','info','fprint'
+__all__='decorator','trace','config_log','ensure','info','fprint','verbose'
 
 info=logging.info
 
@@ -30,6 +30,9 @@ def trace(func,*args,**kwargs):
     print('The result is %s'%(result))
     return result
 
+def verbose():
+    config_log(format='%(message)s')
+    
 def config_log(**kwargs):
     kwargs.setdefault('datefmt','%Y-%m-%d %H:%M:%S')
     kwargs.setdefault('format','%(levelname)-9s %(message)s')
