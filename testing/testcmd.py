@@ -2,7 +2,6 @@ import unittest
 from orange.version import *
 from orange import *
 
-
 class TestVer(unittest.TestCase):
     def test_ver(self):
         for ver,seg,new_ver in (('1.0','o','1.0.1a1'),
@@ -33,3 +32,17 @@ class TestVer(unittest.TestCase):
 
     def test_regex(self):
         self.assertEqual('test_case',convert_cls_name('TestCase'))
+
+    def test_crawler(this):
+        from orange.hclient import Crawler,wait,BS4
+        class TestCrawler(Crawler):
+            root='http://localhost'
+            async def run(self):
+                soup=await self.get_soup('blog')
+                this.assertTrue(soup.title.text.startswith('Well'))
+                await self.json()
+            async def json(self):
+                j=await self.get_json('vacation/2017')
+                this.assertTrue('anpai' in j)
+                
+        TestCrawler.start()

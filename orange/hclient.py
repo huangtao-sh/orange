@@ -4,6 +4,7 @@
 # License:GPL
 # Email:huangtao.sh@icloud.com
 # 创建：2016-12-26 17:08
+# 修订：2017-01-14
 
 from aiohttp import *
 from orange.coroutine import *
@@ -13,36 +14,34 @@ from bs4 import BeautifulSoup as BS4
 __all__='Crawler','wait','BS4'
 
 class Crawler(ClientSession):
-    root=''
+    root=''   # 网址的根目录
     def __init__(self,root=None,*args,**kw):
         if root:
             if root.endswith('/'):
                 root=root[:-1]
-            self.root=root
+            self.root=root    # 设置根目录
         super().__init__(*args,**kw)
 
-    def get_url(self,url):
+    def _request(self,method,url,*args,**kw):
+        # 处理网址，支持网址中只输入后续路径
         if ':' not in url:
             if url.startswith('/'):
                 url=url[1:]
             url='/'.join([self.root,url])
-        return url
-
-    def post(self,url,data=None,*args,**kw):
-        return super().post(self.get_url(url),*args,data=data,**kw)
-
-    def get(self,url,params=None,*args,**kw):
-        return super().get(self.get_url(url),*args,params=params,**kw)
-
-    async def get_text(self,url,params=None,*args,**kw):
-        async with self.get(url,*args,params=params,**kw)as resp:
+        return super()._request(method,url,*args,**kw)
+    
+    async def get_text(self,url,*args,method='GET',**kw):
+        # 以获取指定网页的文本
+        async with self.request(method,url,*args,**kw)as resp:
             return await resp.text()
 
-    async def get_soup(self,url,params=None,*args,**kw):
-        text=await self.get_text(url,params=params,*args,**kw)
+    async def get_soup(self,url,*args,**kw):
+        # 获取指定网页的BeautifulSoup实例
+        text=await self.get_text(url,*args,**kw)
         return BS4(text,'lxml')
 
     async def download(self,url,params=None,path='.',*args,**kw):
+        # 下载文件，其中path可以是下载文件的文件名，也可以是下载目录
         async with self.get(url,params=params,*args,**kw)as resp:
             path=Path(path)
             if path.is_dir():
@@ -59,12 +58,14 @@ class Crawler(ClientSession):
                 path=path / Path(filename).name
             path.write(data=await resp.read())
                     
-    async def get_json(self,url,params=None,*args,encoding=None,
+    async def get_json(self,url,*args,encoding=None,method='GET',
                            **kw):
-        async with self.get(url,params=params,*args,**kw)as resp:
+        # 获取指定网页的JSON数据
+        async with self.request(method,url,*args,**kw)as resp:
             return await resp.json(encoding=encoding)
 
     async def run(self):
+        # 爬虫的主运行程序
         raise Exception('This function doesn''t exist!')
 
     @classmethod
