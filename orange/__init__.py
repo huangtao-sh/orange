@@ -11,6 +11,7 @@ from .htutil import *
 from .dateutil import *
 from .regex import *
 from .mail import *
+from .click import *
 
 __all__='get_ver','Path','get_path',\
   'first','last','Ver','decode',\
@@ -20,5 +21,5 @@ __all__='get_ver','Path','get_path',\
   'encrypt','decrypt','get_py',\
   'LOCAL','UTC','now','datetime','fprint','date_add','ONEDAY','LTZ',\
   'ONESECOND','R','sendmail','tsendmail','Mail','PY','MailClient',\
-  'convert_cls_name','verbose'
+  'convert_cls_name','verbose','arg','command'
 
