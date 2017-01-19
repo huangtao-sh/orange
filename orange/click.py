@@ -11,14 +11,13 @@ from functools import partial
 __all__='command','arg'
 
 class _Command(object):
+    _args=()      # ArgumentParser 的位置参数
+    _kw={}        # ArgumentParser 的参数
+    allow_empty=False   # 是否允许参数为空，如允许则argv为None的情况下也调用执行函数
     def __init__(self,run):
-        self.run=run
-        self.groups=[]
-        self.args=[]
-        self._args=()
-        self._kw={}
-        self.allow_empty=False
-        self.parsers=[]
+        self.run=run    # 可执行函数，命令行解析成功时调用  
+        self.args=[]    # 参数列表
+        self.parsers=[] # 子命令列表
         
     @classmethod
     def wrapper(cls,cmd,*args,**kw):
