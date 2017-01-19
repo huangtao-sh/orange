@@ -31,7 +31,7 @@ def trace(func,*args,**kwargs):
     return result
 
 def verbose():
-    config_log(format='%(message)s')
+    config_log(format='%(message)s',level=20)
     
 def config_log(**kwargs):
     kwargs.setdefault('datefmt','%Y-%m-%d %H:%M:%S')
