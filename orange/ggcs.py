@@ -17,7 +17,9 @@ def extract_str(s):
 def query_canshu(category,query):
     TYPE={'jym':'transactions_output.csv',
           'km':'ggkmzd.del',
-          'jg':'ggjgm.del',}
+          'jg':'ggjgm.del',
+          'gy':'users_output.csv',
+          'user':'users_output.csv',}
     root=Path('~/OneDrive/工作/参数备份/')
     files=[filename for filename in root.rglob(TYPE[category])]
     if files:

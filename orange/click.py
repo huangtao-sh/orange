@@ -13,7 +13,7 @@ __all__='command','arg'
 class _Command(object):
     _args=()      # ArgumentParser 的位置参数
     _kw={}        # ArgumentParser 的参数
-    allow_empty=False   # 是否允许参数为空，如允许则argv为None的情况下也调用执行函数
+    allow_empty=False # 是否允许参数为空，如允许则argv为None的情况下也调用执行函数
     def __init__(self,run):
         self.run=run    # 可执行函数，命令行解析成功时调用  
         self.args=[]    # 参数列表
