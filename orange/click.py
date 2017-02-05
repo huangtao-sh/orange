@@ -4,7 +4,8 @@
 # License:GPL
 # Email:huangtao.sh@icloud.com
 # 创建：2017-01-18 21:34
-
+# 修改：2017-02-05 为__call__函数增加cls参数，以支持主程序为classmethod
+ 
 from argparse import *
 from functools import partial
 
@@ -42,7 +43,7 @@ class _Command(object):
         for args,kw in reversed(self.args):
             parser.add_argument(*args,**kw)
 
-    def __call__(self,argv=None):
+    def __call__(self,cls=None,argv=None):
         import sys
         argv=argv or sys.argv[1:]
         parser=ArgumentParser(*self._args,**self._kw)
@@ -59,7 +60,10 @@ class _Command(object):
             kwargs=dict(parser.parse_args(argv)._get_kwargs())
             proc=kwargs.pop('proc',None)
             if proc:
-                proc(**kwargs)
+                if cls:
+                    proc(cls,**kwargs)
+                else:
+                    proc(**kwargs)
         else:
             parser.print_usage()
 
