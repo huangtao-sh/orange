@@ -18,16 +18,16 @@ user='racaljk'
 def main():
     if os.name=='posix':
         path=Path('~/.fkgfw')
-        dest=Path('/etc/hosts/hosts')
+        dest=Path('/private/etc/hosts')
     else:
         path=Path('%appdata%/fkgfw')
         dest=Path('%SystemRoot%/System32/drivers/etc/hosts')
     path.ensure()
     os.chdir(str(path))
-    if (path / '.git').exists():
+    if not (path / '.git').exists():
         proc(repos=repos,user=user)
     else:
-        os.chdir((path /'hosts'))
+        os.chdir(str(path /'hosts'))
         s=read_shell('git status')[-1]
         if 'clean' in s:
             print('数据无更新，退出程序！')
