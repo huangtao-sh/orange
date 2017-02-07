@@ -32,11 +32,12 @@ def main():
         if 'clean' in s:
             print('数据无更新，退出程序！')
             return
-    dest.text=(path/'hosts/hosts').text
-    print(dest.text)
-    if os.name=='nt':
+    if os.name=='posix':
+        os.system('sudo cp %s %s'%(path/'hosts/hosts',dest))
+    else:
+        dest.text=(path/'hosts/hosts').text
         os.system('ipconfig /flushdns')
-    
+    print(dest.text)
     
 if __name__=='__main__':
     main()
