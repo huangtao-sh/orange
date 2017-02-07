@@ -13,11 +13,6 @@ import os
 from orange import Path,exec_shell
 from orange.deploy import *
 
-def pytest():
-    sys.path.insert(0,'.')
-    import unittest
-    unittest.main('testing')
-
 def _clear():
     for path in Path('.').glob('*.egg-info'):
         print('Path %s has beed deleted!'%(path))

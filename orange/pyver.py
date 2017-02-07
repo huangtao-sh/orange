@@ -14,17 +14,6 @@ from orange import *
 from orange.version import Ver
 from orange.parseargs import *
 
-'''
-This function is no longer used.
-
-def get_ver():
-    ver_file=first(list(Path(".").glob("*/__version__.py")))
-    if ver_file:
-        for line in ver_file.lines:
-            if line.startswith('version'):
-                return ver_file,line.split('"')[1]
-'''
-
 class VersionMgr:
     branch=None   # 当前git分支
     up_to_date=True  # 与版本库是否同步
@@ -159,11 +148,21 @@ class VersionMgr:
                 for cmd in cmds:
                     exec_shell(cmd)
 
+    def sync(self):
+        s=read_shell('git status')
+        print(s)
+
+        
     @classmethod
-    def proc(cls,show=None,upgrade=None,commit=None):
+    @arg('-u','--upgrade',nargs='?',action='store',
+                metavar='segment',help=('升级版本号，可以为major,'
+                'minor,micro,dev'))
+    @arg('-c','--commit',nargs='?',metavar='message',help='提交变更')
+    @arg('-s','--show',action='store_true',help='查看当前版本状态')
+    @arg('-y','--sync',action='store_true',help='同步程序')
+    def main(cls,show=None,upgrade=None,commit=None,sync=False):
         obj=cls()
         if obj:
-        #try:
             if show:
                 obj.show_version()
             if commit:
@@ -172,51 +171,5 @@ class VersionMgr:
             if upgrade:
                 obj.upgrade=upgrade
                 obj.upgrade_ver()
-        #except Exception as e:
-        #    print(e)
-
-    ''' This method is no longer used.
-    @classmethod
-    def main(cls,argv=None):
-        from orange.parseargs import parse_args
-        version=cls()
-        parse_args(ARGUMENTS,argv=argv,instance=version)
-        try:
-            if hasattr(version,'show')and version.show:
-                version.show_version()
-            elif hasattr(version,'upgrade') and version.upgrade:
-                version.upgrade_ver()
-            elif hasattr(version,'commit') and version.commit:
-                version.commit_()
-        except Exception as e:
-            print(e)
-
-
-原参数模板，将被新的所取代
-# 参数解析模版
-ARGUMENTS=[
-    {'arg':['-u','--upgrade'],
-     'nargs':'?',
-     'action':'store',
-     'metavar':'segment',
-     'help':'升级版本号，可以为major,minor,micro,dev'},
-     {'arg':['-c','--commit'],
-     'nargs':'?',
-     'metavar':'message',
-     'help':'提交变更'},
-     {'arg':['-s','--show'],
-      'action':'store_true',
-      'help':'查看当前版本状态'}
-    ]
-'''
-main=Parser(Arg('-u','--upgrade',nargs='?',action='store',
-                metavar='segment',help=('升级版本号，可以为major,'
-                'minor,micro,dev')),
-            Arg('-c','--commit',nargs='?',metavar='message',
-                help='提交变更'),
-            Arg('-s','--show',action='store_true',
-                help='查看当前版本状态'),
-            proc=VersionMgr.proc)
-
-if __name__=='__main__':
-    main()
+            if sync:
+                obj.sync()
