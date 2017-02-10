@@ -6,8 +6,8 @@
 # Email:huangtao.sh@icloud.com
 # 创建：2015-05-20 15:32
 # 修订：2016-9-6 将其迁移至orange 库，并移除对stdlib 的依赖
+# 修订：2017-2-10 pyver 增加 -y 功能，与远程服务器同步
 
-# from os.path import dirname,splitext,curdir
 import os
 import sys
 from orange import *

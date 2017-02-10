@@ -43,7 +43,7 @@ class _Command(object):
         for args,kw in reversed(self.args):
             parser.add_argument(*args,**kw)
 
-    def __call__(self,cls=None,argv=None):
+    def __call__(self,*args,argv=None):
         import sys
         argv=argv or sys.argv[1:]
         parser=ArgumentParser(*self._args,**self._kw)
@@ -60,10 +60,7 @@ class _Command(object):
             kwargs=dict(parser.parse_args(argv)._get_kwargs())
             proc=kwargs.pop('proc',None)
             if proc:
-                if cls:
-                    proc(cls,**kwargs)
-                else:
-                    proc(**kwargs)
+                proc(*args,**kwargs)
         else:
             parser.print_usage()
 
