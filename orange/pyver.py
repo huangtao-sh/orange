@@ -150,7 +150,9 @@ class VersionMgr:
 
     def sync(self):
         s=read_shell('git status')
-        print(s)
+        print(*s,sep='\n')
+        if 'working directory clean' in s[-1]:
+            pass
 
         
     @classmethod
