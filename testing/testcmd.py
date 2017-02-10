@@ -46,3 +46,19 @@ class TestVer(unittest.TestCase):
                 this.assertTrue('anpai' in j)
                 
         TestCrawler.start()
+
+    def test_args(self):
+        @command(description='command show')
+        def show():
+            pass
+
+        @command(description='command work')
+        @arg('-a','--appear')
+        def work():
+            pass
+
+        @command(show,work,description='main command')
+        @arg('-p','--pear')
+        def main():
+            pass
+
