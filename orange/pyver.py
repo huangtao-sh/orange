@@ -150,11 +150,12 @@ class VersionMgr:
 
     def sync(self):
         s=read_shell('git status')
-        if 'working directory clean' in s[-1]:
-            if "Your branch is ahead of" in s[1]:
-                os.system('git push --all')
-            else:
-                print(*s,sep='\n')
+        if 'working directory clean' not in s[-1]:
+            print(*s,sep='\n')
+        elif "Your branch is ahead of" in s[1]:
+            os.system('git push --all')
+        else:
+            os.system('git pull --all')
         
     @classmethod
     @arg('-u','--upgrade',nargs='?',action='store',
