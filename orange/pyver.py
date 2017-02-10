@@ -152,7 +152,7 @@ class VersionMgr:
         s=read_shell('git status')
         print(*s,sep='\n')
         if 'working directory clean' in s[-1]:
-            if "You branch is ahead of" in s[1]:
+            if "Your branch is ahead of" in s[1]:
                 os.system('git push --all')
             
 
