@@ -4,19 +4,19 @@
 # License:GPL
 # Email:huangtao.sh@icloud.com
 # 创建：2017-01-18 21:34
-# 修改：2017-02-05 为__call__函数增加cls参数，以支持主程序为classmethod
+# 修改：2017-02-05 为__call__函数增加位置参数，可以支持主程序为classmethod
+# 修改：2017-02-11 调整相关函数名
  
 from functools import partial
 
 __all__='command','arg'
 
 class _Command(object):
-    # _args=()      # ArgumentParser 的位置参数
-    _kw={}        # ArgumentParser 的参数
+    kwargs={}            # ArgumentParser 的参数，由command函数生成
     allow_empty=False # 是否允许参数为空，如允许则argv为None的情况下也调用执行函数
     def __init__(self,run):
-        self.run=run    # 可执行函数，命令行解析成功时调用  
-        self.args=[]    # 参数列表
+        self.run=run        # 可执行函数，命令行解析成功时调用  
+        self.args=[]        # 参数列表
         self.subcommands=[] # 子命令列表
         
     @classmethod
@@ -34,8 +34,8 @@ class _Command(object):
     def add_arg(self,*args,**kw):
         self.args.append((args,kw))
 
-    def command(self,*subcommands,allow_empty=False,**kw):
-        self._kw=kw   # ArgumentParser 的参数
+    def command(self,*subcommands,allow_empty=False,**kwargs):
+        self.kwargs=kwargs                  # ArgumentParser 的参数
         self.subcommands=list(subcommands)  # 子命令
         self.allow_empty=allow_empty        # 是否允许命令行为空
 
@@ -47,7 +47,7 @@ class _Command(object):
         import sys
         from argparse import ArgumentParser
         argv=argv or sys.argv[1:]
-        parser=ArgumentParser(**self._kw)
+        parser=ArgumentParser(**self.kwargs)
         self.proc_args(parser)
         parser.set_defaults(proc=self.run)
         if self.subcommands:
@@ -57,7 +57,7 @@ class _Command(object):
                 if help:
                     subcommand._kw['help']=help
                 sub=subparsers.add_parser(subcommand.run.__name__,
-                            **subcommand._kw)
+                            **subcommand.kwargs)
                 subcommand.proc_args(sub)
                 sub.set_defaults(proc=subcommand.run)
         if self.allow_empty or argv:
