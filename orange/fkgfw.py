@@ -24,20 +24,18 @@ def main():
         dest=Path('%SystemRoot%/System32/drivers/etc/hosts')
     path.ensure()
     os.chdir(str(path))
-    if not (path / '.git').exists():
+    if not (path / 'hosts').exists():
         proc(repos=repos,user=user)
     else:
         os.chdir(str(path /'hosts'))
-        s=read_shell('git status')[-1]
-        if 'clean' in s:
-            print('数据无更新，退出程序！')
-            return
+        os.system('git pull')
+        
     if os.name=='posix':
         os.system('sudo cp %s %s'%(path/'hosts/hosts',dest))
     else:
         dest.text=(path/'hosts/hosts').text
         os.system('ipconfig /flushdns')
-    print(dest.text)
+    print(*dest.lines[:5],sep='\n')
     
 if __name__=='__main__':
     main()
