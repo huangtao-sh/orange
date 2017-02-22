@@ -4,16 +4,14 @@
 # License:GPL
 # Email:huangtao.sh@icloud.com
 # 创建：2017-02-05 19:16
-
+# 修订：2017-02-22
 '''
 功夫网是档在我们和外部世界之间的一堵墙。幸好有好人提供了一把梯子，供我们翻墙
 '''
-from orange.gclone import proc
 from orange import *
 import os
 
-repos='hosts',
-user='racaljk'
+url='git@github.com:racaljk/hosts.git'
 
 def main():
     if os.name=='posix':
@@ -25,7 +23,7 @@ def main():
     path.ensure()
     os.chdir(str(path))
     if not (path / 'hosts').exists():
-        proc(repos=repos,user=user)
+        os.system('git clone %s'%(url))
     else:
         os.chdir(str(path /'hosts'))
         os.system('git pull')
