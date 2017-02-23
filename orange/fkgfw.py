@@ -11,29 +11,29 @@
 from orange import *
 import os
 
-url='git@github.com:racaljk/hosts.git'
+repo='git@github.com:racaljk/hosts.git'
 
 def main():
     if os.name=='posix':
-        path=Path('~/.fkgfw')
+        src=Path('~/.fkgfw')
         dest=Path('/private/etc/hosts')
     else:
-        path=Path('%appdata%/fkgfw')
+        src=Path('%appdata%/fkgfw')
         dest=Path('%SystemRoot%/System32/drivers/etc/hosts')
-    path.ensure()
-    os.chdir(str(path))
-    if not (path / 'hosts').exists():
-        os.system('git clone %s'%(url))
+    src.ensure()
+    src.chdir()
+    if not (src / 'hosts').exists():
+        os.system('git clone %s'%(repo))
     else:
-        os.chdir(str(path /'hosts'))
+        (src/'hosts').chdir()
         os.system('git pull')
         
     if os.name=='posix':
-        os.system('sudo cp %s %s'%(path/'hosts/hosts',dest))
+        os.system('sudo cp %s %s'%(src/'hosts/hosts',dest))
     else:
-        dest.text=(path/'hosts/hosts').text
+        dest.text=(src/'hosts/hosts').text
         os.system('ipconfig /flushdns')
-    print(*dest.lines[:5],sep='\n')
+    print(*dest.lines[:10],sep='\n')
     
 if __name__=='__main__':
     main()
