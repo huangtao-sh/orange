@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 from orange import setup
 
-console_scripts=['dos2unix=orange.path:dos2unix',
+console_scripts=['conv=orange.path:convert',
                  #'pytest=orange.pytools:pytest',
                  'pysdist=orange.pytools:pysdist',
                  'pyupload=orange.pytools:pyupload',

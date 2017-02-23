@@ -11,8 +11,7 @@
 import pathlib
 import os
 from codecs import BOM_UTF8,BOM_LE,BOM_BE
-from .parseargs import Parser,Argument
-from .regex import *
+from .click import *
 
 BOM_CODE={
     BOM_UTF8:'utf_8',
@@ -54,10 +53,6 @@ def decode(d):
             pass
     raise Exception('解码失败')
 
-_Pattern=R/r'\%([A-Za-z]+)\%'
-def _rep(r):
-    return os.getenv(r.groups()[0],r.group())
-
 _Parent= pathlib.WindowsPath if os.name=='nt' else pathlib.PosixPath
 
 class Path(_Parent):
@@ -67,7 +62,7 @@ class Path(_Parent):
             if path.startswith('~'):  # 支持用户目录开头
                 path=os.path.expanduser(path)
             elif path.startswith('%'): # 支持环境变量转义
-                path=_Pattern/path % _rep
+                path=os.path.expandvars(path)
         return super().__new__(cls,path,*args,**kwargs)
     
     def read(self,*args,**kwargs):
@@ -184,13 +179,15 @@ class Path(_Parent):
         '''删除整个目录'''
         import shutil
         shutil.rmtree(str(self))
-        
+
+    def chdir(self):
+        if self.is_dir():
+            os.chdir(str(self))
+
+@command(description='Windows 格式文件转换为 Unix 文件格式')
+@arg('files',nargs='*',help='待转换的文件',metavar='file')
 def convert(files):
     for file in files:
         Path(file).lines=Path(file).lines
         print('转换文件"%s"成功'%(file))
 
-dos2unix=Parser(
-    Argument('files',nargs='*',help='待转换的文件',metavar='file'),
-    description='Windows 格式文件转换为 Unix 文件格式',
-    proc=convert)

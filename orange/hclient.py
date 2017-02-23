@@ -56,7 +56,7 @@ class Crawler(ClientSession):
                     filename=filename[1:-1]
                 filename=unquote(filename)
                 path=path / Path(filename).name
-            path.write(data=await resp.read())
+            path.write(data=await resp.read()) # 写入文件
                     
     async def get_json(self,url,*args,encoding=None,method='GET',
                            **kw):
@@ -69,9 +69,17 @@ class Crawler(ClientSession):
         raise Exception('This function doesn''t exist!')
 
     @classmethod
-    def start(cls,*args,**kw):
+    def start(cls,target=None,args=None,kwargs=None,**kw):
+        # target：待执行的命令，必须为协程，若无，则调用run
+        # target的第一个参数应为 session
+        # args：target的位置参数
+        # kwargs: target的关键字参数
+        # kw: cls的关键字参数
+        args=args or []
+        kwargs=kwargs or {}
+        target=target or cls.run
         async def _main():
-            async with cls(*args,**kw)as sess:
-                await sess.run()
+            async with cls(**kw)as sess:
+                await target(sess,*args,**kwargs)
         start(_main())
  
