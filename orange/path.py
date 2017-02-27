@@ -61,7 +61,7 @@ class Path(_Parent):
         if isinstance(path,str):
             if path.startswith('~'):  # 支持用户目录开头
                 path=os.path.expanduser(path)
-            elif path.startswith('%'): # 支持环境变量转义
+            elif path[0] in('%','$'): # 支持环境变量转义
                 path=os.path.expandvars(path)
         return super().__new__(cls,path,*args,**kwargs)
     
