@@ -1,4 +1,4 @@
-from pathlib import *
+from orange import *
 import os
 import sys
 
@@ -18,13 +18,20 @@ DARWIN_LINKS={'conf/vimrc_mac':'.vimrc',}
 
 def win_init():
     # 修改注册表，增加.PY 和.PYW 为可执行文件
-    from orange.winreg import HKLM,RegKey
-    with RegKey(HKLM,r'SYSTEM\CurrentControlSet\Control\Session Manager\Environment') as key:
-        pathext=key.PATHEXT[0]
-        for ext in ('.PY','.PYW'):
-            if ext not in set(pathext.split(',')):
-                pathext+=ext
+    from orange.regkey import HKLM,REG_SZ,HKCU
+    with HKCU/'GNU/Emacs' as key:
+        home=str(Path('~'))
+        key['HOME']=home,REG_SZ
+        print('设置 Emacs 的 HOME 目录完成。')
 
+    with HKLM/r'SYSTEM\CurrentControlSet\Control\Session Manager\Environment' as key:
+        pathext=key['PATHEXT'][0]
+        for ext in ('.PY','.PYW'):
+            if ext not in set(pathext.split(';')):
+                pathext+=';'+ext
+        key['PATHEXT']=pathext,REG_SZ
+        
+        
 def do_link():
     if sys.platform=='win32':
         LINKS.update(WIN32_LINKS)
