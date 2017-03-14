@@ -22,7 +22,8 @@ class RegKey(object):
         return self
 
     def __exit__(self,*args):
-        self._key.Close()
+        if hasattr(self._key,'Close'):
+            self._key.Close()
 
     def __getitem__(self,name):
         if name not in self._items:
