@@ -41,9 +41,6 @@ class RegKey(object):
         else:
             # 已调用open
             return RegKey(self._key,subkey)
-    
-    def __enter__(self):
-        return self
 
     def close(self):
         if hasattr(self._key,'Close'):
