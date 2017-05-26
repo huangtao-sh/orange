@@ -184,6 +184,10 @@ class Path(_Parent):
         if self.is_dir():
             os.chdir(str(self))
 
+    def write_xlsx(self):
+        from orange.xlsx import Book
+        return Book(str(self))
+
 @command(description='Windows 格式文件转换为 Unix 文件格式')
 @arg('files',nargs='*',help='待转换的文件',metavar='file')
 def convert(files):
