@@ -49,7 +49,7 @@ class Book(Workbook):
         return _format
 
     def add_formats(self,properties):
-        for property,name in properties.items():
+        for name,property in properties.items():
             self.add_format(property,name)
 
     def set_widths(self,widths):
