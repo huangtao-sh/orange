@@ -47,6 +47,14 @@ class Book(Workbook):
             _format.name=name
             _format.properties=properties
         return _format
+
+    def add_formats(self,properties):
+        for property,name in properties.items():
+            self.add_format(property,name)
+
+    def set_widths(self,widths):
+        for column,width in widths.items():
+            self.set_columns(column,width=width)
                 
     def set_columns(self,*columns,width=None,cell_format=None,options=None):
         ''' 设置当前工作表的列属性，允许同时设置多个，使用方法如下：
