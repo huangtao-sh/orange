@@ -53,9 +53,8 @@ class Book(Workbook):
             self.add_format(property,name)
 
     def set_widths(self,widths):
-        for column,width in widths.items():
-            self.set_columns(column,width=width)
-                
+        [self.set_columns(*args)for args in widths.items()]
+        
     def set_columns(self,*columns,width=None,cell_format=None,options=None):
         ''' 设置当前工作表的列属性，允许同时设置多个，使用方法如下：
         book.set_columns('A:C','E:D','G:H',width=12)
