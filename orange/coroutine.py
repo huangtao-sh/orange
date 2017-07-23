@@ -17,7 +17,7 @@
 '''
 import asyncio
 
-__all__='start','wait','wait_for','sleep','iscoroutine','batch','run'
+__all__='start','wait','wait_for','sleep','iscoroutine','batch','run','gather'
 
 wait=asyncio.wait
 wait_for=asyncio.wait_for
