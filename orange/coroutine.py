@@ -33,10 +33,12 @@ def start(*coros):
     try:
         loop=asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
-        if len(coros)==1:
-            loop.run_until_complete(coros[0])
-        else:
-            loop.run_until_complete(wait(coros))
+        coro=coros[0] if len(coros)==1 else wait(coros)
+        loop.run_until_complete(coro)
     finally:
         loop.close()
 
+def run(*coros):
+    loop=asyncio.get_event_loop()
+    coro=coros[0] if len(coros)==1 else wait(coros)
+    loop.run_until_complete(coro)
