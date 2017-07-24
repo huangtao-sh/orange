@@ -20,6 +20,7 @@ setup(
         description='orange',
         long_description='orange',
         url='https://github.com/huangtao-sh/orange.git',
-        entry_points={'console_scripts':console_scripts},
+        cscripts=console_scripts,
+        # entry_points={'console_scripts':console_scripts},
         license='GPL',
         )
