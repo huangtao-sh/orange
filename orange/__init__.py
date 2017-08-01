@@ -16,7 +16,7 @@ from .click import *
 __all__='get_ver','Path','get_path',\
   'first','last','Ver','decode',\
   'setup','decorator','trace','config_log','ensure','info',\
-  'classproperty','is_installed','is_dev',\
+  'classproperty','is_installed','is_dev','cachedproperty',\
   'read_shell','write_shell','exec_shell','wlen',\
   'encrypt','decrypt','get_py',\
   'LOCAL','UTC','now','datetime','fprint','date_add','ONEDAY','LTZ',\

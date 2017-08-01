@@ -22,7 +22,26 @@ class classproperty:
 
     def __get__(self,instance,kclass):
         return self.getter(kclass)
-                    
+
+class cachedproperty:
+    '''类属性，用法：
+    class A:
+        @classproperty
+        def name(cls):
+              return cls.__name__
+
+    A.name
+    A().name
+    '''
+    def __init__(self,getter):
+        self.getter=getter
+        self.cache={}
+
+    def __get__(self,instance,kclass):
+        if kclass not in self.cache:
+            self.cache[kclass]=self.getter(kclass)
+        return self.cache[kclass]
+    
 def read_shell(cmd):
     '''
     执行系统命令，并将执行命令的结果通过管道读取。
