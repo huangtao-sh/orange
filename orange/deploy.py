@@ -53,7 +53,15 @@ def _get_requires():
             
 def setup(version=None,packages=None,after_install=None,
           scripts=None,install_requires=None,
+          cscripts=None,gscripts=None,
           **kwargs):
+    if cscripts or gscripts:
+        entry_points=kwargs.get('entry_points',{})
+        if cscripts:
+            entry_points['console_scripts']=cscripts
+        if gscripts:
+            entry_points['gui_scripts']=gscripts
+        kwargs['entry_points']=entry_points
     for k,v in DEFAULT.items():
         kwargs.setdefault(k,v)
     if not packages:
