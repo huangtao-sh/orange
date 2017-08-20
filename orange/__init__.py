@@ -18,7 +18,7 @@ __all__='get_ver','Path','get_path',\
   'setup','decorator','trace','config_log','ensure','info',\
   'classproperty','is_installed','is_dev','cachedproperty',\
   'read_shell','write_shell','exec_shell','wlen',\
-  'encrypt','decrypt','get_py','split',\
+  'encrypt','decrypt','get_py','split','deprecation',\
   'LOCAL','UTC','now','datetime','fprint','date_add','ONEDAY','LTZ',\
   'ONESECOND','R','sendmail','tsendmail','Mail','PY','MailClient',\
   'convert_cls_name','verbose','arg','command'

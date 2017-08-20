@@ -39,6 +39,7 @@ class XlsxReport():
         rpt.add_table('A1','sheetname',columns=columns,data=data)
     '''
     def __init__(self,*args,**kwargs):
+        deprecation("XlsxReport","Book")
         self.book=Workbook(*args,**kwargs)
         self.formats={}
         self.add_formats(DefaultFormats)

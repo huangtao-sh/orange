@@ -126,3 +126,10 @@ def split(data,size=1000):
     else:
         yield data[i:]
 
+def deprecation(func,replace=''):
+    '''DeprecationWarning'''
+    import warnings
+    message="%s 已被弃用"%(func)
+    if replace:
+        message+="，请使用 %s 替代"%(replace)
+    warnings.warn(message,DeprecationWarning, stacklevel=2)
