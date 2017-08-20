@@ -23,6 +23,7 @@ Arg=Argument
 
 class Parser():
     def __init__(self,*items,proc=None,allow_empty=False,**kwargs):
+        deprecation("Parser","arg 和 command")
         self.items=items
         self.proc=proc
         self.kwargs=kwargs

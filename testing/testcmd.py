@@ -33,6 +33,7 @@ class TestVer(unittest.TestCase):
     def test_regex(self):
         self.assertEqual('test_case',convert_cls_name('TestCase'))
 
+    '''
     def test_crawler(this):
         from orange.hclient import Crawler,wait,BS4
         class TestCrawler(Crawler):
@@ -46,7 +47,8 @@ class TestVer(unittest.TestCase):
                 this.assertTrue('anpai' in j)
                 
         TestCrawler.start()
-
+    '''
+        
     def test_args(self):
         @command(description='command show')
         def show():
