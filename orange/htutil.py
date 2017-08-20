@@ -117,4 +117,12 @@ class PY(metaclass=_PY):
     '''
     pass
 
-        
+def split(datas,size=1000):
+    '''拆分数据，其中datas应为list,size为每批数据的数量'''
+    length=len(data)
+    i=0
+    for i in range(step,length,step):
+        yield data[i-step:i]
+    else:
+        yield data[i:]
+
