@@ -13,6 +13,7 @@ import sys
 from orange import *
 from orange.version import Ver
 from orange.parseargs import *
+from .pytools import pyupload,pysdist
 
 class VersionMgr:
     branch=None   # 当前git分支
@@ -164,7 +165,10 @@ class VersionMgr:
     @arg('-c','--commit',nargs='?',metavar='message',help='提交变更')
     @arg('-s','--show',action='store_true',help='查看当前版本状态')
     @arg('-y','--sync',action='store_true',help='同步程序')
-    def main(cls,show=None,upgrade=None,commit=None,sync=False):
+    @arg('-d','--sdist',action='store_true',help='源代码打包')
+    @arg('-U','--upload',action='store_true',help='打包上传')
+    def main(cls,show=None,upgrade=None,commit=None,sync=False,
+                 sdist=False,upload=False):
         obj=cls()
         if obj:
             if show:
@@ -177,3 +181,8 @@ class VersionMgr:
                 obj.upgrade_ver()
             if sync:
                 obj.sync()
+            if upload:
+                pyupload()
+            if sdist:
+                pysdist()
+                
