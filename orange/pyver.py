@@ -155,8 +155,7 @@ class VersionMgr:
             print(*s,sep='\n')
         elif "Your branch is ahead of" in s[1]:
             os.system('git push --all')
-        else:
-            os.system('git pull --all')
+        os.system('git pull --all')
         
     @classmethod
     @arg('-u','--upgrade',nargs='?',action='store',
