@@ -221,7 +221,7 @@ class Book(Workbook):
          
     @convert_range_args
     def add_table(self,first_row,first_col,last_row,last_col,\
-                  sheet=None,**kwargs):
+                  sheet=None,header_format='title',**kwargs):
         '''添加图表，如sheet为空，则使用默认的工作表'''
         if sheet:
             self.worksheet=sheet
@@ -244,6 +244,11 @@ class Book(Workbook):
                     new_columns.append(new_column)
                 else:
                     new_columns.append(column)
+            if header_format:
+                if isinstance(header_format,str):
+                    header_format=self._formats.get(header_format)
+                for column in new_columns:
+                    column['header_format']=header_format
             kwargs['columns']=new_columns
             last_col=first_col+len(columns)-1
         if 'data' in kwargs:
