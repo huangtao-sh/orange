@@ -233,10 +233,14 @@ class Book(Workbook):
                     self.set_columns("{0}:{0}".format(
                         xl_col_to_name(idx+first_col)),\
                         width=column.get('width'))
-                format=column.get("format")
-                if format and isinstance(format,str):
+                if 'format' in column or 'header_format' in column:
                     new_column=column.copy()
-                    new_column['format']=self._formats.get(format)
+                    format=column.get("format")
+                    if format and isinstance(format,str):
+                        new_column['format']=self._formats.get(format)
+                    hformat=column.get("header_format")
+                    if hformat and isinstance(hformat,str):
+                        new_column['header_format']=self._formats.get(hformat)
                     new_columns.append(new_column)
                 else:
                     new_columns.append(column)
