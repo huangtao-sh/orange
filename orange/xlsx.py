@@ -1,3 +1,4 @@
+
 # 项目：Excel写入模块封装
 # 模块：xlsxwriter的封装
 # 作者：黄涛
@@ -25,6 +26,7 @@ DefaultFormat=(('currency',{'num_format':'#,##0.00'}),
                 ('date',{'num_format':'yyyy-mm-dd'}),
                 ('time',{'num_format':'hh:mm:ss'}),
                 ('number',{'num_format':'#,##0'}),
+                ('header',{'font_name':'黑体','font_size':12,'align':'center'}),
                 ('datetime',{'num_format':'yyyy-mm-dd hh:mm:ss'}),
                 ('timestamp',{'num_format':'yyyy-mm-dd hh:mm:ss.0'}))
 
@@ -221,7 +223,7 @@ class Book(Workbook):
          
     @convert_range_args
     def add_table(self,first_row,first_col,last_row,last_col,\
-                  sheet=None,header_format='title',**kwargs):
+                  sheet=None,header_format='header',**kwargs):
         '''添加图表，如sheet为空，则使用默认的工作表'''
         if sheet:
             self.worksheet=sheet
