@@ -28,7 +28,7 @@ net:
 
 Pattern=re.compile(r'\d+(\.\d+)*([ab]\d+)?')
 def find_ver(path):
-    v=Pattern.search(path.name)
+    v=Pattern.search(str(path))
     if v:
         return Ver(v.group())
 
@@ -41,7 +41,7 @@ def win_deploy():
     s=s and s[-1]
     from orange.regkey import add_path
     add_path(str(s),'MongoDB')
-    print('设置路 Windows 搜索路径成功')
+    print('添加 %s 到 Windows 搜索路径成功'%(s))
     root=get_path(SERVERNAME,False)[0]
     data=root / 'data'
     if not data.exists():
