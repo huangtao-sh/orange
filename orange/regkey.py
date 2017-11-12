@@ -15,7 +15,7 @@
 from winreg import *
 
 __all__='RegKey','HKLM','HKCU','HKU','REG_BINARY',\
-        'REG_DWORD','REG_EXPAND_SZ','REG_SZ'
+        'REG_DWORD','REG_EXPAND_SZ','REG_SZ','add_path'
 
 class RegKey(object):
     __slots__='_items','_key','_subkey'
@@ -67,6 +67,7 @@ class RegKey(object):
         return SetValue(self._key,REG_SZ,val)
         
     def __setitem__(self,name,value):
+        # thd value is tuplie or list: value,type
         if isinstance(value,(tuple,list))and len(value)==2:
             if SetValueEx(self._key,name,0,*reversed(value)):
                 self._items[name]=value
@@ -91,3 +92,14 @@ class RegKey(object):
 HKLM=RegKey(HKEY_LOCAL_MACHINE)
 HKCU=RegKey(HKEY_CURRENT_USER)
 HKU=RegKey(HKEY_USERS)
+
+def add_path(path,replace=None):
+    with HKLM/r'SYSTEM\CurrentControlSet\Control\Session Manager\Environment' as key:
+        value,type_=key['Path']
+        if replace:
+            value=[x for x in value.split(';') if replace not in x]
+            value=';'.join(value)
+        value='%s;%s'%(value,path)
+        key['Path']=value,type_
+        
+            
