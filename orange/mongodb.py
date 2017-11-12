@@ -42,7 +42,6 @@ def win_deploy():
     from orange.regkey import add_path
     add_path(str(s),'MongoDB')
     print('设置路 Windows 搜索路径成功')
-    
     root=get_path(SERVERNAME,False)[0]
     data=root / 'data'
     if not data.exists():
@@ -58,8 +57,10 @@ def win_deploy():
 
     cmd='mongod --install --serviceName "%s" --config "%s"'%(SERVERNAME,root/'mongo.ini')
     exec_shell(cmd)
-    exec_shell('sc start %s'%(SERVERNAME))
     print('%s 服务安装成功！'%(SERVERNAME))
+    print('启动 MongoDB 服务')
+    exec_shell('sc start %s'%(SERVERNAME))
+
 
 def darwin_deploy():
     pass
