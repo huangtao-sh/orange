@@ -7,10 +7,10 @@
 
 import sys
 import re
+import platform
 from orange.deploy import *
 from orange import exec_shell,read_shell
 from orange.pyver import Ver
-
 
 MONGOCONFIG='''
 systemLog:
@@ -51,16 +51,19 @@ def win_deploy():
         'dbpath':(str(data)).replace("\\","/"),
         'logpath':(str(root)).replace("\\","/"),
         'engine':'wiredTiger'}
+    if platform.architecture()[0]!='64bit':
+        config['engine']='mmapv1'
+        print('本机使用32位处理器，使用 mmapv1 引擎')
     config_file=MONGOCONFIG.format(**config)
     (root/'mongo.ini').text=config_file
     print('写入配置文件成功')
 
+    exec_shell('sc delete %s'%(SERVERNAME))
     cmd='mongod --install --serviceName "%s" --config "%s"'%(SERVERNAME,root/'mongo.ini')
     exec_shell(cmd)
     print('%s 服务安装成功！'%(SERVERNAME))
     print('启动 MongoDB 服务')
     exec_shell('sc start %s'%(SERVERNAME))
-
 
 def darwin_deploy():
     pass
