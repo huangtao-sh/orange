@@ -11,7 +11,7 @@ console_scripts=['conv=orange.path:convert',
                  'plist=orange.plist:main',
                  'pyinit=orange.init:main',
                  'gclone=orange.gclone:main',
-                 'deploymongo=orange.mongodb:main',
+                 'mongodeploy=orange.mongodb:main',
                  'fkgfw=orange.fkgfw:main',
                  'sysinit=orange.sysinit:main']
 setup(
