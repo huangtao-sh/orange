@@ -185,3 +185,14 @@ class VersionMgr:
             if sdist:
                 pysdist()
                 
+Pattern=R/r'\d+(\.\d+)*([ab]\d+)?'
+
+def find_ver(path):
+    v=Pattern.search(str(path))
+    if v:
+        return Ver(v.group())
+
+def get_cur_ver(paths):
+    if paths:
+        return list(sorted(paths,key=lambda x:find_ver(x)))[-1]
+        

@@ -10,7 +10,7 @@ import re
 import platform
 from orange.deploy import *
 from orange import exec_shell,read_shell
-from orange.pyver import Ver
+from orange.pyver import Ver,get_cur_ver
 
 MONGOCONFIG='''
 systemLog:
@@ -25,45 +25,48 @@ net:
   bindIp: 127.0.0.1
   port: 27017
 '''
-
-Pattern=re.compile(r'\d+(\.\d+)*([ab]\d+)?')
-def find_ver(path):
-    v=Pattern.search(str(path))
-    if v:
-        return Ver(v.group())
+MONGOFILES=('mongo.exe','mongod.exe','mongodump.exe',\
+                'mongoexport.exe','mongoimport.exe')
 
 SERVERNAME='MongoDb'
 def win_deploy():
-    print('停止 MongoDb 服务……')
+    print('停止 MongoDb 服务')
     exec_shell('sc stop %s'%(SERVERNAME))
-    k=input('请安装新版本的 MongoDb 服务器程序\n安装完成后按回车继续')
-    s=list((sorted(Path("%PROGRAMFILES%/MongoDB").rglob('bin'),key=lambda x:find_ver(x))))
-    s=s and s[-1]
-    from orange.regkey import add_path
-    add_path(str(s),'MongoDB')
-    print('添加 %s 到 Windows 搜索路径成功'%(s))
+    cur_prg_path=get_cur_ver(Path('%PROGRAMFILES%/MongoDB').rglob('bin'))
+    print('最新版程序安装路径：%s'%(cur_prg_path))
+    dest=Path('%windir%')
+    for exefile in MONGOFILES:
+        dexefile=dest/exefile
+        if not dexefile.exists():
+            dexefile.symlink_to(cur_prg_path/exefile)
+            print('连接 %s 到 %s 成功'%(dexefile,cur_prg_path/exefile))
+    
     root=get_path(SERVERNAME,False)[0]
-    data=root / 'data'
-    if not data.exists():
-        data.ensure()
-        print('创建目录：%s'%(data))
-    config={
-        'dbpath':(str(data)).replace("\\","/"),
-        'logpath':(str(root)).replace("\\","/"),
-        'engine':'wiredTiger'}
-    if platform.architecture()[0]!='64bit':
-        config['engine']='mmapv1'
-        print('本机使用32位处理器，使用 mmapv1 引擎')
-    config_file=MONGOCONFIG.format(**config)
-    (root/'mongo.ini').text=config_file
-    print('写入配置文件成功')
-
+    data_path=root / 'data'
+    if not data_path.exists():
+        data_path.ensure()
+        print('创建数据目录：%s'%(data_path))   
+    config_file=root/'mongo.conf'
+    if not config_file.exists():
+        config={
+            'dbpath':data_path.as_posix(),
+            'logpath':root.as_posix(),
+            'engine':'wiredTiger'}
+        if platform.architecture()[0]!='64bit':
+            config['engine']='mmapv1'
+            print('本机使用32位处理器，使用 mmapv1 引擎')
+        config_file.text=MONGOCONFIG.format(**config)
+        print('写入配置文件 %s '%(config_file))        
+    print('删除服务配置')
     exec_shell('sc delete %s'%(SERVERNAME))
-    cmd='mongod --install --serviceName "%s" --config "%s"'%(SERVERNAME,root/'mongo.ini')
+    print('重新配置服务')
+    cmd='%s --install --serviceName "%s" --config "%s"'%(
+        'mongod.exe',SERVERNAME,config_file)
+    print(cmd)
     exec_shell(cmd)
-    print('%s 服务安装成功！'%(SERVERNAME))
     print('启动 MongoDB 服务')
     exec_shell('sc start %s'%(SERVERNAME))
+    input('Press any key to continue')
 
 def darwin_deploy():
     pass
