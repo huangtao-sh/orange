@@ -12,6 +12,7 @@ from .dateutil import *
 from .regex import *
 from .mail import *
 from .click import *
+from .__version__ import version as __version__
 
 __all__ = 'get_ver', 'Path', 'get_path',\
     'first', 'last', 'Ver', 'decode',\
