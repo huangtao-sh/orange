@@ -2,6 +2,7 @@
 # 模块：工具包
 # 作者：黄涛
 # 创建：2015-9-2
+# 修订：2018-2-2 新增 __version__
 
 from .path import *
 from .version import *

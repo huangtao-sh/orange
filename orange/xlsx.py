@@ -229,6 +229,8 @@ class Book(Workbook):
         worksheet=sheet or worksheet
         if worksheet:
             self.worksheet=worksheet
+        elif not self.worksheet:
+            raise Exception('当前 worksheet 未设置')
         columns=kwargs.get('columns')
         if columns:
             new_columns=[]
