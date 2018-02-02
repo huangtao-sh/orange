@@ -21,5 +21,5 @@ __all__ = 'get_ver', 'Path', 'get_path',\
     'encrypt', 'decrypt', 'get_py', 'split', 'deprecation',\
     'LOCAL', 'UTC', 'now', 'datetime', 'fprint', 'date_add', 'ONEDAY', 'LTZ',\
     'ONESECOND', 'R', 'sendmail', 'tsendmail', 'Mail', 'PY', 'MailClient',\
-    'convert_cls_name', 'verbose', 'arg', 'command', 'generator'
+    'convert_cls_name', 'verbose', 'arg', 'command', 'generator','__version__'
 
