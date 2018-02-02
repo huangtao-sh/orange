@@ -5,7 +5,7 @@
 # Email:huangtao.sh@icloud.com
 # 创建：2016-05-20 16:45
 
-from orange import *
+from orange import arg,Path
 import re
 
 def extract_str(s):
@@ -30,4 +30,3 @@ def canshu(category,query):
             if query in line:
                 print(",".join([extract_str(x)for x in\
                                 line.split(',')]))
-                                
