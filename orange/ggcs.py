@@ -6,7 +6,6 @@
 # 创建：2016-05-20 16:45
 
 from orange import arg,Path
-import re
 
 def extract_str(s):
     if s.startswith('"')and s.endswith('"'):
@@ -19,6 +18,7 @@ def canshu(category,query):
     TYPE={'jym':'transactions_output.csv',
           'km':'ggkmzd.del',
           'jg':'ggjgm.del',
+          'jgm':'ggjgm.del',
           'gy':'users_output.csv',
           'user':'users_output.csv',}
     root=Path('~/OneDrive/工作/参数备份/')
