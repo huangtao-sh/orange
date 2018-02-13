@@ -29,7 +29,6 @@ setup(
         name='{prj_name}',
         author='{author}',
         author_email='{email}',
-        platforms='any',
         description='{project}',
         install_requires=requires,
         long_description='{project}',
