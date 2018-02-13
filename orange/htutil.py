@@ -7,7 +7,6 @@
 
 import os
 
-
 class classproperty:
     '''类属性，用法：
     class A:
@@ -72,7 +71,6 @@ def exec_shell(cmd):
     执行系统命令。
     '''
     return os.system(cmd)
-
 
 def wlen(s):
     '''

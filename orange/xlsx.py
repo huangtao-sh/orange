@@ -71,7 +71,6 @@ class Book(Workbook):
     def newline(self):
         '''换行'''
         return self+1
-
     @property
     def worksheet(self):
         '''当前工作表'''
