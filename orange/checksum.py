@@ -46,17 +46,8 @@ def bank_card(card_no):
                         lambda x,y:sum(divmod(int(x)*y,10)),
                         circle([2,1]),Sum)
 
-def czbank_ac(acno):
-    '''账号校验位算法'''
-    keys=30,3,50,5,70,7,10,11,30,13,70,17,90,19,30,23,90,29,10,31
-    if len(acno)>=20:
-        checksum='%02d'%(sum([int(x)*k for x,k in zip(acno,keys)]))
-        if acno[11]=='9':
-            return '%s%s'%(acno[:21],checksum[-2])
-        else:
-            return '%s%s'%(acno[:20],checksum[-2:])
-
 def credit_code(code):
+    '''修正信用代码证校验位'''
     Base="0123456789ABCDEFGHJKLMNPQRTUWXY"
     wi=1, 3, 9, 27, 19, 26, 16, 17, 20, 29, 25, 13, 8, 24, 10, 30, 28
     if len(code)>=17:
@@ -66,12 +57,3 @@ def credit_code(code):
         return '%s%s'%(code[:17],Base[check])
         
     
-if __name__=='__main__':
-    print(id_card('310115201411142227'))
-    print(id_card('412902197909022053'))
-    print(bank_card('3568680095415995'))
-    print(bank_card('6223093310810005226'))
-    print(org_code('L2345678-1'))
-    print(org_code('74371976-1'))
-    print(credit_code('91460600MA5RC30P9Y'))
-        

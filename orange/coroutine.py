@@ -17,28 +17,31 @@
 '''
 import asyncio
 
-__all__='start','wait','wait_for','sleep','iscoroutine','batch','run'
+__all__ = 'start', 'wait', 'wait_for', 'sleep', 'iscoroutine', 'batch', 'run'
 
-wait=asyncio.wait
-wait_for=asyncio.wait_for
-sleep=asyncio.sleep
-iscoroutine=asyncio.iscoroutine
+wait = asyncio.wait
+wait_for = asyncio.wait_for
+sleep = asyncio.sleep
+iscoroutine = asyncio.iscoroutine
 
-def batch(coro,*datas):
+
+def batch(coro, *datas):
     # 使用一个协程函数批量生成协程
-    return wait(map(coro,*datas))
-    
+    return wait(map(coro, *datas))
+
+
 def start(*coros):
     # 执行协程，如coro为多个，则全部并发执行。
     try:
-        loop=asyncio.new_event_loop()
+        loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
-        coro=coros[0] if len(coros)==1 else wait(coros)
+        coro = coros[0] if len(coros) == 1 else wait(coros)
         loop.run_until_complete(coro)
     finally:
         loop.close()
 
+
 def run(*coros):
-    loop=asyncio.get_event_loop()
-    coro=coros[0] if len(coros)==1 else wait(coros)
+    loop = asyncio.get_event_loop()
+    coro = coros[0] if len(coros) == 1 else wait(coros)
     loop.run_until_complete(coro)

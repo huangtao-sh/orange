@@ -131,18 +131,3 @@ def save_config():
     if _config and _config.modified:
         _config.save_config()
 
-if __name__=='__main__':
-    config=config()
-    print(config.config_file)
-    config.load_config()
-    d={
-        'hello':{'HOST':'123456',
-                 'USER':'fsda',
-                 'PASSWD':'123456',
-                 'DB':'hunter',
-                 }
-                 }
-    config.update_many(d)
-    f=config.get_many('hello')
-    print(config.get('hello'))
-    
