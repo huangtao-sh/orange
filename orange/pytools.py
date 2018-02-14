@@ -10,24 +10,26 @@
 
 import sys
 import os
-from orange import Path,exec_shell
-from orange.deploy import *
+from orange import Path, exec_shell
+from orange.deploy import run_setup
+
 
 def _clear():
     for path in Path('.').glob('*.egg-info'):
-        print('Path %s has beed deleted!'%(path))
+        print('Path %s has beed deleted!' % (path))
         if path.is_dir():
             path.rmtree()
-            
+
+
 def pyupload():
     import os
-    cmd='setup' if os.name=='nt' else 'python3 setup.py'
-    cmd='%s sdist --dist-dir %s upload'%(cmd,Path('~/OneDrive/pylib'))
-    #run_setup('sdist','--dist-dir',str(Path('~/OneDrive/pylib')),'upload')
+    cmd = 'setup' if os.name == 'nt' else 'python3 setup.py'
+    cmd = '%s sdist --dist-dir %s upload' % (cmd, Path('~/OneDrive/pylib'))
+    # run_setup('sdist','--dist-dir',str(Path('~/OneDrive/pylib')),'upload')
     os.system(cmd)
     _clear()
 
-def pysdist():
-    run_setup('sdist','--dist-dir',str(Path('~/OneDrive/pylib')))
-    _clear()
 
+def pysdist():
+    run_setup('sdist', '--dist-dir', str(Path('~/OneDrive/pylib')))
+    _clear()

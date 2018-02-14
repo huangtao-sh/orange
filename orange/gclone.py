@@ -8,7 +8,7 @@
 # 修订：2016-11-18 采用Parser来分析参数
 
 #from stdlib import parse_args,exec_shell
-from orange import *
+from orange import arg, exec_shell
 import sys
 
 
@@ -31,6 +31,7 @@ def proc(repos=None, user=None, protocol='SSH'):
         url = '%s/%s.git' % (URL, repo)
         print('cloning', url)
         exec_shell('git clone %s' % (url))
+
 
 if __name__ == '__main__':
     proc()
