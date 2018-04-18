@@ -31,17 +31,20 @@ SERVERNAME = 'MongoDb'
 
 
 def win_deploy():
-    print('停止 MongoDb 服务')
-    exec_shell('sc stop %s' % (SERVERNAME))
-    cur_prg_path = get_cur_ver(Path('%PROGRAMFILES%/MongoDB').rglob('bin'))
-    print('最新版程序安装路径：%s' % (cur_prg_path))
-    dest = Path('%windir%')
-    for exefile in MONGOFILES:
-        dexefile = dest/exefile
-        if dexefile.exists():
-            dexefile.unlink()
-        dexefile.symlink_to(cur_prg_path/exefile)
-        print('连接 %s 到 %s 成功' % (dexefile, cur_prg_path/exefile))
+    try:
+        exec_shell('sc stop %s' % (SERVERNAME))
+        cur_prg_path = get_cur_ver(Path('%PROGRAMFILES%/MongoDB').rglob('bin'))
+        print('停止 MongoDb 服务')
+        print('最新版程序安装路径：%s' % (cur_prg_path))
+        dest = Path('%windir%')
+        for exefile in MONGOFILES:
+            dexefile = dest/exefile
+            if dexefile.exists():
+                dexefile.unlink()
+            dexefile.symlink_to(cur_prg_path/exefile)
+            print('连接 %s 到 %s 成功' % (dexefile, cur_prg_path/exefile))
+    except:
+        print('未安装MongoDb服务')
 
     root = get_path(SERVERNAME, False)[0]
     data_path = root / 'data'
