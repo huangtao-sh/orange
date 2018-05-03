@@ -36,12 +36,15 @@ DefaultFormat = (('currency', {'num_format': '#,##0.00'}),
 class Book(Workbook):
     ''' 对Xlsxwriter模块进一步进行封装'''
 
-    def __init__(self, filename=None, **kw):
+    def __init__(self, filename=None, formats=formats, **kw):
         filename = str(Path(filename))
         super().__init__(filename, **kw)
         self._worksheet = None    # 设置当前的工作表为空
         self._worksheets = {}     # 设置当前的工作表清单为空
         self._formats = {}
+        if formats:
+            self.add_formats(formtas)
+            
         for name, val in DefaultFormat:
             self.add_format(val, name)
 
