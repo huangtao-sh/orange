@@ -74,7 +74,7 @@ def win_deploy():
     input('Press any key to continue')
 
 
-PLIST_CONTENT='''<?xml version="1.0" encoding="UTF-8"?>
+PLIST_CONTENT = '''<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
   <dict>
@@ -92,15 +92,16 @@ PLIST_CONTENT='''<?xml version="1.0" encoding="UTF-8"?>
 </plist>
 '''
 
+
 def darwin_deploy():
     config = {
         'dbpath': '/usr/local/var/mongodb',
         'logpath': 'usr/local/var/log',
         'engine': 'wiredTiger'}
-    config_path=Path('/usr/local/etc/mongod.conf')
-    plist_file=Path('/Library/LaunchDaemons/com.mongodb.plist')
-    config_path.text=MONGOCONFIG.format(**config)
-    plist_file.text=PLIST_CONTENT
+    config_path = Path('/usr/local/etc/mongod.conf')
+    plist_file = Path('/Library/LaunchDaemons/com.mongodb.plist')
+    config_path.text = MONGOCONFIG.format(**config)
+    plist_file.text = PLIST_CONTENT
 
 
 def main():
@@ -111,6 +112,7 @@ def main():
         darwin_deploy()
     else:
         print('操作系统%下的配置未实现')
+
 
 if __name__ == '__main__':
     main()
