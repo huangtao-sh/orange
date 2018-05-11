@@ -6,10 +6,11 @@
 # Email:huangtao.sh@icloud.com
 # 创建：2016-10-12 08:24
 
-from orange import *
-from xlsxwriter import *
+from orange import R, Path, generator
+from xlsxwriter import Workbook
 from xlsxwriter.format import Format
-from xlsxwriter.worksheet import *
+from xlsxwriter.worksheet import convert_cell_args, convert_column_args, convert_range_args, cell_blank_tuple,\
+    xl_col_to_name
 
 Pattern = R/r'([A-Z]{1,2})(\d*)([:_]([A-Z]{1,2})(\d*))?'
 Row = R/r'(\{([+-]?\d+)\})'
@@ -36,15 +37,15 @@ DefaultFormat = (('currency', {'num_format': '#,##0.00'}),
 class Book(Workbook):
     ''' 对Xlsxwriter模块进一步进行封装'''
 
-    def __init__(self, filename=None, formats=formats, **kw):
+    def __init__(self, filename=None, formats={}, **kw):
         filename = str(Path(filename))
         super().__init__(filename, **kw)
         self._worksheet = None    # 设置当前的工作表为空
         self._worksheets = {}     # 设置当前的工作表清单为空
         self._formats = {}
         if formats:
-            self.add_formats(formtas)
-            
+            self.add_formats(formats)
+
         for name, val in DefaultFormat:
             self.add_format(val, name)
 
@@ -74,6 +75,7 @@ class Book(Workbook):
     def newline(self):
         '''换行'''
         return self+1
+
     @property
     def worksheet(self):
         '''当前工作表'''
