@@ -7,6 +7,7 @@
 # 修改：2016-04-13 21:01
 # 修改：2016-08-13 新增__iter__ 和 extractall功能
 # 修订：2016-11-19 修改Path的实现方式
+# 修订：2018-05-25 增加write_tables功能
 
 import pathlib
 import os
@@ -62,6 +63,10 @@ _Parent = pathlib.WindowsPath if os.name == 'nt' else pathlib.PosixPath
 
 class Path(_Parent):
     __slots__ = ()
+
+    def __bool__(self):
+        '''判断文件是否存在'''
+        return self.exists()
 
     def __new__(cls, path='.', *args, **kwargs):
         if isinstance(path, str):
@@ -190,9 +195,28 @@ class Path(_Parent):
         if self.is_dir():
             os.chdir(str(self))
 
-    def write_xlsx(self):
+    def write_xlsx(self, **kw):
         from orange.xlsx import Book
-        return Book(str(self))
+        return Book(str(self), **kw)
+
+    def write_tables(self, *tables, formats=None, **kw):
+        '''
+        写入多张表格，支持以下参数：
+        formats:预设格式
+        tables:为列表，每个table为字典，参数值如下：
+        pos:位置
+        columns:表格格式
+        data:数据
+        sheet:表格名称
+        '''
+        if self:
+            s = input('%s 已存在，请确认是否覆盖，Y or N?\n')
+            if s.upper() == 'N':
+                return
+        with self.write_xlsx(formats=formats)as book:
+            for table in tables:
+                pos = table.pop('pos')
+                book.add_table(pos, **table)
 
 
 @command(description='Windows 格式文件转换为 Unix 文件格式')
