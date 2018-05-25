@@ -199,7 +199,7 @@ class Path(_Parent):
         from orange.xlsx import Book
         return Book(str(self), **kw)
 
-    def write_tables(self, *tables, formats=None, **kw):
+    def write_tables(self, *tables, formats=None, force=False, **kw):
         '''
         写入多张表格，支持以下参数：
         formats:预设格式
@@ -209,13 +209,13 @@ class Path(_Parent):
         data:数据
         sheet:表格名称
         '''
-        if self:
+        if self and not force:
             s = input('%s 已存在，请确认是否覆盖，Y or N?\n')
             if s.upper() == 'N':
                 return
         with self.write_xlsx(formats=formats)as book:
             for table in tables:
-                pos = table.pop('pos')
+                pos = table.pop('pos', 'A1')
                 book.add_table(pos, **table)
 
 
