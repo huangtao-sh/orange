@@ -211,7 +211,7 @@ class Path(_Parent):
         '''
         if self and not force:
             s = input('%s 已存在，请确认是否覆盖，Y or N?\n' % self.name)
-            if s.upper() == 'N':
+            if s.upper() != 'Y':
                 return
         with self.write_xlsx(formats=formats)as book:
             for table in tables:
