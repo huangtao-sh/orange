@@ -141,8 +141,8 @@ class Path(_Parent):
     @property
     def xmlroot(self):
         '''如果指定的文件为xml文件，则返回本文件的根元素'''
-        import lxml.etree
-        return lxml.etree.parse(str(self)).getroot()
+        from lxml.etree import parse
+        return parse(str(self)).getroot()
 
     def __iter__(self):
         '''根据文件的不同，迭代返回不同的内容。支持如下文件：
@@ -195,11 +195,19 @@ class Path(_Parent):
         if self.is_dir():
             os.chdir(str(self))
 
-    def write_xlsx(self, **kw):
-        from orange.xlsx import Book
-        return Book(str(self), **kw)
+    def write_xlsx(self, *args, force=False, formats=None, writer=None, **kw):
+        if self and not force:
+            s = input('%s 已存在，请确认是否覆盖，Y or N?\n' % self.name)
+            if s.upper() != 'Y':
+                return
+        from .xlsx import Book
+        if callable(writer):
+            with Book(str(self), formats=formats)as book:
+                writer(book, *args, **kw)
+        else:
+            return Book(str(self), formats=formats, **kw)
 
-    def write_tables(self, *tables, formats=None, force=False, **kw):
+    def write_tables(self, *tables,  **kw):
         '''
         写入多张表格，支持以下参数：
         formats:预设格式
@@ -209,14 +217,12 @@ class Path(_Parent):
         data:数据
         sheet:表格名称
         '''
-        if self and not force:
-            s = input('%s 已存在，请确认是否覆盖，Y or N?\n' % self.name)
-            if s.upper() != 'Y':
-                return
-        with self.write_xlsx(formats=formats)as book:
+        def writer(book, *tables):
             for table in tables:
                 pos = table.pop('pos', 'A1')
                 book.add_table(pos, **table)
+
+        self.write_xlsx(writer=writer, **kw)
 
 
 @command(description='Windows 格式文件转换为 Unix 文件格式')
