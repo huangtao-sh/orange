@@ -222,7 +222,7 @@ class Path(_Parent):
                 pos = table.pop('pos', 'A1')
                 book.add_table(pos, **table)
 
-        self.write_xlsx(writer=writer, **kw)
+        self.write_xlsx(writer=writer, *tables, **kw)
 
 
 @command(description='Windows 格式文件转换为 Unix 文件格式')
