@@ -5,6 +5,7 @@
 # License:GPL
 # Email:huangtao.sh@icloud.com
 # 创建：2016-10-12 08:24
+# 修订：2018-05-25 修改add_table的参数格式
 
 from orange import R, Path, generator
 from xlsxwriter import Workbook
@@ -201,8 +202,6 @@ class Book(Workbook):
             bottom = bottom or border
             top = top or border
         table = self.table
-        default_format = {"left": inner, "right": inner, "top": inner,
-                          "bottom": inner}
 
         def _replace(r, c, **kw):
             row = table[r]
@@ -229,12 +228,15 @@ class Book(Workbook):
         [_replace(r, c)for r in range(first_row, last_row+1)
          for c in range(first_col, last_col+1)]
 
-    @convert_range_args
-    def add_table(self, first_row, first_col, last_row, last_col,
-                  sheet=None, worksheet=None, header_format='header',
-                  data=None, **kwargs):
-        '''添加图表，如sheet为空，则使用默认的工作表'''
+    def add_table(self, pos, sheet=None, worksheet=None, data=None, **kw):
         worksheet = sheet or worksheet
+        self._add_table(pos, worksheet=worksheet, data=data, **kw)
+
+    @convert_range_args
+    def _add_table(self, first_row, first_col, last_row, last_col,
+                   worksheet=None, header_format='header',
+                   data=None, **kwargs):
+        '''添加图表，如sheet为空，则使用默认的工作表'''
         if worksheet:
             self.worksheet = worksheet
         elif not self.worksheet:
