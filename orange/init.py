@@ -6,16 +6,16 @@
 # 修订：2016-9-6 移除stdlib的支持
 
 import os
-from orange import *
-from orange.parseargs import *
+from orange import is_dev, is_installed, Path, now
+from orange.parseargs import Parser, Arg
 
-INITIAL_VERSION='version="0.1"\n'
-INITIAL_FILE='''# 项目：{project}
+INITIAL_VERSION = 'version="0.1"\n'
+INITIAL_FILE = '''# 项目：{project}
 # 作者：{author}
 # 邮件：{email}
 # 创建：{date:%Y-%m-%d}
 '''
-SETUP_FILE='''#!/usr/bin/env python3
+SETUP_FILE = '''#!/usr/bin/env python3
 from orange import setup
 requires=[
           ]
@@ -38,9 +38,9 @@ setup(
         license='GPL',
         )
 '''
-TESTING_PKG='''from .test_sample import *
+TESTING_PKG = '''from .test_sample import *
 '''
-TEST_SAMPLE='''import unittest
+TEST_SAMPLE = '''import unittest
 class TestSample(unittest.TestCase):
     def setUp(self):
         pass
@@ -53,7 +53,8 @@ class TestSample(unittest.TestCase):
         self.assertEqual(a,a)
 '''
 
-def py_init(project='',author='',email=''):
+
+def py_init(project='', author='', email=''):
     '''
     初始化项目文件
     自动在当前目录下生成包文件、初始版本号文件、安装文件和测试文件
@@ -61,42 +62,43 @@ def py_init(project='',author='',email=''):
     author:作者姓名
     email:作者的电子邮件
     '''
-    prj_name=os.path.split(os.path.abspath('.'))[-1]
-    ver_file='%s/__version__.py'%(prj_name)
-    pkg_file='%s/__init__.py'%(prj_name)
+    prj_name = os.path.split(os.path.abspath('.'))[-1]
+    ver_file = '%s/__version__.py' % (prj_name)
+    pkg_file = '%s/__init__.py' % (prj_name)
     # 生成setup.py文件
     if not os.path.isfile('setup.py'):
-        Path('setup.py').text=SETUP_FILE.format(\
-            author=author,prj_name=prj_name,
-            project=project,email=email)
+        Path('setup.py').text = SETUP_FILE.format(
+            author=author, prj_name=prj_name,
+            project=project, email=email)
         print('已生成setup.py')
-        
+
     # 创建包目录
     if not os.path.isdir(prj_name):
         os.mkdir(prj_name)
-    # 生成初始化版本文件    
+    # 生成初始化版本文件
     if not os.path.isfile(ver_file):
-        Path(ver_file).text=INITIAL_VERSION
+        Path(ver_file).text = INITIAL_VERSION
         print('当前程序版本初始化为：0.1')
     # 生成初始化包文件
     if not os.path.isfile(pkg_file):
-        contents=INITIAL_FILE.format(project=project,
-                                      author=author,
-                                      email=email,
-                                      date=now())
-        Path(pkg_file).text=contents
+        contents = INITIAL_FILE.format(project=project,
+                                       author=author,
+                                       email=email,
+                                       date=now())
+        Path(pkg_file).text = contents
         print('已初始化包文件')
 
     # 生成测试模板文件
     if not os.path.isdir('testing'):
-        testing=Path('testing')
+        testing = Path('testing')
         testing.ensure()
-        (testing / '__init__.py').text=TESTING_PKG
-        (testing / 'test_sample.py').text=TEST_SAMPLE
+        (testing / '__init__.py').text = TESTING_PKG
+        (testing / 'test_sample.py').text = TEST_SAMPLE
         print('已创建测试模板文件')
 
-main=Parser(Arg('-p','--project',help='项目描述'),
-            Arg('-a','--author',help='作者姓名',default='黄涛'),
-            Arg('-e','--email',help='电子邮件',
-                default='hunto@163.com'),
-            proc=py_init)
+
+main = Parser(Arg('-p', '--project', help='项目描述'),
+              Arg('-a', '--author', help='作者姓名', default='黄涛'),
+              Arg('-e', '--email', help='电子邮件',
+                  default='hunto@163.com'),
+              proc=py_init)
