@@ -6,8 +6,7 @@
 # 修订：2016-9-6 移除stdlib的支持
 
 import os
-from orange import is_dev, is_installed, Path, now
-from orange.parseargs import Parser, Arg
+from orange import is_dev, is_installed, Path, now, arg
 
 INITIAL_VERSION = 'version="0.1"\n'
 INITIAL_FILE = '''# 项目：{project}
@@ -54,7 +53,10 @@ class TestSample(unittest.TestCase):
 '''
 
 
-def py_init(project='', author='', email=''):
+@arg('-p', '--project', help='项目描述')
+@arg('-a', '--author', help='作者姓名', default='黄涛')
+@arg('-e', '--email', help='电子邮件', default='hunto@163.com')
+def main(project='', author='', email=''):
     '''
     初始化项目文件
     自动在当前目录下生成包文件、初始版本号文件、安装文件和测试文件
@@ -95,10 +97,3 @@ def py_init(project='', author='', email=''):
         (testing / '__init__.py').text = TESTING_PKG
         (testing / 'test_sample.py').text = TEST_SAMPLE
         print('已创建测试模板文件')
-
-
-main = Parser(Arg('-p', '--project', help='项目描述'),
-              Arg('-a', '--author', help='作者姓名', default='黄涛'),
-              Arg('-e', '--email', help='电子邮件',
-                  default='hunto@163.com'),
-              proc=py_init)
