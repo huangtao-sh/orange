@@ -8,7 +8,7 @@
 import distutils.core
 import os
 import setuptools
-import pip
+from pip.__main__ import _main as main
 from orange import Path, Ver
 
 
@@ -31,7 +31,7 @@ def get_path(pkg, user=True):
 
 
 def run_pip(*args):
-    pip.main(list(args))
+    main(list(args))
 
 
 def run_setup(*args):
