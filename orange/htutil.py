@@ -9,6 +9,11 @@ import os
 
 
 def cstr(arg, width=None, align='left'):
+    '''
+    用于转换成字符串，增加如下功能：
+    width:总宽度
+    align:left:左对齐，right:右对齐，center:居中
+    '''
     s = str(arg)
     if width:
         align = align.lower()
@@ -162,9 +167,34 @@ def split(data, size=1000):
         yield data[i:]
 
 
+import warnings
+
+
+from functools import wraps
+
+
+def deprecate(func):
+    '''进行废弃声明，使用方法：
+
+    @deprecate(new_func)
+    def depr_func(*arg,**kw):
+        pass
+    '''
+    func = func.__name__ if hasattr(func, '__name__') else func
+
+    def _(fn):
+        @wraps(fn)
+        def new_func(*args, **kw):
+            fn(*args, **kw)
+            warnings.warn(
+                '%s will be deprecated, Please use %s replaced!' % (
+                    fn.__name__, func), DeprecationWarning, stacklevel=2)
+        return new_func
+    return _
+
+
 def deprecation(func, replace=''):
     '''DeprecationWarning'''
-    import warnings
     message = "%s 已被弃用" % (func)
     if replace:
         message += "，请使用 %s 替代" % (replace)

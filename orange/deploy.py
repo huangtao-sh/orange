@@ -11,13 +11,12 @@ import setuptools
 from .htutil import exec_shell
 from orange import Path, Ver
 
-pip = 'pip'
+pip = 'pip3' if os.name == 'posix' else 'pip'
 
 
 def get_path(pkg, user=True):
     ''' 返回指定包的参数配置目录和数据目录'''
     if os.name == 'posix':
-        pip = 'pip3'
         if user:
             root = Path('~')
             return root, root / ('.%s' % (pkg))
