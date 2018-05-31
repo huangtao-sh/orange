@@ -7,6 +7,25 @@
 
 import os
 
+
+def cstr(arg, width=None, align='left'):
+    s = str(arg)
+    if width:
+        align = align.lower()
+        s = s.strip()
+        x = width-wlen(s)
+        if x > 0:
+            if align == 'right':
+                s = ' '*x+s
+            elif align == 'left':
+                s += ' '*x
+            else:
+                l = x//2
+                r = x-l
+                s = ' '*l+s+' '*r
+    return s
+
+
 class classproperty:
     '''类属性，用法：
     class A:
@@ -72,12 +91,14 @@ def exec_shell(cmd):
     '''
     return os.system(cmd)
 
+
 def wlen(s):
     '''
     用于统计字符串的显示宽度，一个汉字或双字节的标点占两个位，
     单字节的字符占一个字节。
     '''
     return sum([2 if ord(x) > 127 else 1 for x in s])
+
 
 _des = None
 
@@ -148,5 +169,6 @@ def deprecation(func, replace=''):
     if replace:
         message += "，请使用 %s 替代" % (replace)
     warnings.warn(message, DeprecationWarning, stacklevel=2)
+
 
 generator = type((x for x in 'hello'))

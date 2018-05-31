@@ -8,13 +8,16 @@
 import distutils.core
 import os
 import setuptools
-from pip.__main__ import _main as main
+from .htutil import exec_shell
 from orange import Path, Ver
+
+pip = 'pip'
 
 
 def get_path(pkg, user=True):
     ''' 返回指定包的参数配置目录和数据目录'''
     if os.name == 'posix':
+        pip = 'pip3'
         if user:
             root = Path('~')
             return root, root / ('.%s' % (pkg))
@@ -31,7 +34,7 @@ def get_path(pkg, user=True):
 
 
 def run_pip(*args):
-    main(list(args))
+    exec_shell("%s %s" % (pip, " ".join(args)))
 
 
 def run_setup(*args):
