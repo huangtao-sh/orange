@@ -19,11 +19,11 @@ class Connection(sqlite3.Connection):
         params: 查询参数
         '''
         with self.find(*args, **kw)as cursor:
-            return cursor.findone()
+            return cursor.fetchone()
 
-    def findmany(self, *args, **kw):
+    def findall(self, *args, **kw):
         with self.find(*args, **kw)as cursor:
-            return cursor.findall()
+            return cursor.fetchall()
 
     @contextmanager
     def find(self, *args, **kw):

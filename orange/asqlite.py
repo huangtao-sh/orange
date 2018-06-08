@@ -16,7 +16,7 @@ class Connection(aiosqlite.Connection):
 
     async def findone(self, sql: str, params=None)->tuple:
         async with self.execute(sql, params)as cursor:
-            return await cursor.fetchdone()
+            return await cursor.fetchone()
 
     async def findall(self, sql: str, params=None):
         async with self.execute(sql, params)as cursor:
