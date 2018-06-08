@@ -66,16 +66,3 @@ class TestVer(unittest.TestCase):
         @arg('-p', '--pear')
         def main():
             pass
-
-
-def a():
-    pass
-
-
-@deprecate(a)
-def b():
-    print('hello world')
-    print(b.__name__)
-
-
-

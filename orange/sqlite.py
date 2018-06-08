@@ -14,6 +14,10 @@ __all__ = 'Connection', 'connect'
 class Connection(sqlite3.Connection):
 
     def findone(self, *args, **kw):
+        '''查找一条数据
+        sql: sql 语句
+        params: 查询参数
+        '''
         with self.find(*args, **kw)as cursor:
             return cursor.findone()
 
