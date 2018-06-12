@@ -1,6 +1,6 @@
 import unittest
-from orange.version import *
-from orange import *
+from orange.version import upgrade_ver
+from orange import datetime, convert_cls_name, command, arg, PY
 
 
 class TestVer(unittest.TestCase):
