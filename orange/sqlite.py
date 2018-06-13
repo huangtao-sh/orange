@@ -6,7 +6,7 @@
 # 创建：2018-06-12 19:51
 
 from orange import Path, convert_cls_name, is_dev
-from contextlib import contextmanager
+from contextlib import contextmanager, closing
 import sqlite3
 
 __all__ = ('Model',)
@@ -79,15 +79,10 @@ class Model(dict):
     @contextmanager
     def connect(cls):
         con = sqlite3.connect(cls._get_dbname())
-        try:
+        with closing(con), con:
             cursor = con.cursor(Cursor)
-            try:
-                with con:
-                    yield cursor
-            finally:
-                cursor.close()
-        finally:
-            con.close()
+            with closing(cursor):
+                yield cursor
 
     @classmethod
     def findall(cls, sql, params=None):
