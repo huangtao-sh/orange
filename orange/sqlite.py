@@ -11,6 +11,10 @@ import sqlite3
 
 __all__ = ('Model',)
 
+ROOTPATH = Path('~/OneDrive')
+ROOTPATH = ROOTPATH/'testdb' if is_dev() else ROOTPATH/'db'
+ROOTPATH.ensuer()
+
 
 class Cursor(sqlite3.Cursor):
     def execute(self, sql, params=None):
@@ -61,11 +65,7 @@ class Model(dict):
                 raise Exception('数据库文件未定义')
             path = Path(cls._db)
             if not path.root:
-                if is_dev():
-                    path = Path('~/OneDrive/testdb') / path
-                else:
-                    path = Path('~/OneDrive/db') / path
-                path.parent.ensure()
+                path = ROOTPATH/path
             path = path.with_suffix('.db')
             cls.__db = str(path)
         return cls.__db
