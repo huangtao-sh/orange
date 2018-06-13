@@ -9,25 +9,15 @@
 import sys
 from plistlib import dump, Dict
 from orange import Path
-import sys
+from orange.click import arg
 
 
-def proc(filename, label, *args):
+@arg('filename', nargs=1, help='文件名')
+@arg('label', nargs=1, help='标签')
+@arg('args', nargs='*', metavar='arg', help='其他参数')
+def main(filename, label, *args):
     filename = str(Path(filename).with_suffix('.plist'))
     with open(filename, 'wb') as fn:
         dump(Dict(Label=label,
                   KeepAlive=True,
                   ProgramArguments=args), fn)
-
-
-def main():
-    args = sys.argv
-    if len(args) < 4:
-        print('Usage:\n'
-              '\t%s plist-file-name label program args' % (args[0]))
-    else:
-        proc(*args[1:])
-
-
-if __name__ == '__main__':
-    main()
