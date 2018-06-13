@@ -9,6 +9,8 @@ from orange import Path, convert_cls_name
 from contextlib import contextmanager
 import sqlite3
 
+__all__ = ('Model',)
+
 
 class Cursor(sqlite3.Cursor):
     def execute(self, sql, params=None):
