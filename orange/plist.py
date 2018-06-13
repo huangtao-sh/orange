@@ -7,25 +7,27 @@
 # 修改：2016-9-17 使用plistlib 来写入plist文件
 
 import sys
-from plistlib import *
-from orange import *
+from plistlib import dump, Dict
+from orange import Path
 import sys
 
-def proc(filename,label,*args):
-    filename=str(Path(filename).with_suffix('.plist'))
-    with open(filename,'wb') as fn:
+
+def proc(filename, label, *args):
+    filename = str(Path(filename).with_suffix('.plist'))
+    with open(filename, 'wb') as fn:
         dump(Dict(Label=label,
                   KeepAlive=True,
-                  ProgramArguments=args),fn)
+                  ProgramArguments=args), fn)
+
 
 def main():
-    args=sys.argv
-    if len(args)<4:
+    args = sys.argv
+    if len(args) < 4:
         print('Usage:\n'
-        '\t%s plist-file-name label program args'%(args[0]))
+              '\t%s plist-file-name label program args' % (args[0]))
     else:
         proc(*args[1:])
-    
 
-if __name__=='__main__':
+
+if __name__ == '__main__':
     main()

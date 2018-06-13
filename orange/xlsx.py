@@ -7,7 +7,7 @@
 # 创建：2016-10-12 08:24
 # 修订：2018-05-25 修改add_table的参数格式
 
-from orange import R, Path, generator
+from orange import R, Path
 from xlsxwriter import Workbook
 from xlsxwriter.format import Format
 from xlsxwriter.worksheet import convert_cell_args, convert_column_args, convert_range_args, cell_blank_tuple,\
@@ -38,7 +38,7 @@ DefaultFormat = (('currency', {'num_format': '#,##0.00'}),
 class Book(Workbook):
     ''' 对Xlsxwriter模块进一步进行封装'''
 
-    def __init__(self, filename=None, formats={}, **kw):
+    def __init__(self, filename=None, formats=None, **kw):
         filename = str(Path(filename))
         super().__init__(filename, **kw)
         self._worksheet = None    # 设置当前的工作表为空
@@ -269,8 +269,8 @@ class Book(Workbook):
             kwargs['columns'] = new_columns
             last_col = first_col+len(columns)-1
         if data:
-            if isinstance(data, generator):
-                data = list(data)
+            if not isinstance(data, (tuple, list)):
+                data = tuple(data)
             last_row = first_row+len(data)
             if kwargs.get('total_row', False):
                 last_row += 1
