@@ -13,7 +13,7 @@ __all__ = ('Model',)
 
 ROOTPATH = Path('~/OneDrive')
 ROOTPATH = ROOTPATH/'testdb' if is_dev() else ROOTPATH/'db'
-ROOTPATH.ensuer()
+ROOTPATH.ensure()
 
 
 class Cursor(sqlite3.Cursor):
