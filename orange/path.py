@@ -23,7 +23,7 @@ BOM_CODE = {
 DEFAULT_CODES = 'utf8', 'gbk', 'utf16', 'big5'
 
 
-def is_installed(file_name):
+def is_installed(file_name: str)->bool:
     '''
     确认指定的文件是否已被安装。
     '''
@@ -35,7 +35,7 @@ def is_installed(file_name):
     return any([file_name.startswith(path) for path in paths])
 
 
-def is_dev(cmd=None):
+def is_dev(cmd: str=None)->bool:
     import sys
     cmd = cmd or sys.argv[0]
     if('wsgi' in cmd):
@@ -43,7 +43,7 @@ def is_dev(cmd=None):
     return 'test' in cmd or (not is_installed(cmd))
 
 
-def decode(d):
+def decode(d: bytes)->str:
     '''
     对指定的二进制，进行智能解码，适配适当的编码。按行返回字符串。
     '''
