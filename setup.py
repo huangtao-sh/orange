@@ -1,12 +1,11 @@
 #!/usr/bin/env python3
+import os
 from orange import setup
 
 console_scripts = ['conv=orange.path:convert',
-                   #'pytest=orange.pytools:pytest',
                    'pysdist=orange.pytools:pysdist',
                    'pyupload=orange.pytools:pyupload',
                    'canshu=orange.ggcs:canshu',
-                   #'mongodb=orange.mongodb:main',
                    'pyver=orange.pyver:VersionMgr.main',
                    'plist=orange.plist:main',
                    'pyinit=orange.init:main',
@@ -14,6 +13,9 @@ console_scripts = ['conv=orange.path:convert',
                    'mongodeploy=orange.mongodb:main',
                    'fkgfw=orange.fkgfw:main',
                    'sysinit=orange.sysinit:main']
+
+if os.name == 'posix':
+    console_scripts.append('pysetup=orange.pysetup:py_setup')
 setup(
     name='orange-kit',
     platforms='any',
