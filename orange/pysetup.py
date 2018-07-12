@@ -7,12 +7,12 @@
 # 修改：2016-03-08 16:47
 # 修改：2016-04-13 21:07
 # 修改：2016-9-7 将通过shell调用pip命令调整为直接引入pip模块
+# 修改：2018-7-12 调整参数处理方法
 
 import os
 import sys
 import re
 from orange import R, Path, info, read_shell, command, arg
-# from orange.parseargs import *
 from orange.deploy import Ver, run_pip, run_setup
 
 
