@@ -11,8 +11,8 @@ from contextlib import contextmanager, closing
 from orange import Path, is_dev, info
 
 
-__all__ = 'db_config', 'begin_tran', 'begin_query', 'exec_', 'exec_many',\
-    'exec_script', 'find', 'find_one', 'cursor'
+__all__ = 'db_config', 'begin_tran', 'begin_query', 'execute', 'executemany',\
+    'executescript', 'find', 'findone', 'cursor'
 
 ROOT = Path('~/OneDrive')
 ROOT = ROOT / ('testdb' if is_dev() else 'db')
@@ -73,30 +73,32 @@ def begin_query(database: str=None, **kw):
             _cursor_stack.pop()
 
 
-def exec_(sql, params=None):
+def execute(sql, params=None):
     params = params or []
     return cursor.execute(sql, params)
 
 
-def exec_script(sql, params=None):
+def executescript(sql, params=None):
     cursor.executescript(sql)
 
 
-def exec_many(sql, params=None):
+def executemany(sql, params=None):
     params = params or []
     cursor.executemany(sql, params)
 
 
-def find_one(sql, params=None):
-    return exec_(sql, params).fetchone()
+def findone(sql, params=None):
+    return execute(sql, params).fetchone()
 
 
 def find(sql, params=None):
-    return exec_(sql, params).fetchall()
+    return execute(sql, params).fetchall()
 
 
 if __name__ == '__main__':
     db_config('hello')
+    from orange import config_log
+    config_log()
     with begin_tran()as db:
         sql = '''
         drop table if exists abc;
@@ -106,9 +108,9 @@ if __name__ == '__main__':
         update or replace abc set b=b+1 where a=2;
         '''
         # db.executescript(sql)
-        exec_script(sql)
-        exec_('insert into abc values(2,3)')
-        exec_('insert into abc values(4,5)')
+        executescript(sql)
+        execute('insert into abc values(2,3)')
+        execute('insert into abc values(4,5)')
 
     with begin_query():
         '''
@@ -121,7 +123,7 @@ if __name__ == '__main__':
 
         print('-'*10)
         with begin_query():
-            a = find_one('select * from abc limit 1')
+            a = findone('select * from abc limit 1')
             print(*a)
         print('-'*20)
         for b in find('select * from abc limit 2'):
