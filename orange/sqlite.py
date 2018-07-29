@@ -1,121 +1,128 @@
-# 项目：标准库函数
-# 模块：sqlite封装
+# 项目：基本库函数
+# 模块：sqlite 数据库
 # 作者：黄涛
 # License:GPL
 # Email:huangtao.sh@icloud.com
-# 创建：2018-06-12 19:51
+# 创建：2018-7-18
 
-from orange import Path, convert_cls_name, is_dev
-from contextlib import contextmanager, closing
 import sqlite3
-
-__all__ = ('Model',)
-
-ROOTPATH = Path('~/OneDrive')
-ROOTPATH = ROOTPATH/'testdb' if is_dev() else ROOTPATH/'db'
-ROOTPATH.ensure()
+from werkzeug.local import LocalStack, LocalProxy
+from contextlib import contextmanager, closing
+from orange import Path, is_dev, info
 
 
-class Cursor(sqlite3.Cursor):
-    def execute(self, sql, params=None):
-        params = params or []
-        return super().execute(sql, params)
+__all__ = 'db_config', 'begin_tran', 'begin_query', 'exec_', 'exec_many',\
+    'exec_script', 'find', 'find_one', 'cursor'
 
-    def findall(self, sql, params=None):
-        self.execute(sql, params)
-        return self.fetchall()
-
-    def findone(self, sql, params=None):
-        self.execute(sql, params)
-        return self.fetchone()
+ROOT = Path('~/OneDrive')
+ROOT = ROOT / ('testdb' if is_dev() else 'db')
+_db_config = None
+_cursor_stack = LocalStack()
 
 
-class Model(dict):
-    __slots__ = tuple()
-    _db = None
-    __db = None
-    _fields = None
+def _get_cursor():
+    cursor = _cursor_stack.top
+    info(f'get cursor:{id(cursor)}')
+    if not cursor:
+        raise Exception('Cursor is not exists!')
+    return cursor
 
-    @classmethod
-    def execute(cls, sql, params=None, db=None):
-        print(sql, params)
-        # return
-        if db:
-            db.execute(sql, params)
-        else:
-            with cls.connect()as db:
-                db.execute(sql, params)
 
-    @classmethod
-    def drop_table(cls, db=None):
-        sql = 'drop table if exists %s' % (convert_cls_name(cls.__name__))
-        cls.execute(sql, db=db)
+cursor = LocalProxy(_get_cursor)
 
-    @classmethod
-    def create_table(cls, db=None):
-        sql = 'create table if not exists %s(%s)' % (
-            convert_cls_name(cls.__name__),
-            ",".join("%s %s" % (k, v)for k, v in cls._fields.items()))
-        cls.execute(sql, db=db)
 
-    @classmethod
-    def _get_dbname(cls):
-        if not cls.__db:
-            if not cls._db:
-                raise Exception('数据库文件未定义')
-            path = Path(cls._db)
-            if not path.root:
-                path = ROOTPATH/path
-            path = path.with_suffix('.db')
-            cls.__db = str(path)
-        return cls.__db
+def db_config(database: str, **kw):
+    global _db_config
+    kw['database'] = database
+    _db_config = kw
 
-    @classmethod
-    def aconnect(cls):
-        import aiosqlite
-        return aiosqlite.connect(cls._get_dbname())
 
-    @classmethod
-    @contextmanager
-    def connect(cls):
-        con = sqlite3.connect(cls._get_dbname())
-        with closing(con), con:
-            cursor = con.cursor(Cursor)
-            with closing(cursor):
-                yield cursor
+@contextmanager
+def _connect(database: str=None, **kw):
+    if not database:
+        kw = _db_config.copy()
+        database = kw.pop('database')
+    if not database.startswith(':'):
+        db = Path(database)
+        if not db.root:
+            db = ROOT/db
+        db = db.with_suffix('.db')
+        database = str(db)
+    connection = sqlite3.connect(database, **kw)
+    with closing(connection):
+        yield connection
 
-    @classmethod
-    def findall(cls, sql, params=None):
-        with cls.connect() as db:
-            return db.findall(sql, params)
 
-    @classmethod
-    def findone(self, sql, params=None):
-        with self.connect() as db:
-            return db.findone(sql, params)
+@contextmanager
+def begin_tran(database: str=None, is_tran=True, **kw):
+    with _connect(database, **kw) as connection:
+        cursor = connection.cursor()
+        with connection, closing(cursor):
+            _cursor_stack.push(cursor)
+            yield cursor
+            _cursor_stack.pop()
+
+
+@contextmanager
+def begin_query(database: str=None, **kw):
+    with _connect(database, **kw) as connection:
+        cursor = connection.cursor()
+        with closing(cursor):
+            _cursor_stack.push(cursor)
+            yield cursor
+            _cursor_stack.pop()
+
+
+def exec_(sql, params=None):
+    params = params or []
+    return cursor.execute(sql, params)
+
+
+def exec_script(sql, params=None):
+    cursor.executescript(sql)
+
+
+def exec_many(sql, params=None):
+    params = params or []
+    cursor.executemany(sql, params)
+
+
+def find_one(sql, params=None):
+    return exec_(sql, params).fetchone()
+
+
+def find(sql, params=None):
+    return exec_(sql, params).fetchall()
 
 
 if __name__ == '__main__':
-    class Test(Model):
-        _db = 'test'
-        _fields = {'a': 'int primary key',
-                   'b': 'int'}
+    db_config('hello')
+    with begin_tran()as db:
+        sql = '''
+        drop table if exists abc;
+        create table  if not exists abc(a,b);
+        insert into abc values(1,2);
+        update abc set b=b+1 where a=1;
+        update or replace abc set b=b+1 where a=2;
+        '''
+        # db.executescript(sql)
+        exec_script(sql)
+        exec_('insert into abc values(2,3)')
+        exec_('insert into abc values(4,5)')
 
-    async def _():
-        with Test.connect() as db:
-            Test.drop_table(db=db)
-            Test.create_table(db=db)
-            # Test.drop_table(db=db)
-            # Test.create_table(db=db)
-            db.execute('insert into test values(?,?)', [128, 81])
+    with begin_query():
+        '''
+        cursor.execute('select * from abc')
+        for i in cursor:
+            print(*i)
+        '''
+        for i in find('select * from abc'):
+            print(*i)
 
-        with Test.connect()as db:
-            for row in db.findall('select * from test'):
-                print(*row)
-
-            print('-'*30)
-            for k in db.findall('select * from sqlite_master'):
-                print(*k)
-
-    from orange.coroutine import run
-    run(_())
+        print('-'*10)
+        with begin_query():
+            a = find_one('select * from abc limit 1')
+            print(*a)
+        print('-'*20)
+        for b in find('select * from abc limit 2'):
+            print(*b)
