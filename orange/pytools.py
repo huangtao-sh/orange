@@ -22,17 +22,10 @@ def _clear():
 
 
 def pyupload():
-    import os
-    cmd = 'setup' if os.name == 'nt' else 'python3 setup.py'
-    cmd = '%s sdist --dist-dir %s upload' % (cmd, Path('~/OneDrive/pylib'))
-    # run_setup('sdist','--dist-dir',str(Path('~/OneDrive/pylib')),'upload')
-    os.system(cmd)
+    run_setup('sdist','--dist-dir',str(Path('~/OneDrive/pylib')),'upload')
     _clear()
 
 
 def pysdist():
-    import os
-    cmd = 'setup' if os.name == 'nt' else 'python3 setup.py'
-    os.system(f'{cmd} sdist --dist-dir {Path("~/OneDrive/pylib")}')
-    # run_setup('sdist', '--dist-dir', str(Path('~/OneDrive/pylib')))
+    run_setup('sdist', '--dist-dir', str(Path('~/OneDrive/pylib')))
     _clear()
