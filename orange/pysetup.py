@@ -13,14 +13,7 @@ import os
 import sys
 import re
 from orange import R, Path, info, read_shell, command, arg
-from orange.deploy import Ver, run_pip, run_setup
-
-
-def pyclean():
-    for path in ('build', 'dist', '*egg-info'):
-        for p in Path('.').glob(path):
-            p.rmtree()
-            print('Path %s have been deleted!' % (p))
+from orange.deploy import Ver, run_pip, run_setup, pyclean
 
 
 RootPath = '~/OneDrive/pylib'

@@ -41,20 +41,27 @@ def run_setup(*args):
     exec_shell(f'{cmd} {" ".join(args)}')
 
 
-DEFAULT={'author': 'huangtao',
+def pyclean():
+    for path in ('build', 'dist', '*egg-info'):
+        for p in Path('.').glob(path):
+            p.rmtree()
+            print('Path %s have been deleted!' % (p))
+
+
+DEFAULT = {'author': 'huangtao',
            'author_email': 'huangtao.sh@icloud.com',
            'platforms': 'any',
            'license': 'GPL', }
 
 
 def _get_requires():
-    result=[]
+    result = []
     for fn in Path('.').glob('*/requires.txt'):
         for row in fn.lines:
-            i=row.find('#')
+            i = row.find('#')
             if i > -1:
-                row=row[:i]
-            row=row.strip()
+                row = row[:i]
+            row = row.strip()
             if row:
                 result.append(row)
     return result
@@ -65,27 +72,27 @@ def setup(version=None, packages=None, after_install=None,
           cscripts=None, gscripts=None,
           **kwargs):
     if cscripts or gscripts:
-        entry_points=kwargs.get('entry_points', {})
+        entry_points = kwargs.get('entry_points', {})
         if cscripts:
-            entry_points['console_scripts']=cscripts
+            entry_points['console_scripts'] = cscripts
         if gscripts:
-            entry_points['gui_scripts']=gscripts
-        kwargs['entry_points']=entry_points
+            entry_points['gui_scripts'] = gscripts
+        kwargs['entry_points'] = entry_points
     for k, v in DEFAULT.items():
         kwargs.setdefault(k, v)
     if not packages:
         # 自动搜索包
-        packages=setuptools.find_packages(exclude=('testing',
+        packages = setuptools.find_packages(exclude=('testing',
                                                      'scripts'))
     if not version:
         # 自动获取版本
-        version=str(Ver.read_file())
+        version = str(Ver.read_file())
     if not install_requires:  # 从repuires.txt 中获取依赖包
-        install_requires=_get_requires()
+        install_requires = _get_requires()
     if not scripts:
-        scripts=[str(path) for path in Path('.').glob('scripts/*')]
+        scripts = [str(path) for path in Path('.').glob('scripts/*')]
     # 安装程序
-    dist=distutils.core.setup(scripts=scripts, packages=packages,
+    dist = distutils.core.setup(scripts=scripts, packages=packages,
                                 install_requires=install_requires,
                                 version=version, **kwargs)
     # 处理脚本
@@ -93,9 +100,9 @@ def setup(version=None, packages=None, after_install=None,
     if 'install' in dist.have_run and os.name == 'posix' \
             and scripts:
         from sysconfig import get_path
-        prefix=Path(get_path('scripts'))
+        prefix = Path(get_path('scripts'))
         for script in scripts:
-            script_name=prefix/(Path(script).name)
+            script_name = prefix/(Path(script).name)
             if script_name.lsuffix in ['.py', '.pyw']\
                     and script_name.exists():
                 script_name.replace(script_name.with_suffix(''))

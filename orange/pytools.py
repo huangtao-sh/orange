@@ -11,23 +11,16 @@
 import sys
 import os
 from orange import Path, exec_shell
-from orange.deploy import run_setup
+from orange.deploy import run_setup, pyclean
 
 libpath = str(Path('~/OneDrive/pylib'))
 
 
-def _clear():
-    for path in Path('.').glob('*.egg-info'):
-        print('Path %s has beed deleted!' % (path))
-        if path.is_dir():
-            path.rmtree()
-
-
 def pyupload():
     run_setup('sdist', '--dist-dir', libpath, 'upload')
-    _clear()
+    pyclean()
 
 
 def pysdist():
     run_setup('sdist', '--dist-dir', libpath)
-    _clear()
+    pyclean()
