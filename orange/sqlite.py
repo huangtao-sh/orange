@@ -7,28 +7,27 @@
 
 import sqlite3
 from werkzeug.local import LocalStack, LocalProxy
-from contextlib import contextmanager, closing
 from orange import Path, is_dev, info
 
 
-__all__ = 'db_config', 'begin_tran', 'begin_query', 'execute', 'executemany',\
-    'executescript', 'find', 'findone', 'cursor'
+__all__ = 'db_config', 'connect', 'execute', 'executemany',\
+    'executescript', 'find', 'findone', 'find_','findone_'
 
 ROOT = Path('~/OneDrive')
 ROOT = ROOT / ('testdb' if is_dev() else 'db')
 _db_config = None
-_cursor_stack = LocalStack()
+_conn_stack = LocalStack()
 
 
-def _get_cursor():
-    cursor = _cursor_stack.top
-    info(f'get cursor:{id(cursor)}')
-    if not cursor:
-        raise Exception('Cursor is not exists!')
-    return cursor
+def _get_conn():
+    conn = _conn_stack.top
+    info(f'get conn:{id(conn)}')
+    if not conn:
+        raise Exception('Connection is not exists!')
+    return conn
 
 
-cursor = LocalProxy(_get_cursor)
+conn = LocalProxy(_get_conn)
 
 
 def db_config(database: str, **kw):
@@ -37,69 +36,90 @@ def db_config(database: str, **kw):
     _db_config = kw
 
 
-@contextmanager
-def _connect(database: str=None, **kw):
-    if not database:
-        kw = _db_config.copy()
-        database = kw.pop('database')
-    if not database.startswith(':'):
-        db = Path(database)
-        if not db.root:
-            db = ROOT/db
-        db = db.with_suffix('.db')
-        database = str(db)
-    connection = sqlite3.connect(database, **kw)
-    with closing(connection):
-        yield connection
+class connect():
+    def __init__(self,database: str=None, **kw):
+        if not database:
+            kw = _db_config.copy()
+            database = kw.pop('database')
+        if not database.startswith(':'):
+            db = Path(database)
+            if not db.root:
+                db = ROOT/db
+            db = db.with_suffix('.db')
+            database = str(db)
+        self._db=database
+        self._kw=kw    
 
+    def __enter__(self):
+        connection = sqlite3.connect(self._db, **self._kw)
+        _conn_stack.push(connection)
+        return connection
 
-@contextmanager
-def begin_tran(database: str=None, is_tran=True, **kw):
-    with _connect(database, **kw) as connection:
-        cursor = connection.cursor()
-        with connection, closing(cursor):
-            _cursor_stack.push(cursor)
-            yield cursor
-            _cursor_stack.pop()
+    def __exit__(self,exc_type, exc_val, exc_tb):
+        conn=_conn_stack.pop()
+        if exc_type:
+            conn.rollback()
+        else:
+            conn.commit()
+        conn.close()
 
+    async def __aenter__(self):
+        import aiosqlite3
+        connection = await aiosqlite3.connect(self._db, **self._kw)
+        _conn_stack.push(connection)
+        return connection
 
-@contextmanager
-def begin_query(database: str=None, **kw):
-    with _connect(database, **kw) as connection:
-        cursor = connection.cursor()
-        with closing(cursor):
-            _cursor_stack.push(cursor)
-            yield cursor
-            _cursor_stack.pop()
+    async def __aexit__(self,exc_type, exc_val, exc_tb):
+        conn=_conn_stack.pop()
+        if exc_type:
+            await conn.rollback()
+        else:
+            await conn.commit()
+        await conn.close()
 
 
 def execute(sql, params=None):
     params = params or []
-    return cursor.execute(sql, params)
+    return conn.execute(sql, params)
 
 
 def executescript(sql, params=None):
-    cursor.executescript(sql)
+    return conn.executescript(sql)
 
 
 def executemany(sql, params=None):
     params = params or []
-    cursor.executemany(sql, params)
+    return conn.executemany(sql, params)
 
+def find(sql, params=None,multi=True):
+    con_=_conn_stack.top
+    if not isinstance(con_,sqlite3.Connection):
+        con_=con_._conn
+    params=params or []
+    cursor=con_.execute(sql,params)
+    if multi:
+        return cursor.fetchall()
+    else:
+        return cursor.fetchone()
 
 def findone(sql, params=None):
-    return execute(sql, params).fetchone()
+    return find(sql,params,multi=False)
 
 
-def find(sql, params=None):
-    return execute(sql, params).fetchall()
+async def findone_(sql,params=None):
+    cursor=await execute(sql,params)
+    return await cursor.fetchone()
 
+async def find_(sql,params=None):
+    cursor=await execute(sql,params)
+    return await cursor.fetchall()
 
 if __name__ == '__main__':
+    from orange.coroutine import run
     db_config('hello')
     from orange import config_log
     config_log()
-    with begin_tran()as db:
+    with connect():
         sql = '''
         drop table if exists abc;
         create table  if not exists abc(a,b);
@@ -112,7 +132,7 @@ if __name__ == '__main__':
         execute('insert into abc values(2,3)')
         execute('insert into abc values(4,5)')
 
-    with begin_query():
+    with connect():
         '''
         cursor.execute('select * from abc')
         for i in cursor:
@@ -122,9 +142,23 @@ if __name__ == '__main__':
             print(*i)
 
         print('-'*10)
-        with begin_query():
+        with connect():
             a = findone('select * from abc limit 1')
             print(*a)
         print('-'*20)
         for b in find('select * from abc limit 2'):
             print(*b)
+    async def _():
+        async with connect():
+            await execute('insert into abc values(7,8)')
+            data=[(x,x+20)for x in range(20) ]
+            await executemany('insert into abc values(?,?)',data)
+            d=find('select * from abc')
+            for row in d :
+                print(*row)
+            b=await findone_('select * from abc')
+            print(*b)
+    print('*'*20)
+    run(_())
+
+    
