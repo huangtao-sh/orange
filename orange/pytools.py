@@ -31,5 +31,8 @@ def pyupload():
 
 
 def pysdist():
-    run_setup('sdist', '--dist-dir', str(Path('~/OneDrive/pylib')))
+    import os
+    cmd = 'setup' if os.name == 'nt' else 'python3 setup.py'
+    os.system(f'{cmd} sdist --dist-dir {Path("~/OneDrive/pylib")}')
+    # run_setup('sdist', '--dist-dir', str(Path('~/OneDrive/pylib')))
     _clear()
