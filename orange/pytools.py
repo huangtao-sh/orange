@@ -13,6 +13,8 @@ import os
 from orange import Path, exec_shell
 from orange.deploy import run_setup
 
+libpath = str(Path('~/OneDrive/pylib'))
+
 
 def _clear():
     for path in Path('.').glob('*.egg-info'):
@@ -22,10 +24,10 @@ def _clear():
 
 
 def pyupload():
-    run_setup('sdist','--dist-dir',str(Path('~/OneDrive/pylib')),'upload')
+    run_setup('sdist', '--dist-dir', libpath, 'upload')
     _clear()
 
 
 def pysdist():
-    run_setup('sdist', '--dist-dir', str(Path('~/OneDrive/pylib')))
+    run_setup('sdist', '--dist-dir', libpath)
     _clear()
