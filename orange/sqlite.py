@@ -39,7 +39,7 @@ class Connection():
         if not database:
             kw = self._config.copy()
             database = kw.pop('database')
-        if not database.startswith(':'):
+        if not str(database).startswith(':'):
             db = Path(database)
             if not db.root:
                 db = ROOT/db
