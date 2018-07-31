@@ -9,6 +9,7 @@ import sqlite3
 from werkzeug.local import LocalStack, LocalProxy
 from orange import Path, is_dev, info
 from contextlib import closing
+from functools import partial
 
 
 __all__ = 'db_config', 'connect', 'execute', 'executemany',\
@@ -48,12 +49,12 @@ class Connection():
         self._kw = kw
 
     def __enter__(self):
-        connection = sqlite3.connect(self._db, **self._kw)
-        self.stack.push(connection)
-        return connection
+        self._conn = sqlite3.connect(self._db, **self._kw)
+        self.stack.push(self)
+        return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        conn = self.stack.pop()
+        conn = self._conn
         if exc_type:
             conn.rollback()
         else:
@@ -62,41 +63,43 @@ class Connection():
 
     async def __aenter__(self):
         import aiosqlite3
-        connection = await aiosqlite3.connect(self._db, **self._kw)
-        self.stack.push(connection)
-        return connection
+        self._conn = await aiosqlite3.connect(self._db, **self._kw)
+        self.stack.push(self)
+        return self
 
     async def __aexit__(self, exc_type, exc_val, exc_tb):
-        conn = self.stack.pop()
+        conn = self._conn
         if exc_type:
             await conn.rollback()
         else:
             await conn.commit()
         await conn.close()
 
+    def execute(self, sql: str, params=None):
+        params = params or []
+        return self._conn.execute(sql, params)
+
 
 db_config = Connection.config
 connect = Connection
 conn = LocalProxy(Connection.get_conn)
 
-
 def execute(sql: str, params=None):
-    params = params or []
-    return conn.execute(sql, params)
+    return conn._conn.execute(sql, params)
 
 
 def executescript(sql: str):
-    return conn.executescript(sql)
+    return conn._conn.executescript(sql)
 
 
 def executemany(sql: str, params=None):
     params = params or []
-    return conn.executemany(sql, params)
+    return conn._conn.executemany(sql, params)
 
 
 def find(sql: str, params=None, multi=True):
     fetch = 'fetchall' if multi else 'fetchone'
-    if isinstance(Connection.get_conn(), sqlite3.Connection):
+    if isinstance(Connection.get_conn()._conn, sqlite3.Connection):
         cursor = execute(sql, params)
         with closing(cursor):
             return getattr(cursor, fetch)()
