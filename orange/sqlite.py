@@ -8,38 +8,35 @@
 import sqlite3
 from werkzeug.local import LocalStack, LocalProxy
 from orange import Path, is_dev, info
+from contextlib import closing
 
 
 __all__ = 'db_config', 'connect', 'execute', 'executemany',\
-    'executescript', 'find', 'findone', 'find_', 'findone_'
+    'executescript', 'find', 'findone'
 
-ROOT = Path('~/OneDrive')
-ROOT = ROOT / ('testdb' if is_dev() else 'db')
-_db_config = None
-_conn_stack = LocalStack()
+ROOT = Path('~/OneDrive') / ('testdb' if is_dev() else 'db')
 
 
-def _get_conn():
-    conn = _conn_stack.top
-    info(f'get conn:{id(conn)}')
-    if not conn:
-        raise Exception('Connection is not exists!')
-    return conn
+class Connection():
+    _config = {}
+    stack = LocalStack()
 
+    @classmethod
+    def get_conn(cls):
+        conn = cls.stack.top
+        info(f'get conn:{id(conn)}')
+        if not conn:
+            raise Exception('Connection is not exists!')
+        return conn
 
-conn = LocalProxy(_get_conn)
+    @classmethod
+    def config(cls, database: str, **kw):
+        kw['database'] = database
+        cls._config = kw
 
-
-def db_config(database: str, **kw):
-    global _db_config
-    kw['database'] = database
-    _db_config = kw
-
-
-class connect():
     def __init__(self, database: str=None, **kw):
         if not database:
-            kw = _db_config.copy()
+            kw = self._config.copy()
             database = kw.pop('database')
         if not database.startswith(':'):
             db = Path(database)
@@ -52,11 +49,11 @@ class connect():
 
     def __enter__(self):
         connection = sqlite3.connect(self._db, **self._kw)
-        _conn_stack.push(connection)
+        self.stack.push(connection)
         return connection
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        conn = _conn_stack.pop()
+        conn = self.stack.pop()
         if exc_type:
             conn.rollback()
         else:
@@ -66,11 +63,11 @@ class connect():
     async def __aenter__(self):
         import aiosqlite3
         connection = await aiosqlite3.connect(self._db, **self._kw)
-        _conn_stack.push(connection)
+        self.stack.push(connection)
         return connection
 
     async def __aexit__(self, exc_type, exc_val, exc_tb):
-        conn = _conn_stack.pop()
+        conn = self.stack.pop()
         if exc_type:
             await conn.rollback()
         else:
@@ -78,44 +75,41 @@ class connect():
         await conn.close()
 
 
-def execute(sql, params=None):
+db_config = Connection.config
+connect = Connection
+conn = LocalProxy(Connection.get_conn)
+
+
+def execute(sql: str, params=None):
     params = params or []
     return conn.execute(sql, params)
 
 
-def executescript(sql, params=None):
+def executescript(sql: str):
     return conn.executescript(sql)
 
 
-def executemany(sql, params=None):
+def executemany(sql: str, params=None):
     params = params or []
     return conn.executemany(sql, params)
 
 
-def find(sql, params=None, multi=True):
-    con_ = _conn_stack.top
-    if not isinstance(con_, sqlite3.Connection):
-        con_ = con_._conn
-    params = params or []
-    cursor = con_.execute(sql, params)
-    if multi:
-        return cursor.fetchall()
+def find(sql: str, params=None, multi=True):
+    fetch = 'fetchall' if multi else 'fetchone'
+    if isinstance(Connection.get_conn(), sqlite3.Connection):
+        cursor = execute(sql, params)
+        with closing(cursor):
+            return getattr(cursor, fetch)()
     else:
-        return cursor.fetchone()
+        async def _():
+            async with execute(sql, params) as cursor:
+                return await getattr(cursor, fetch)()
+        return _()
 
 
-def findone(sql, params=None):
+def findone(sql: str, params=None):
     return find(sql, params, multi=False)
 
-
-async def findone_(sql, params=None):
-    cursor = await execute(sql, params)
-    return await cursor.fetchone()
-
-
-async def find_(sql, params=None):
-    cursor = await execute(sql, params)
-    return await cursor.fetchall()
 
 if __name__ == '__main__':
     from orange.coroutine import run
@@ -157,10 +151,10 @@ if __name__ == '__main__':
             await execute('insert into abc values(7,8)')
             data = [(x, x+20)for x in range(20)]
             await executemany('insert into abc values(?,?)', data)
-            d = find('select * from abc')
+            d = await find('select * from abc')
             for row in d:
                 print(*row)
-            b = await findone_('select * from abc')
+            b = await findone('select * from abc')
             print(*b)
     print('*'*20)
     run(_())
