@@ -6,7 +6,7 @@
 # 创建：2018-7-18
 
 import sqlite3
-from werkzeug.local import LocalStack, LocalProxy
+from werkzeug.local import LocalStack
 from orange import Path, is_dev, info
 from contextlib import closing
 from functools import partial
@@ -49,12 +49,12 @@ class Connection():
         self._kw = kw
 
     def __enter__(self):
-        self._conn = sqlite3.connect(self._db, **self._kw)
-        self.stack.push(self)
+        conn = sqlite3.connect(self._db, **self._kw)
+        self.stack.push(conn)
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        conn = self._conn
+        conn = self.stack.pop()
         if exc_type:
             conn.rollback()
         else:
@@ -63,55 +63,56 @@ class Connection():
 
     async def __aenter__(self):
         import aiosqlite3
-        self._conn = await aiosqlite3.connect(self._db, **self._kw)
-        self.stack.push(self)
+        conn = await aiosqlite3.connect(self._db, **self._kw)
+        self.stack.push(conn)
         return self
 
     async def __aexit__(self, exc_type, exc_val, exc_tb):
-        conn = self._conn
+        conn = self.stack.pop()
         if exc_type:
             await conn.rollback()
         else:
             await conn.commit()
         await conn.close()
 
-    def execute(self, sql: str, params=None):
+    @classmethod
+    def execute(cls, sql: str, params=None):
         params = params or []
-        return self._conn.execute(sql, params)
+        return cls.get_conn().execute(sql, params)
+
+    @classmethod
+    def executemany(cls, sql: str, params=None):
+        return cls.get_conn().executemany(sql, params)
+
+    @classmethod
+    def executescript(cls, sql: str):
+        return cls.get_conn().executescript(sql)
+
+    @classmethod
+    def find(cls, sql: str, params=None, multi=True):
+        fetch = 'fetchall' if multi else 'fetchone'
+        if isinstance(cls.stack.top, sqlite3.Connection):
+            cursor = cls.execute(sql, params)
+            with closing(cursor):
+                return getattr(cursor, fetch)()
+        else:
+            async def _():
+                async with cls.execute(sql, params) as cursor:
+                    return await getattr(cursor, fetch)()
+            return _()
+
+    @classmethod
+    def findone(cls, sql: str, params=None):
+        return cls.find(sql, params, multi=False)
 
 
 db_config = Connection.config
 connect = Connection
-conn = LocalProxy(Connection.get_conn)
-
-def execute(sql: str, params=None):
-    return conn._conn.execute(sql, params)
-
-
-def executescript(sql: str):
-    return conn._conn.executescript(sql)
-
-
-def executemany(sql: str, params=None):
-    params = params or []
-    return conn._conn.executemany(sql, params)
-
-
-def find(sql: str, params=None, multi=True):
-    fetch = 'fetchall' if multi else 'fetchone'
-    if isinstance(Connection.get_conn()._conn, sqlite3.Connection):
-        cursor = execute(sql, params)
-        with closing(cursor):
-            return getattr(cursor, fetch)()
-    else:
-        async def _():
-            async with execute(sql, params) as cursor:
-                return await getattr(cursor, fetch)()
-        return _()
-
-
-def findone(sql: str, params=None):
-    return find(sql, params, multi=False)
+execute = Connection.execute
+executemany = Connection.executemany
+executescript = Connection.executescript
+find = Connection.find
+findone = Connection.findone
 
 
 if __name__ == '__main__':
