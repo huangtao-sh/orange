@@ -105,6 +105,19 @@ class Connection():
     def findone(cls, sql: str, params=None):
         return cls.find(sql, params, multi=False)
 
+    @classmethod
+    def droptable(cls, *tables):
+        script = ";".join('drop table if exists %s\n' % (table)
+                          for table in tables)
+        info('executescript')
+        info(script)
+        return cls.executescript(script)
+
+    @classmethod
+    def createtable(cls, name, *fields, pk=None):
+        sql = f'create table if not exists {name} ({",".join(fields)})'
+        cls.execute(sql)
+
 
 db_config = Connection.config
 connect = Connection
@@ -113,3 +126,5 @@ executemany = Connection.executemany
 executescript = Connection.executescript
 find = Connection.find
 findone = Connection.findone
+droptable = Connection.droptable
+createtable = Connection.createtable

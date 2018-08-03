@@ -1,5 +1,6 @@
 import unittest
-from orange.sqlite import connect, execute, executemany, executescript, find, findone, db_config
+from orange.sqlite import connect, execute, executemany, executescript, \
+    droptable, find, findone, db_config
 from orange import Path
 from orange.coroutine import run
 
@@ -23,6 +24,7 @@ class TestSqlite(unittest.TestCase):
 
     def test_query(self):
         rows = [('a', 'b', i) for i in range(10)]
+
         async def _():
             async with connect():
                 await execute('create table if not exists test(a,b,c)')
@@ -31,5 +33,7 @@ class TestSqlite(unittest.TestCase):
                 ab = await find('select * from test')
                 self.assertEqual(len(ab), 11)
                 d = await findone('select * from test limit 1')
-                self.assertEqual(d[0],'a')
+                self.assertEqual(d[0], 'a')
+                await droptable('abc', 'test')
+
         run(_())
