@@ -231,6 +231,14 @@ class Path(_Parent):
         return int(self.lstat().st_ctime)
 
     @property
+    def uri(self):
+        '''统一网址'''
+        ur = self.resolve().as_uri()
+        if os.name == 'nt':
+            ur = ur.lower()
+        return ur
+
+    @property
     def atime(self):
         '''文件访问时间'''
         return int(self.lstat().st_atime)
