@@ -220,6 +220,21 @@ class Path(_Parent):
         else:
             return Book(str(self), formats=formats, **kw)
 
+    @property
+    def mtime(self):
+        '''文件修改时间'''
+        return int(self.lstat().st_mtime)
+
+    @property
+    def ctime(self):
+        '''文件创建时间'''
+        return int(self.lstat().st_ctime)
+
+    @property
+    def atime(self):
+        '''文件访问时间'''
+        return int(self.lstat().st_atime)
+
     def write_tables(self, *tables,  **kw):
         '''
         写入多张表格，支持以下参数：

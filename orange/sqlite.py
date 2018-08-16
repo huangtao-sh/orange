@@ -115,8 +115,14 @@ class Connection():
 
     @classmethod
     def createtable(cls, name, *fields, pk=None):
+        if pk:
+            fields=list(fields)
+            if not isinstance(pk,str):
+                pk=",".join(pk)
+            fields.append(f"primary key({pk})")
+            
         sql = f'create table if not exists {name} ({",".join(fields)})'
-        cls.execute(sql)
+        return cls.execute(sql)
 
 
 db_config = Connection.config
@@ -128,3 +134,5 @@ find = Connection.find
 findone = Connection.findone
 droptable = Connection.droptable
 createtable = Connection.createtable
+
+createtable('abc',"name","idcard",'abc',pk=("name","idcard"))
