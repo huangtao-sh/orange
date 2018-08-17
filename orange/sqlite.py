@@ -125,13 +125,11 @@ class Connection():
         return cls.execute(sql)
 
     @classmethod
-    def executefile(cls, pkg, filenames):
+    def executefile(cls, pkg, filename):
         from pkgutil import get_data
-        for filename in filenames:
-            data = get_data(pkg, f'sql/{filename}.sql')
-            sql = decode(data)
-            executescript(sql)
-            print(f'file {filename}.sql execute successfuly')
+        data = get_data(pkg, filename)
+        sql = decode(data)
+        return executescript(sql)
 
 
 db_config = Connection.config
