@@ -13,7 +13,7 @@ from functools import partial
 
 
 __all__ = 'db_config', 'connect', 'execute', 'executemany',\
-    'executescript', 'find', 'findone'
+    'executescript', 'find', 'findone', 'executefile'
 
 ROOT = Path('~/OneDrive') / ('testdb' if is_dev() else 'db')
 
