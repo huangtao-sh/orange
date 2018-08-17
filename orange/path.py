@@ -22,6 +22,8 @@ BOM_CODE = {
 
 DEFAULT_CODES = 'utf8', 'gbk', 'utf16', 'big5'
 
+NT = os.name == 'NT'
+
 
 def is_installed(file_name: str)->bool:
     '''
@@ -234,9 +236,12 @@ class Path(_Parent):
     def uri(self):
         '''统一网址'''
         ur = self.resolve().as_uri()
-        if os.name == 'nt':
-            ur = ur.lower()
-        return ur
+        return ur.lower() if NT else ur
+
+    @property
+    def fullname(self):
+        path = str(self.absolute())
+        return path.lower() if NT else path
 
     @property
     def atime(self):
