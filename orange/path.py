@@ -22,7 +22,7 @@ BOM_CODE = {
 
 DEFAULT_CODES = 'utf8', 'gbk', 'utf16', 'big5'
 
-NT = os.name == 'NT'
+NT = os.name == 'nt'
 
 
 def is_installed(file_name: str)->bool:
