@@ -7,7 +7,7 @@
 
 import sqlite3
 from werkzeug.local import LocalStack
-from orange import Path, is_dev, info
+from orange import Path, is_dev, info, decode
 from contextlib import closing
 from functools import partial
 
@@ -116,13 +116,22 @@ class Connection():
     @classmethod
     def createtable(cls, name, *fields, pk=None):
         if pk:
-            fields=list(fields)
-            if not isinstance(pk,str):
-                pk=",".join(pk)
+            fields = list(fields)
+            if not isinstance(pk, str):
+                pk = ",".join(pk)
             fields.append(f"primary key({pk})")
-            
+
         sql = f'create table if not exists {name} ({",".join(fields)})'
         return cls.execute(sql)
+
+    @classmethod
+    def executefile(cls, pkg, filenames):
+        from pkgutil import get_data
+        for filename in filenames:
+            data = get_data(pkg, f'sql/{filename}.sql')
+            sql = decode(data)
+            executescript(sql)
+            print(f'file {filename}.sql execute successfuly')
 
 
 db_config = Connection.config
@@ -130,9 +139,8 @@ connect = Connection
 execute = Connection.execute
 executemany = Connection.executemany
 executescript = Connection.executescript
+executefile = Connection.executefile
 find = Connection.find
 findone = Connection.findone
 droptable = Connection.droptable
 createtable = Connection.createtable
-
-createtable('abc',"name","idcard",'abc',pk=("name","idcard"))
