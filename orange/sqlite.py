@@ -13,7 +13,7 @@ from functools import partial
 
 
 __all__ = 'db_config', 'connect', 'execute', 'executemany',\
-    'executescript', 'find', 'findone', 'executefile'
+    'executescript', 'find', 'findone', 'executefile', 'insert'
 
 ROOT = Path('~/OneDrive') / ('testdb' if is_dev() else 'db')
 
@@ -131,6 +131,18 @@ class Connection():
         sql = decode(data)
         return executescript(sql)
 
+    @classmethod
+    def insert(cls, table, data, fields=None, oper='insert'):
+        data = tuple(data)
+        if fields:
+            fields = '(%s)' % (','.join(fields))
+            values = ','.join(['?']*len(fields))
+        else:
+            fields = ''
+            values = ','.join(['?']*len(data[0]))
+        sql = f'{oper} into {table}{fields} values({values})'
+        return cls.executemany(sql, data)
+
 
 db_config = Connection.config
 connect = Connection
@@ -142,3 +154,4 @@ find = Connection.find
 findone = Connection.findone
 droptable = Connection.droptable
 createtable = Connection.createtable
+insert = Connection.insert
