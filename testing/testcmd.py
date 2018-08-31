@@ -36,6 +36,10 @@ class TestVer(unittest.TestCase):
     def test_regex(self):
         self.assertEqual('test_case', convert_cls_name('TestCase'))
 
+    def test_wlen(self):
+        from orange.htutil import wlen
+        self.assertEqual(wlen('我们like'),8)
+
     '''
     def test_crawler(this):
         from orange.hclient import Crawler,wait,BS4
@@ -66,3 +70,4 @@ class TestVer(unittest.TestCase):
         @arg('-p', '--pear')
         def main():
             pass
+
