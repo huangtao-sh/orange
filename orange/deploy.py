@@ -56,8 +56,9 @@ DEFAULT = {'author': 'huangtao',
 
 def _get_requires():
     result = []
-    for fn in Path('.').glob('*/requires.txt'):
-        for row in fn.lines:
+    requires = Path('rquires.txt')
+    if requires:
+        for row in requires.lines:
             i = row.find('#')
             if i > -1:
                 row = row[:i]
