@@ -69,7 +69,7 @@ def py_setup(packages=None, path=None, download=None, upgrade=False):
             run_pip('install', *pkgs)
             # exec_cmd('pip','install %s'%(" ".join(pkgs)))
         else:
-            if Path('setup.py').exists():
+            if Path('setup.py'):
                 run_setup('install')
                 pyclean()
             else:
