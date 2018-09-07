@@ -143,11 +143,11 @@ class Path(_Parent):
     def iter_csv(self, encoding=None, errors=None, dialect='excel', **kw):
         import csv
 
-        def _reader():
+        def reader():
             with open(str(self), encoding=encoding, errors=errors) as f:
                 yield from f
 
-        return csv.reader(_reader(), dialect=dialect, **kw)
+        return csv.reader(reader(), dialect=dialect, **kw)
 
     @property
     def xmlroot(self):
