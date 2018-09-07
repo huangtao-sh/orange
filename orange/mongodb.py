@@ -7,8 +7,8 @@
 
 import sys
 import platform
-from orange.deploy import *
-from orange import exec_shell, read_shell
+from orange.deploy import get_path
+from orange import exec_shell, read_shell, Path
 from orange.pyver import Ver, get_cur_ver
 
 MONGOCONFIG = '''
