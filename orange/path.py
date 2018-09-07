@@ -140,18 +140,14 @@ class Path(_Parent):
         for index, sheet in enumerate(book.sheets()):
             yield index, sheet.name, sheet._cell_values
 
-    def iter_csv(self, reader=None, encoding=None, dialect='excel', **kw):
+    def iter_csv(self, encoding=None, errors=None, dialect='excel', **kw):
         import csv
 
         def _reader():
-            with open(str(self), 'rb') as f:
-                for line in f:
-                    yield line.decode(encoding, errors='ignore')
-        if not reader:
-            data = _reader() if encoding else self.lines
-        else:
-            data = reader(str(self))
-        return csv.reader(data, dialect=dialect, **kw)
+            with open(str(self), encoding=encoding, errors=errors) as f:
+                yield from f
+
+        return csv.reader(_reader(), dialect=dialect, **kw)
 
     @property
     def xmlroot(self):
