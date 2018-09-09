@@ -4,6 +4,7 @@
 # License:GPL
 # Email:huangtao.sh@icloud.com
 # 创建：2016-04-13 20:46
+# 修改：2018-09-09 新增 tprint 功能
 
 import os
 
@@ -29,6 +30,35 @@ def cstr(arg, width=None, align='left'):
                 r = x-l
                 s = ' '*l+s+' '*r
     return s
+
+
+def tprint(data, format_):
+    '''按行格式化打印，可以指定每列的宽度和对齐方式。
+    其中格式为： r23，前面是对齐方式，右边是宽度。
+    左对齐：     l,<  
+    居中对齐：   c,^
+    右对齐：     r,> 可者省略
+    '''
+    ALIGN = {
+        'l': 'left',
+        '<': 'left',
+        '^': 'center',
+        'c': 'center',
+        'r': 'right',
+        '>': 'right'
+    }
+
+    def trans(x):
+        f = x[0].lower()
+        if f in 'lcr<^>':
+            return int(x[1:]), ALIGN[f]
+        else:
+            return int(x), 'left'
+
+    formats = [trans(x)for x in format_.split(',')]
+    for row in data:
+        x = ''.join(cstr(k, *f)for k, f in zip(row, formats))
+        print(x)
 
 
 class classproperty:

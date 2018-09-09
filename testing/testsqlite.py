@@ -38,3 +38,4 @@ class TestSqlite(unittest.TestCase):
                 await droptable('abc', 'test')
 
         run(_())
+
