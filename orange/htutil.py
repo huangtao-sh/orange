@@ -34,7 +34,7 @@ def cstr(arg, width=None, align='left'):
 
 def tprint(data, format_):
     '''按行格式化打印，可以指定每列的宽度和对齐方式。
-    其中格式为： r23，前面是对齐方式，右边是宽度。
+    其中格式为： r23，前面是对齐方式，右边是宽度。中间用,隔开，如"c23,r19"
     左对齐：     l,<  
     居中对齐：   c,^
     右对齐：     r,> 可者省略
@@ -55,7 +55,7 @@ def tprint(data, format_):
         else:
             return int(x), 'left'
 
-    formats = [trans(x)for x in format_.split(',')]
+    formats = tuple(trans(x)for x in format_.split(','))
     for row in data:
         x = ''.join(cstr(k, *f)for k, f in zip(row, formats))
         print(x)

@@ -5,7 +5,7 @@
 
 
 def checksum(s, calc, Key, Sum):
-    return Sum[sum([calc(c, k) for c, k in zip(s, Key)]) % len(Sum)]
+    return Sum[sum(calc(c, k) for c, k in zip(s, Key)) % len(Sum)]
 
 
 def circle(s):
@@ -58,7 +58,7 @@ def credit_code(code):
     Base = "0123456789ABCDEFGHJKLMNPQRTUWXY"
     wi = 1, 3, 9, 27, 19, 26, 16, 17, 20, 29, 25, 13, 8, 24, 10, 30, 28
     if len(code) >= 17:
-        check = sum([Base.index(k)*w for k, w in zip(code, wi)]) % 31
+        check = sum(Base.index(k)*w for k, w in zip(code, wi)) % 31
         if check:
             check = 31-check
         return '%s%s' % (code[:17], Base[check])
