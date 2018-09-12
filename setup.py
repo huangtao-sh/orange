@@ -22,7 +22,7 @@ else:
     scripts.append('orange/pysetup.py')
 
 setup(
-    name='orange-kit',
+    name='orange_kit',
     platforms='any',
     description='orange',
     long_description='orange',
