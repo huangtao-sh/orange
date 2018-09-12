@@ -14,6 +14,7 @@ import sys
 import re
 from orange import R, Path, info, command, arg, shell
 from orange.deploy import Ver, run_pip, run_setup, pyclean
+from collections import defaultdict
 
 
 RootPath = '~/OneDrive/pylib'
@@ -24,6 +25,20 @@ def find_ver(path):
     v = Pattern.search(path.name)
     if v:
         return Ver(v.group())
+
+
+def get_pkgs(root=Path(RootPath)):
+    pkgs = defaultdict(lambda: (None, Ver('0.0')))
+    for path in root.glob('*.*'):
+        info = path.verinfo
+        if info:
+            name, ver = info[:2]
+            v = Pattern.search(ver)
+            if v:
+                v = Ver(v.group())
+                if v > pkgs[name][1]:
+                    pkgs[name] = path, v
+    return pkgs
 
 
 @command(allow_empty=True)
@@ -47,24 +62,15 @@ def py_setup(packages=None, path=None, download=None, upgrade=False):
     else:
         if packages:
             pkgs = []
+            cached_pkgs = get_pkgs(root)
             for pkg in packages:
-                pkg_path, pkg_ver = None, Ver('0.0')
-                for file in root.glob('%s-*' % (pkg)):
-                    info('Process file %s' % (file.name))
-                    ver = find_ver(file)
-                    info('Get ver %s' % (ver))
-                    if ver > pkg_ver:
-                        pkg_path = file
-                        pkg_ver = ver
-                if pkg_path:
-                    if Path(pkg_path).lsuffix in ('.zip', '.whl', '.gz', '.tar'):
-                        pkgs.append(str(pkg_path))
-                        info('Add file %s' % (pkg_path.name))
-                    else:
-                        print('%s 不是正常的包文件' % (pkg_path.name))
+                if pkg in cached_pkgs:
+                    path, ver = cached_pkgs[pkg]
+                    pkgs.append(str(path))
+                    print(f'Add pkg {pkg} version: {ver}')
                 else:
                     pkgs.append(pkg)
-                    info('Add pkg %s' % (pkg))
+                    info(f'Add pkg {pkg}')
             root.chdir()
             run_pip('install', *pkgs)
             # exec_cmd('pip','install %s'%(" ".join(pkgs)))

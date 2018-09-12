@@ -6,13 +6,14 @@
 # 创建：2016-03-11 12:21
 # 修改：2016-04-13 21:01
 # 修改：2016-08-13 新增__iter__ 和 extractall功能
-# 修订：2016-11-19 修改Path的实现方式
+# 修订：2016-11-19
 # 修订：2018-05-25 增加write_tables功能
+# 修订：2018-09-12 为 Path 增加 verinfo 功能
 
 import pathlib
 import os
 from codecs import BOM_UTF8, BOM_LE, BOM_BE
-from .click import command, arg
+from orange.click import command, arg
 
 BOM_CODE = {
     BOM_UTF8: 'utf_8',
@@ -38,7 +39,7 @@ def is_installed(file_name: str)->bool:
     return any([file_name.startswith(path) for path in paths])
 
 
-def is_dev(cmd: str=None)->bool:
+def is_dev(cmd: str = None)->bool:
     import sys
     cmd = cmd or sys.argv[0]
     if('wsgi' in cmd):
@@ -241,6 +242,31 @@ class Path(_Parent):
         return path.lower() if NT else path
 
     @property
+    def verinfo(self):
+        name = self.name
+        TYPES = {
+            '.tar.gz': 'Source',
+            '.tar': 'Source',
+            '.whl': 'Wheel'
+        }
+        lname = name.lower()
+        for suffix, type_ in TYPES.items():
+            if lname.endswith(suffix):
+                name = name[:-len(suffix)]
+                break
+        if type_ == 'Source':
+            d = name.split('-')
+            version = d[-1]
+            name = '-'.join(d[:-1])
+            return name, version
+        elif type_ == 'Wheel':
+            d = name.split('-')
+            attrs = dict(zip(('version', 'abi', 'platform'), d[-3:]))
+            version = d[-4]
+            name = '-'.join(d[:-4])
+            return name, version, attrs
+
+    @property
     def atime(self):
         '''文件访问时间'''
         return int(self.lstat().st_atime)
@@ -269,3 +295,9 @@ def convert(files):
     for file in files:
         Path(file).lines = Path(file).lines
         print('转换文件"%s"成功' % (file))
+
+
+if __name__ == '__main__':
+    root = Path('~/Onedrive/pylib')
+    for path in root.glob('*.*'):
+        print(*path.verinfo, sep='\t')
