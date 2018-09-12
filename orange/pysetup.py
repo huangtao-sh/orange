@@ -65,7 +65,7 @@ def py_setup(packages=None, path=None, download=None, upgrade=False):
                 else:
                     pkgs.append(pkg)
                     info('Add pkg %s' % (pkg))
-            os.chdir('%s' % (root))
+            root.chdir()
             run_pip('install', *pkgs)
             # exec_cmd('pip','install %s'%(" ".join(pkgs)))
         else:
