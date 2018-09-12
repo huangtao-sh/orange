@@ -5,12 +5,13 @@
 # Email:huangtao.sh@icloud.com
 # 创建：2016-04-13 20:46
 # 修改：2018-09-09 新增 tprint 功能
-# 修改：2018-09-12 10:19 新增 shell 功能
+# 修改：2018-09-12 10:19 新增 shell、cformat、tprint 功能
 
 
 import os
 import warnings
 from functools import wraps
+from .regex import R
 
 
 def deprecate(func):
@@ -41,6 +42,20 @@ def deprecation(func, replace=''):
     warnings.warn(message, DeprecationWarning, stacklevel=2)
 
 
+_Digit = R/r'\d+'
+
+
+def cformat(value, format_spec=''):
+    '''对字符串进行格式化，
+    解决设定宽度后，汉字无法对齐的问题'''
+    if isinstance(value, str)and _Digit/format_spec:
+        d = int(tuple(_Digit/format_spec)[0]) - \
+            sum(1 for x in value if ord(x) > 127)
+        format_spec = _Digit/format_spec % str(d)
+    return format(value, format_spec)
+
+
+@deprecate('cformat')
 def cstr(arg, width=None, align='left'):
     '''
     用于转换成字符串，增加如下功能：
@@ -64,33 +79,22 @@ def cstr(arg, width=None, align='left'):
     return s
 
 
-def tprint(data, format_):
+def tprint(data, format_spec={}, sep=' '):
     '''按行格式化打印，可以指定每列的宽度和对齐方式。
-    其中格式为： r23，前面是对齐方式，右边是宽度。中间用,隔开，如"c23,r19"
-    左对齐：     l,<  
-    居中对齐：   c,^
-    右对齐：     r,> 可者省略
+    其中格式为： <23，前面是对齐方式，右边是宽度。中间用,隔开，如"^23,>19"
+    左对齐：     <
+    居中对齐：   ^
+    右对齐：     > 可者省略
     '''
-    ALIGN = {
-        'l': 'left',
-        '<': 'left',
-        '^': 'center',
-        'c': 'center',
-        'r': 'right',
-        '>': 'right'
-    }
-
-    def trans(x):
-        f = x[0].lower()
-        if f in 'lcr<^>':
-            return int(x[1:]), ALIGN[f]
-        else:
-            return int(x), 'left'
-
-    formats = tuple(trans(x)for x in format_.split(','))
-    for row in data:
-        x = ''.join(cstr(k, *f)for k, f in zip(row, formats))
-        print(x)
+    if isinstance(format_spec, (tuple, list)):
+        for row in data:
+            x = sep.join(cformat(k, f)for k, f in zip(row, format_spec))
+            print(x)
+    elif isinstance(format_spec, dict):
+        for row in data:
+            x = sep.join(cformat(k, format_spec.get(i, ''))
+                         for i, k in enumerate(row))
+            print(x)
 
 
 class classproperty:
@@ -188,7 +192,7 @@ def exec_shell(cmd):
     '''
     执行系统命令。
     '''
-    #deprecation('exec_shell', 'shell')
+    # deprecation('exec_shell', 'shell')
     return os.system(cmd)
 
 

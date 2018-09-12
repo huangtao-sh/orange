@@ -10,7 +10,7 @@ from .deploy import get_path, run_pip, run_setup, setup
 from .debug import decorator, trace, config_log, ensure, info, fprint, verbose
 from .htutil import classproperty, cachedproperty, read_shell, write_shell, wlen, encrypt, \
     decrypt, PY, get_py, exec_shell, split, deprecation, generator, cstr, deprecate, tprint,\
-    shell
+    shell, cformat
 from .dateutil import datetime, LOCAL, UTC, date_add, ONEDAY, LTZ, ONESECOND, now
 from .regex import R, extract, convert_cls_name
 from .mail import sendmail, tsendmail, Mail, MailClient
@@ -26,4 +26,4 @@ __all__ = 'get_ver', 'Path', 'get_path',\
     'LOCAL', 'UTC', 'now', 'datetime', 'fprint', 'date_add', 'ONEDAY', 'LTZ',\
     'ONESECOND', 'R', 'sendmail', 'tsendmail', 'Mail', 'PY', 'MailClient',\
     'convert_cls_name', 'verbose', 'arg', 'command', 'generator', 'version',\
-    'extract', 'cstr', 'deprecate', 'tprint', 'shell', 'POSIX'
+    'extract', 'cstr', 'deprecate', 'tprint', 'shell', 'POSIX', 'cformat'
