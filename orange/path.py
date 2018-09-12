@@ -257,13 +257,13 @@ class Path(_Parent):
         if type_ == 'Source':
             d = name.split('-')
             version = d[-1]
-            name = '-'.join(d[:-1])
+            name = '_'.join(d[:-1])
             return name, version
         elif type_ == 'Wheel':
             d = name.split('-')
             attrs = dict(zip(('version', 'abi', 'platform'), d[-3:]))
             version = d[-4]
-            name = '-'.join(d[:-4])
+            name = '_'.join(d[:-4])
             return name, version, attrs
 
     @property
