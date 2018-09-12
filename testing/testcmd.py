@@ -38,7 +38,7 @@ class TestVer(unittest.TestCase):
 
     def test_wlen(self):
         from orange.htutil import wlen
-        self.assertEqual(wlen('我们like'),8)
+        self.assertEqual(wlen('我们like'), 8)
 
     '''
     def test_crawler(this):
@@ -70,4 +70,3 @@ class TestVer(unittest.TestCase):
         @arg('-p', '--pear')
         def main():
             pass
-

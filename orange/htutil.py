@@ -5,8 +5,40 @@
 # Email:huangtao.sh@icloud.com
 # 创建：2016-04-13 20:46
 # 修改：2018-09-09 新增 tprint 功能
+# 修改：2018-09-12 10:19 新增 shell 功能
+
 
 import os
+import warnings
+from functools import wraps
+
+
+def deprecate(func):
+    '''进行废弃声明，使用方法：
+
+    @deprecate(new_func)
+    def depr_func(*arg,**kw):
+        pass
+    '''
+    func = func.__name__ if hasattr(func, '__name__') else func
+
+    def _(fn):
+        @wraps(fn)
+        def new_func(*args, **kw):
+            warnings.warn(
+                '%s will be deprecated, Please use %s replaced!' % (
+                    fn.__name__, func), DeprecationWarning, stacklevel=2)
+            return fn(*args, **kw)
+        return new_func
+    return _
+
+
+def deprecation(func, replace=''):
+    '''DeprecationWarning'''
+    message = "%s 已被弃用" % (func)
+    if replace:
+        message += "，请使用 %s 替代" % (replace)
+    warnings.warn(message, DeprecationWarning, stacklevel=2)
 
 
 def cstr(arg, width=None, align='left'):
@@ -100,6 +132,36 @@ class cachedproperty:
         return self.cache[kclass]
 
 
+class _Shell():
+    '''执行系统命令，
+    使用方法：
+    1.直接在终端上执行命令，并显示结果。
+      shell > 'dir'
+      注： result = shell >'dir'
+          result 为系统返回的结果，一般 0 为正确执行
+    2.获取执行结果。
+      result = shell('dir')
+      这里返回的是 dir 执行的输出
+    '''
+
+    def __gt__(self, cmd):
+        return os.system(cmd)
+
+    def __call__(self, cmd, input=None):
+        mode = 'w' if input else 'r'
+        with os.popen(cmd, mode)as f:
+            if input:
+                if isinstance(input, (tuple, list)):
+                    input = '\n'.join(input)
+                f.write(input)
+            else:
+                return f.read().splitlines()
+
+
+shell = _Shell()
+
+
+@deprecate('shell')
 def read_shell(cmd):
     '''
     执行系统命令，并将执行命令的结果通过管道读取。
@@ -109,6 +171,7 @@ def read_shell(cmd):
     return k.splitlines()
 
 
+@deprecate('shell')
 def write_shell(cmd, lines):
     '''
     执行系统命令，将指定的文通过管道向该程序输入。
@@ -120,10 +183,12 @@ def write_shell(cmd, lines):
             [fn.write('%s\n' % (x))for x in lines]
 
 
+@deprecate('shell')
 def exec_shell(cmd):
     '''
     执行系统命令。
     '''
+    #deprecation('exec_shell', 'shell')
     return os.system(cmd)
 
 
@@ -187,48 +252,16 @@ class PY(metaclass=_PY):
     pass
 
 
+generator = type((x for x in 'hello'))
+
+
 def split(data, size=1000):
     '''拆分数据，其中datas应为list,size为每批数据的数量'''
+    if isinstance(data, generator):
+        data = tuple(data)
     length = len(data)
     i = 0
     for i in range(size, length, size):
         yield data[i - size:i]
     else:
         yield data[i:]
-
-
-import warnings
-
-
-from functools import wraps
-
-
-def deprecate(func):
-    '''进行废弃声明，使用方法：
-
-    @deprecate(new_func)
-    def depr_func(*arg,**kw):
-        pass
-    '''
-    func = func.__name__ if hasattr(func, '__name__') else func
-
-    def _(fn):
-        @wraps(fn)
-        def new_func(*args, **kw):
-            fn(*args, **kw)
-            warnings.warn(
-                '%s will be deprecated, Please use %s replaced!' % (
-                    fn.__name__, func), DeprecationWarning, stacklevel=2)
-        return new_func
-    return _
-
-
-def deprecation(func, replace=''):
-    '''DeprecationWarning'''
-    message = "%s 已被弃用" % (func)
-    if replace:
-        message += "，请使用 %s 替代" % (replace)
-    warnings.warn(message, DeprecationWarning, stacklevel=2)
-
-
-generator = type((x for x in 'hello'))
