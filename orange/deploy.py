@@ -4,19 +4,18 @@
 # License:GPL
 # Email:huangtao.sh@icloud.com
 # 创建：2016-03-12 18:05
+# 修改：2018-09-12 10:29 采用 shell 执行系统命令
+
 
 import distutils.core
-import os
 import setuptools
-from .htutil import exec_shell
-from orange import Path, Ver
-
-pip = 'pip3' if os.name == 'posix' else 'pip'
+from .htutil import shell
+from orange import Path, Ver, POSIX
 
 
 def get_path(pkg, user=True):
     ''' 返回指定包的参数配置目录和数据目录'''
-    if os.name == 'posix':
+    if POSIX:
         if user:
             root = Path('~')
             return root, root / ('.%s' % (pkg))
@@ -33,19 +32,21 @@ def get_path(pkg, user=True):
 
 
 def run_pip(*args):
-    exec_shell("%s %s" % (pip, " ".join(args)))
+    param = ' '.join(args)
+    shell > f"pip3 {param}"
 
 
 def run_setup(*args):
-    cmd = 'setup' if os.name == 'nt' else 'python3 setup.py'
-    exec_shell(f'{cmd} {" ".join(args)}')
+    cmd = 'python3 setup.py' if POSIX else 'setup'
+    param = ' '.join(args)
+    shell > f'{cmd} {param}'
 
 
 def pyclean():
     for path in ('build', 'dist', '*egg-info'):
         for p in Path('.').glob(path):
             p.rmtree()
-            print('Path %s have been deleted!' % (p))
+            print(f'Path {p} have been deleted!')
 
 
 DEFAULT = {'author': 'huangtao',
@@ -98,7 +99,7 @@ def setup(version=None, packages=None, after_install=None,
                                 version=version, **kwargs)
     # 处理脚本
 
-    if 'install' in dist.have_run and os.name == 'posix' \
+    if 'install' in dist.have_run and POSIX \
             and scripts:
         from sysconfig import get_path
         prefix = Path(get_path('scripts'))

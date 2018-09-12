@@ -12,7 +12,7 @@
 import os
 import sys
 import re
-from orange import R, Path, info, read_shell, command, arg
+from orange import R, Path, info, command, arg, shell
 from orange.deploy import Ver, run_pip, run_setup, pyclean
 
 
@@ -38,9 +38,9 @@ def py_setup(packages=None, path=None, download=None, upgrade=False):
         # exec_cmd('pip','download -d %s %s'%(Path(path),
         #                      " ".join(packages)))
     elif upgrade:
-        pip = 'pip' if os.name == 'nt' else 'pip3'
-        pkglist = read_shell('%s list -o' % (pip))
-        for line in pkglist:
+        pkglist = shell('pip3 list -o')
+        print(*pkglist, sep='\n')
+        for line in pkglist[2:]:
             pkg = line.split()
             if pkg:
                 run_pip('install', '-U', pkg[0])

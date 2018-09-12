@@ -6,9 +6,10 @@
 # Email:huangtao.sh@icloud.com
 # 创建：2015-06-11 12:28
 # 修订：2016-11-18 采用Parser来分析参数
+# 修改：2018-09-12 10:35 采用 shell 来处理命令行
 
 #from stdlib import parse_args,exec_shell
-from orange import arg, exec_shell
+from orange import arg, shell, Path
 import sys
 
 
@@ -17,21 +18,16 @@ import sys
 def proc(repos=None, user=None, protocol='SSH'):
     if user is None:
         from configparser import ConfigParser
-        import os
         config = ConfigParser()
-        config.read([os.path.expanduser('~/.gitconfig')])
+        config.read([str(Path('~/.gitconfig'))])
         try:
             user = config.get('user', 'name')
         except:
             raise Exception('用户不存在！')
     protocol = protocol.upper()
-    URL = 'git@github.com:%s' % (user) if protocol == 'SSH' else \
-        'https://github.com/%s' % (user)
+    URL = f'git@github.com:{user}' if protocol == 'SSH' else \
+        f'https://github.com/{user}'
     for repo in repos:
         url = '%s/%s.git' % (URL, repo)
         print('cloning', url)
-        exec_shell('git clone %s' % (url))
-
-
-if __name__ == '__main__':
-    proc()
+        shell > f'git clone {url}'

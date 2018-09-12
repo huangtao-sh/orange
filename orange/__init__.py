@@ -4,7 +4,7 @@
 # 创建：2015-9-2
 # 修订：2018-2-2 新增 __version__
 
-from .path import is_dev, is_installed, Path, decode
+from .path import is_dev, is_installed, Path, decode, POSIX
 from .version import first, last, Ver, get_ver
 from .deploy import get_path, run_pip, run_setup, setup
 from .debug import decorator, trace, config_log, ensure, info, fprint, verbose
@@ -15,7 +15,7 @@ from .dateutil import datetime, LOCAL, UTC, date_add, ONEDAY, LTZ, ONESECOND, no
 from .regex import R, extract, convert_cls_name
 from .mail import sendmail, tsendmail, Mail, MailClient
 from .click import command, arg
-from .__version__ import version as __version__
+from .__version__ import version
 
 __all__ = 'get_ver', 'Path', 'get_path',\
     'first', 'last', 'Ver', 'decode',\
@@ -25,5 +25,5 @@ __all__ = 'get_ver', 'Path', 'get_path',\
     'encrypt', 'decrypt', 'get_py', 'split', 'deprecation',\
     'LOCAL', 'UTC', 'now', 'datetime', 'fprint', 'date_add', 'ONEDAY', 'LTZ',\
     'ONESECOND', 'R', 'sendmail', 'tsendmail', 'Mail', 'PY', 'MailClient',\
-    'convert_cls_name', 'verbose', 'arg', 'command', 'generator', '__version__',\
-    'extract', 'cstr', 'deprecate', 'tprint', 'shell'
+    'convert_cls_name', 'verbose', 'arg', 'command', 'generator', 'version',\
+    'extract', 'cstr', 'deprecate', 'tprint', 'shell', 'POSIX'
