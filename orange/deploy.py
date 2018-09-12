@@ -94,11 +94,10 @@ def setup(version=None, packages=None, after_install=None,
     if not scripts:
         scripts = [str(path) for path in Path('.').glob('scripts/*')]
     # 安装程序
-    distutils.core.setup(scripts=scripts, packages=packages,
-                         install_requires=install_requires,
-                         version=version, **kwargs)
+    dist = distutils.core.setup(scripts=scripts, packages=packages,
+                                install_requires=install_requires,
+                                version=version, **kwargs)
     # 处理脚本
-    '''
     if 'install' in dist.have_run and POSIX \
             and scripts:
         from sysconfig import get_path
@@ -110,4 +109,3 @@ def setup(version=None, packages=None, after_install=None,
                 script_name.replace(script_name.with_suffix(''))
     if 'install' in dist.have_run and after_install:
         after_install(dist)
-    '''
