@@ -64,6 +64,7 @@ def py_setup(packages=None, path=None, download=None, upgrade=False):
             pkgs = []
             cached_pkgs = get_pkgs(root)
             for pkg in packages:
+                pkg = pkg.replace('-', '_')
                 if pkg in cached_pkgs:
                     path, ver = cached_pkgs[pkg]
                     pkgs.append(str(path))
