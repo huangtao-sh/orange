@@ -25,7 +25,7 @@ def win_init():
         key['HOME'] = home, REG_SZ
         print('设置 Emacs 的 HOME 目录完成。')
 
-    with HKLM/r'SYSTEM\CurrentControlSet\Control\Session Manager\Environment' as key:
+    with HKLM/'SYSTEM/CurrentControlSet/Control/Session Manager/Environment' as key:
         pathext = key['PATHEXT'][0]
         for ext in ('.PY', '.PYW'):
             if ext not in set(pathext.split(';')):

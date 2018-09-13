@@ -28,7 +28,9 @@ def batch_download():
     params = conf['params']
     param = ' '.join(f'--{key}={value}' for key, value in params.items())
     for pkg in packages:
-        run_pip('download', '-d', str(PyLib), param, pkg)
+        result = run_pip('download', '-d', str(PyLib), param, pkg)
+        if result:
+            run_pip('download','-d',str(PyLib),pkg)
 
 
 def config_pkg():
@@ -39,13 +41,13 @@ def config_pkg():
         'implementation': t[0][:2],
         'python-version': t[0][2:],
         'abi': t[1],
-        'platform': t[2],
+        'platform': 'win32',
         'only-binary': ':all:'
     }
     conf = {'packages': packages,
             'params': params}
     with ConfFile.open('w')as f:
-        json.dump(conf, f)
+        json.dump(conf, f, indent='    ')
     print('写配置文件成功！')
 
 
@@ -54,24 +56,13 @@ def config_pkg():
 @arg('-u', '--upgrade', action='store_true', help='升级文件')
 def main(config=False, download=False, upgrade=False):
     if config:
-        if sys.platform == 'win32':
-            config_pkg()
-        else:
-            print('请在不联网的机器上使用此功能')
+        config_pkg()
     if download:
-        if sys.platform == 'win32':
-            print('请在联网的机器上使用此功能')
-        else:
-            batch_download()
+        batch_download()
     if upgrade:
-        if sys.platform == 'win32':
-            print('请在联网的机器上使用此功能')
-        else:
-            pkglist = shell('pip3 list -o')
-            print(*pkglist, sep='\n')
-            for line in pkglist[2:]:
-                pkg = line.split()
-                if pkg:
-                    run_pip('install', '-U', pkg[0])
-    
-
+        pkglist = shell('pip3 list -o')
+        print(*pkglist, sep='\n')
+        for line in pkglist[2:]:
+            pkg = line.split()
+            if pkg:
+                run_pip('install', '-U', pkg[0])

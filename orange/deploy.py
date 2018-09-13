@@ -33,7 +33,7 @@ def get_path(pkg, user=True):
 
 def run_pip(*args):
     param = ' '.join(args)
-    shell > f"pip3 {param}"
+    return shell > f"pip3 {param}"
 
 
 def run_setup(*args):
