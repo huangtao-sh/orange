@@ -12,7 +12,9 @@ console_scripts = ['conv=orange.path:convert',
                    'gclone=orange.gclone:proc',
                    'mongodeploy=orange.mongodb:main',
                    'fkgfw=orange.fkgfw:main',
-                   'sysinit=orange.sysinit:main']
+                   'sysinit=orange.sysinit:main',
+                   'pkg=orange.pypkgs:main',
+                   ]
 
 scripts = ['scripts/pytest.py']
 
