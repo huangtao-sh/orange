@@ -258,13 +258,13 @@ class Path(_Parent):
             d = name.split('-')
             version = d[-1]
             name = '_'.join(d[:-1])
-            return name, version
+            return name, version, type_
         elif type_ == 'Wheel':
             d = name.split('-')
             attrs = dict(zip(('version', 'abi', 'platform'), d[-3:]))
             version = d[-4]
             name = '_'.join(d[:-4])
-            return name, version, attrs
+            return name, version, type_, attrs
 
     @property
     def atime(self):
