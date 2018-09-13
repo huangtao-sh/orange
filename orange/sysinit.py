@@ -10,7 +10,7 @@ LINKS = {'bin': 'bin',
          'conf/pip': '.pip',
          }
 
-WIN32_LINKS = {'conf/pip': 'AppData/Roaming/pip',
+WIN32_LINKS = {'conf/pip/pip.conf': 'AppData/Roaming/pip.ini',
                'conf/vimrc_win': '_vimrc',
                }
 
@@ -41,6 +41,7 @@ def do_link():
 
     home = Path(os.path.expanduser('~'))
     src = home / 'OneDrive'
+    Path('~/AppData/Roaming/pip').ensure()
 
     for source, dest in LINKS.items():
         s = src / source
