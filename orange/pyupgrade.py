@@ -11,11 +11,13 @@ from orange.path import Path
 
 
 class PythonUpgrade(object):
-    def __init__(self):
+    @classmethod
+    def main(cls):
         platform = sys.platform
-        getattr(self, platform)()
+        getattr(cls, platform)()
 
-    def win32(self):
+    @classmethod
+    def win32(cls):
         from .regkey import add_path
         destpath = Path('%ProgramFiles%/Python')
         srcpath = Path('%localappdata%/Programs/Python')
