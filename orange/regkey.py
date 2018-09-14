@@ -98,7 +98,7 @@ if os.name == 'nt':
     HKU = RegKey(HKEY_USERS)
 
     def add_path(path, replace=None):
-        with HKLM/r'SYSTEM\CurrentControlSet\Control\Session Manager\Environment' as key:
+        with HKLM/r'SYSTEM/CurrentControlSet/Control/Session Manager/Environment' as key:
             value, type_ = key['Path']
             if replace:
                 value = [x for x in value.split(';') if replace not in x]
