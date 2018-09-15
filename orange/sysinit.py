@@ -41,13 +41,12 @@ def do_link():
     elif sys.platform == 'darwin':
         LINKS.update(DARWIN_LINKS)
 
-    home = Path(os.path.expanduser('~'))
+    home = Path('~')
     src = home / 'OneDrive'
 
     for source, dest in LINKS.items():
         s = src / source
         d = home / dest
-        print(s, ' -> ', d)
         if not d.exists()and s.exists():
             d.symlink_to(s, s.is_dir())
             print('创建连接文件：%s -> %s' % (d, s))
