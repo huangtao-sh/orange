@@ -30,12 +30,16 @@ def batch_download():
     for pkg in packages:
         result = run_pip('download', '-d', str(PyLib), param, pkg)
         if result:
-            run_pip('download','-d',str(PyLib),pkg)
+            run_pip('download', '-d', str(PyLib), pkg)
+
+
+def get_installed_packages():
+    pkgs = shell('pip3 list --format json')
+    return tuple(pkg['name'] for pkg in json.loads(pkgs[0]))
 
 
 def config_pkg():
-    pkgs = shell('pip3 list --format json')
-    packages = [pkg['name'] for pkg in json.loads(pkgs[0])]
+    packages = get_installed_packages()
     t = get_supported()[0]
     params = {
         'implementation': t[0][:2],
@@ -54,7 +58,8 @@ def config_pkg():
 @arg('-c', '--config', action='store_true', help='获取配置')
 @arg('-d', '--download', action='store_true', help='下载包文件')
 @arg('-u', '--upgrade', action='store_true', help='升级文件')
-def main(config=False, download=False, upgrade=False):
+@arg('-i', '--install', action='store_true', help='批量安装')
+def main(config=False, download=False, upgrade=False, install=False):
     if config:
         config_pkg()
     if download:
@@ -66,3 +71,10 @@ def main(config=False, download=False, upgrade=False):
             pkg = line.split()
             if pkg:
                 run_pip('install', '-U', pkg[0])
+    if install:
+        with ConfFile.open('r')as f:
+            conf = json.load(f)
+        packages = set(conf['packages'])-excludes-set(get_installed_packages())
+        packages.add('python-docx')
+        if packages:
+            run_pip('install', *packages)

@@ -7,14 +7,15 @@ LINKS = {'bin': 'bin',
          'conf/gitconfig': '.gitconfig',
          'conf/ssh': '.ssh',
          'conf/pypirc': '.pypirc',
-         'conf/pip': '.pip',
+
          }
 
-WIN32_LINKS = {'conf/pip/pip.conf': 'AppData/Roaming/pip.ini',
+WIN32_LINKS = {'conf/pip/pip.conf': 'AppData/Roaming/pip/pip.ini',
                'conf/vimrc_win': '_vimrc',
                }
 
-DARWIN_LINKS = {'conf/vimrc_mac': '.vimrc', }
+DARWIN_LINKS = {'conf/vimrc_mac': '.vimrc',
+                'conf/pip': '.pip', }
 
 
 def win_init():
@@ -35,17 +36,18 @@ def win_init():
 
 def do_link():
     if sys.platform == 'win32':
+        Path('~/AppData/Roaming/pip').ensure()
         LINKS.update(WIN32_LINKS)
     elif sys.platform == 'darwin':
         LINKS.update(DARWIN_LINKS)
 
     home = Path(os.path.expanduser('~'))
     src = home / 'OneDrive'
-    Path('~/AppData/Roaming/pip').ensure()
 
     for source, dest in LINKS.items():
         s = src / source
         d = home / dest
+        print(s, ' -> ', d)
         if not d.exists()and s.exists():
             d.symlink_to(s, s.is_dir())
             print('创建连接文件：%s -> %s' % (d, s))
