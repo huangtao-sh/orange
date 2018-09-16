@@ -176,7 +176,7 @@ def run_cmd(cmd, *args, **options):
             yield f'--{key}'
         if value:
             yield str(value)
-    params = [x for x in option(k, v)for k, v in options]
+    params = [x for x in option(k, v)for k, v in options.items()]
     params = [cmd, *args, *params]
     cmd = " ".join([f'"{x}"' if " " in x else x for x in params])
     print(*cmd)
