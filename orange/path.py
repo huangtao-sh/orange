@@ -252,7 +252,9 @@ class Path(_Parent):
         if self.is_symlink():
             if self.resolve() == target.resolve():  # 连接已存在，则忽略
                 return
-            self.unlink()  # 检查文件是否存在，如存在则删除
+            self.unlink()
+        if self:
+            return
         return self.symlink_to(target, target.is_dir())
 
     def __rshift__(self, target):
