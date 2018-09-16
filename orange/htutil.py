@@ -169,17 +169,17 @@ def run_cmd(cmd, *args, **options):
     '''
     执行 cmd 命令，并带 params 以及 options 参数
     '''
-    def option(key, value):
-        if len(key) == 1:
-            yield f'-{key}'
+    params = []
+    for k, v in options.items():
+        if len(k) == 1:
+            params.append(f'-{k}')
         else:
-            yield f'--{key}'
-        if value:
-            yield str(value)
-    params = [x for x in option(k, v)for k, v in options.items()]
+            params.append(f'--{k}')
+        if v:
+            params.append(v)
     params = [cmd, *args, *params]
     cmd = " ".join([f'"{x}"' if " " in x else x for x in params])
-    print(*cmd)
+    print(cmd)
 
 
 @deprecate('shell')
