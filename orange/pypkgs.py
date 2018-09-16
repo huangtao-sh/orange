@@ -30,7 +30,8 @@ def batch_download():
     for pkg in packages:
         result = run_pip('download', '-d', str(PyLib), param, pkg)
         if result:
-            run_pip('download', '-d', str(PyLib), pkg)
+            run_pip('download', '-d', str(PyLib),
+                    pkg, **{'no-binary': ':all:'})
 
 
 def get_installed_packages():
