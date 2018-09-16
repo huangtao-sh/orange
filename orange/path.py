@@ -9,6 +9,8 @@
 # 修订：2016-11-19
 # 修订：2018-05-25 增加write_tables功能
 # 修订：2018-09-12 为 Path 增加 verinfo 功能
+# 修改：2018-09-16 09:00 增加 link_to 功能
+
 
 import pathlib
 import os
@@ -240,6 +242,13 @@ class Path(_Parent):
     def fullname(self):
         path = str(self.absolute())
         return path.lower() if NT else path
+
+    def link_to(self, target):
+        if self.is_symlink():
+            if self.resolve() == target.resolve():  # 连接已存在，则忽略
+                return
+            self.unlink()  # 检查文件是否存在，如存在则删除
+        return self.symlink_to(target, target.is_dir())
 
     @property
     def verinfo(self):
