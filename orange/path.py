@@ -9,7 +9,7 @@
 # 修订：2016-11-19
 # 修订：2018-05-25 增加write_tables功能
 # 修订：2018-09-12 为 Path 增加 verinfo 功能
-# 修改：2018-09-16 09:00 增加 link_to 功能
+# 修改：2018-09-16 09:00 增加 link_to  功能 以及 >> 和 << 操作符
 
 
 import pathlib
@@ -249,6 +249,12 @@ class Path(_Parent):
                 return
             self.unlink()  # 检查文件是否存在，如存在则删除
         return self.symlink_to(target, target.is_dir())
+
+    def __rshift__(self, target):
+        return self.link_to(Path(target))
+
+    def __lshift__(self, target):
+        Path(target).link_to(self)
 
     @property
     def verinfo(self):
