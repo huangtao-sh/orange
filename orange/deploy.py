@@ -9,7 +9,7 @@
 
 import distutils.core
 import setuptools
-from .htutil import shell
+from .htutil import shell, run_cmd
 from orange import Path, Ver, POSIX
 
 
@@ -31,15 +31,13 @@ def get_path(pkg, user=True):
             return root, root
 
 
-def run_pip(*args):
-    param = ' '.join(args)
-    return shell > f"pip3 {param}"
+def run_pip(*args, **options):
+    return run_cmd('pip3', *args, **options)
 
 
-def run_setup(*args):
+def run_setup(*args, **options):
     cmd = 'python3 setup.py' if POSIX else 'setup'
-    param = ' '.join(args)
-    shell > f'{cmd} {param}'
+    return run_cmd(cmd, *args, **options)
 
 
 def pyclean():
