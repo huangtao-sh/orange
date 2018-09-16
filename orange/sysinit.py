@@ -47,9 +47,8 @@ def do_link():
     for source, dest in LINKS.items():
         s = src / source
         d = home / dest
-        if not d.exists()and s.exists():
-            d.symlink_to(s, s.is_dir())
-            print('创建连接文件：%s -> %s' % (d, s))
+        d >> s
+        print(f'创建连接文件：{d} ->{s}')
 
 
 def main():

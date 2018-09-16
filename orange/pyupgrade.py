@@ -24,15 +24,8 @@ class PythonUpgrade(object):
         curpath = max(srcpath.glob('Python*'))
         if curpath:
             print(f'Python 的安装路径为  {curpath}')
-            if destpath:
-                destpath.unlink()
-                if destpath.resolve() != curpath.resolve():
-                    destpath.unlink()
-                    destpath.symlink_to(curpath)
-                    print('目录连接成功！')
-            else:
-                destpath.symlink_to(curpath)
-                print('目录连接成功！')
+            destpath >> curpath  # 连接安装目录
+            print(f'连接安装目录： {destpath} -> {srcpath}')
             scripts = destpath / 'Scripts'
             path = ';'.join([str(destpath), str(scripts)])
             add_path(path, replace='Python')

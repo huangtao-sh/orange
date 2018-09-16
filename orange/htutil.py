@@ -165,6 +165,23 @@ class _Shell():
 shell = _Shell()
 
 
+def run_cmd(cmd, *args, **options):
+    '''
+    执行 cmd 命令，并带 params 以及 options 参数
+    '''
+    def option(key, value):
+        if len(key) == 1:
+            yield f'-{key}'
+        else:
+            yield f'--{key}'
+        if value:
+            yield str(value)
+    params = [x for x in option(k, v)for k, v in options]
+    params = [cmd, *args, *params]
+    cmd = " ".join([f'"{x}"' if " " in x else x for x in params])
+    print(*cmd)
+
+
 @deprecate('shell')
 def read_shell(cmd):
     '''

@@ -244,6 +244,11 @@ class Path(_Parent):
         return path.lower() if NT else path
 
     def link_to(self, target):
+        '''
+            创建文件或目录连接
+            由 self 连接到 target
+            如果 self 指向的文件已存在：是 target 则自动忽略，否则重新建立连接。
+        '''
         if self.is_symlink():
             if self.resolve() == target.resolve():  # 连接已存在，则忽略
                 return
@@ -251,9 +256,17 @@ class Path(_Parent):
         return self.symlink_to(target, target.is_dir())
 
     def __rshift__(self, target):
+        '''
+          Path('a.txt') >> Path('b.txt')
+          把 a.txt 连接到 b.txt 上
+        '''
         return self.link_to(Path(target))
 
     def __lshift__(self, target):
+        '''
+          Path('a.txt') << Path('b.txt')
+          把 b.txt 连接到 a.txt 上
+        '''
         Path(target).link_to(self)
 
     @property
