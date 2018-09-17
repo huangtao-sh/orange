@@ -13,6 +13,8 @@ import json
 from orange.deploy import run_pip
 from pip._internal.pep425tags import get_supported
 import sys
+from collections import defaultdict
+from orange.pyver import Ver
 
 ROOT = Path('~/OneDrive')
 ConfFile = ROOT / 'conf/pypkgs.conf'
@@ -49,14 +51,33 @@ def get_installed_packages():
 
 
 def get_cached_pkgs():
+    pkgs = defaultdict(lambda: [None, Ver('0.0')])
     for path in PyLib.glob('*.*'):
         verinfo = path.verinfo[:3]
         if verinfo:
-            print(*verinfo,path)
+            name, ver, type_ = verinfo
+            tag = f'{name}|{type_}'
+            oldver = pkgs[tag][1]
+            if ver > oldver:
+                pkgs[tag] = path, ver
+    return pkgs
 
+def get_cached_pkgs():
+    for path in PyLib.glob('*.*'):
+        verinfo = path.verinfo[:3]
+        if verinfo:
+            name, ver, type_ = verinfo
+            yield name,ver,type_,path
 
-get_cached_pkgs()
-
+def cleanlib():
+    pkg=None
+    for r in sorted(get_cached_pkgs(),reverse=True):
+        if pkg !=r[0]:
+            pkg =r[0]
+            print(r[0],r[1],sep='\t')
+        else:
+            r[3].unlink()
+            print(f'{r[3]} has been deleted')
 
 def config_pkg():
     packages = get_installed_packages()
@@ -75,11 +96,13 @@ def config_pkg():
     print('写配置文件成功！')
 
 
-@arg('-c', '--config', action='store_true', help='获取配置')
+@arg('-f', '--config', action='store_true', help='获取配置')
 @arg('-d', '--download', action='store_true', help='下载包文件')
 @arg('-u', '--upgrade', action='store_true', help='升级文件')
 @arg('-i', '--install', action='store_true', help='批量安装')
-def main(config=False, download=False, upgrade=False, install=False):
+@arg('-c', '--clean', action='store_true', help='清理无用的包')
+def main(config=False, download=False, upgrade=False, install=False,\
+         clean=False):
     if config:
         config_pkg()
     if download:
@@ -98,3 +121,5 @@ def main(config=False, download=False, upgrade=False, install=False):
         packages.add('python-docx')
         if packages:
             run_pip('install', *packages)
+    if clean:
+        cleanlib()
