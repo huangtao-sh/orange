@@ -33,13 +33,6 @@ def win_init():
                 pathext += ';'+ext
         key['PATHEXT'] = pathext, REG_SZ
 
-    with HKLM / 'SOFTWARE/Microsoft/Windows NT/CurrentVersion/Console/TrueTypeFont' as key:
-        yhfont = 'YaHei Consolas Hybrid'
-        curfont, type_ = key['936']
-        if curfont != yhfont:
-            key['936'] = yhfont, type_
-            print(f'设置 Console 的字体为 {yhfont}')
-
 
 def do_link():
     if sys.platform == 'win32':

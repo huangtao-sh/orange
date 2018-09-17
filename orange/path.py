@@ -273,11 +273,13 @@ class Path(_Parent):
 
     @property
     def verinfo(self):
+        from .pyver import find_ver
         name = self.name
         TYPES = {
             '.tar.gz': 'Source',
             '.tar': 'Source',
-            '.whl': 'Wheel'
+            '.zip': 'Source',
+            '.whl': 'Wheel',
         }
         lname = name.lower()
         for suffix, type_ in TYPES.items():
@@ -286,13 +288,13 @@ class Path(_Parent):
                 break
         if type_ == 'Source':
             d = name.split('-')
-            version = d[-1]
+            version = find_ver(d[-1])
             name = '_'.join(d[:-1])
             return name, version, type_
         elif type_ == 'Wheel':
             d = name.split('-')
             attrs = dict(zip(('version', 'abi', 'platform'), d[-3:]))
-            version = d[-4]
+            version = find_ver(d[-4])
             name = '_'.join(d[:-4])
             return name, version, type_, attrs
 

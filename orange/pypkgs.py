@@ -21,6 +21,15 @@ PyLib = ROOT / 'pylib'
 excludes = set(['green-mongo', 'orange-kit', 'coco', 'glemon', 'lzbg'])
 
 
+def is_connected(url=None):
+    '''检查本机是否联网
+    '''
+    url = url or 'https://pypi.douban.com/simple'
+    from urllib.request import urlopen
+    with urlopen(url) as r:
+        return r.code == 200
+
+
 def batch_download():
     with ConfFile.open('r')as f:
         conf = json.load(f)
@@ -37,6 +46,16 @@ def batch_download():
 def get_installed_packages():
     pkgs = shell('pip3 list --format json')
     return tuple(pkg['name'] for pkg in json.loads(pkgs[0]))
+
+
+def get_cached_pkgs():
+    for path in PyLib.glob('*.*'):
+        verinfo = path.verinfo[:3]
+        if verinfo:
+            print(*verinfo,path)
+
+
+get_cached_pkgs()
 
 
 def config_pkg():

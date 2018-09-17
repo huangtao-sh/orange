@@ -33,11 +33,8 @@ def get_pkgs(root=Path(RootPath)):
         info = path.verinfo
         if info:
             name, ver = info[:2]
-            v = Pattern.search(ver)
-            if v:
-                v = Ver(v.group())
-                if v > pkgs[name][1]:
-                    pkgs[name] = path, v
+            if ver > pkgs[name][1]:
+                pkgs[name] = path, ver
     return pkgs
 
 

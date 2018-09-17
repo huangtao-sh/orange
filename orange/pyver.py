@@ -10,7 +10,7 @@
 
 import os
 import sys
-from orange import is_dev, read_shell, Path, exec_shell, R, Ver
+from orange import is_dev, read_shell, Path, exec_shell, R, Ver, extract
 from .click import arg
 from .pytools import pyupload, pysdist
 
@@ -190,11 +190,11 @@ Pattern = R/r'\d+(\.\d+)*([ab]\d+)?'
 
 
 def find_ver(path):
-    v = Pattern.search(str(path))
+    v = extract(str(path), Pattern)
     if v:
-        return Ver(v.group())
+        return Ver(v)
 
 
 def get_cur_ver(paths):
     if paths:
-        return list(sorted(paths, key=lambda x: find_ver(x)))[-1]
+        return tuple(sorted(paths, key=lambda x: find_ver(x)))[-1]

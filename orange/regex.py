@@ -117,5 +117,5 @@ def convert_cls_name(name): return '_'.join([x.lower() for x in
 def extract(s, pattern):
     if isinstance(pattern, str):
         pattern = R/pattern
-    result = tuple(pattern/s)
-    return result and result[0]
+    result = pattern.search(s)
+    return result and result.group()
