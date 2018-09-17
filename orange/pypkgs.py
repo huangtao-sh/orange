@@ -51,33 +51,23 @@ def get_installed_packages():
 
 
 def get_cached_pkgs():
-    pkgs = defaultdict(lambda: [None, Ver('0.0')])
     for path in PyLib.glob('*.*'):
         verinfo = path.verinfo[:3]
         if verinfo:
             name, ver, type_ = verinfo
-            tag = f'{name}|{type_}'
-            oldver = pkgs[tag][1]
-            if ver > oldver:
-                pkgs[tag] = path, ver
-    return pkgs
+            yield name, ver, type_, path
 
-def get_cached_pkgs():
-    for path in PyLib.glob('*.*'):
-        verinfo = path.verinfo[:3]
-        if verinfo:
-            name, ver, type_ = verinfo
-            yield name,ver,type_,path
 
 def cleanlib():
-    pkg=None
-    for r in sorted(get_cached_pkgs(),reverse=True):
-        if pkg !=r[0]:
-            pkg =r[0]
-            print(r[0],r[1],sep='\t')
+    pkg = None
+    for r in sorted(get_cached_pkgs(), reverse=True):
+        if pkg != r[0]:
+            pkg = r[0]
+            print(r[0], r[1], sep='\t')
         else:
             r[3].unlink()
             print(f'{r[3]} has been deleted')
+
 
 def config_pkg():
     packages = get_installed_packages()
@@ -101,25 +91,35 @@ def config_pkg():
 @arg('-u', '--upgrade', action='store_true', help='升级文件')
 @arg('-i', '--install', action='store_true', help='批量安装')
 @arg('-c', '--clean', action='store_true', help='清理无用的包')
-def main(config=False, download=False, upgrade=False, install=False,\
+def main(config=False, download=False, upgrade=False, install=False,
          clean=False):
     if config:
         config_pkg()
     if download:
         batch_download()
     if upgrade:
-        pkglist = shell('pip3 list -o')
-        print(*pkglist, sep='\n')
-        for line in pkglist[2:]:
-            pkg = line.split()
-            if pkg:
-                run_pip('install', '-U', pkg[0])
+        if is_connected():
+            pkglist = shell('pip3 list -o')
+            print(*pkglist, sep='\n')
+            for line in pkglist[2:]:
+                pkg = line.split()
+                if pkg:
+                    run_pip('install', '-U', pkg[0])
+        else:
+            print('未连接互联网，无法升级')
+
     if install:
-        with ConfFile.open('r')as f:
-            conf = json.load(f)
-        packages = set(conf['packages'])-excludes-set(get_installed_packages())
-        packages.add('python-docx')
-        if packages:
-            run_pip('install', *packages)
+        installed_pkgs = set(get_installed_packages())
+        if is_connected():
+            pkgs = set([p[0]for p in get_cached_pkgs()])
+            pkgs = pkgs-installed_pkgs-excludes
+            for pkg in pkgs:
+                run_pip('install', pkg)
+        else:
+            r = input('未连接互联网，请确认是否安装, Y or N?')
+            if r.lower() == 'y':
+                for name, *ver, path in get_cached_pkgs():
+                    run_pip('install', path)
+
     if clean:
         cleanlib()
