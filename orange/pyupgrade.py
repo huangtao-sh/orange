@@ -18,7 +18,7 @@ class PythonUpgrade(object):
 
     @classmethod
     def win32(cls):
-        from .regkey import add_path
+        from .regkey import add_path，HKLM, REG_SZ
         destpath = Path('%ProgramFiles%/Python')
         srcpath = Path('%localappdata%/Programs/Python')
         curpath = max(srcpath.glob('Python*'))
@@ -30,3 +30,7 @@ class PythonUpgrade(object):
             path = ';'.join([str(destpath), str(scripts)])
             add_path(path, replace='Python')
             print('设置 Path 成功！')
+
+        with HKLM/'SYSTEM/CurrentControlSet/Control/Session Manager/Environment' as key:
+            pythonpath = ";".join（[str(destpath/'DLLs'), str(destpath/'Lib'), str(destpath/'Lib/site-packages')]）
+            key['PYTHONPATH'] = pythonpath, REG_SZ
