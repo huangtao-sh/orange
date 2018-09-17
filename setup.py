@@ -14,7 +14,8 @@ console_scripts = ['conv=orange.path:convert',
                    'fkgfw=orange.fkgfw:main',
                    'sysinit=orange.sysinit:main',
                    'pkg=orange.pypkgs:main',
-                   'pyupgrade=orange.pyupgrade:PythonUpgrade.main'
+                   'pyupgrade=orange.pyupgrade:PythonUpgrade.main',
+                   'sxtm=orange.math:main',
                    ]
 
 scripts = ['scripts/pytest.py']
