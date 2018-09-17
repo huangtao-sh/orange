@@ -118,8 +118,8 @@ def main(config=False, download=False, upgrade=False, install=False,
         else:
             r = input('未连接互联网，请确认是否安装, Y or N?')
             if r.lower() == 'y':
-                for name, *ver, path in get_cached_pkgs():
-                    run_pip('install', path)
+                for pkg in get_cached_pkgs():
+                    run_pip('install', pkg[-1])
 
     if clean:
         cleanlib()
