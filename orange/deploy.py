@@ -98,8 +98,7 @@ def setup(version=None, packages=None, after_install=None,
     # 处理脚本
     if 'install' in dist.have_run and POSIX \
             and scripts:
-        from sysconfig import get_path
-        prefix = Path(get_path('scripts'))
+        prefix = Path('/usr/local/bin')
         for script in scripts:
             script_name = prefix/(Path(script).name)
             if script_name.lsuffix in ['.py', '.pyw']\
