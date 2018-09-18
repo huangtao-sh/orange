@@ -179,6 +179,7 @@ def run_cmd(cmd, *args, **options):
             params.append(v)
     params = [cmd, *args, *params]
     cmd = " ".join([f'"{x}"' if " " in x else x for x in params])
+    print(cmd)
     return shell > cmd
 
 

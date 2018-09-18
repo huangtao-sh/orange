@@ -37,7 +37,7 @@ def run_pip(*args, **options):
 
 def run_setup(*args, **options):
     cmd = 'python3 setup.py' if POSIX else 'setup'
-    return run_cmd(cmd, *args, **options)
+    return run_cmd(*cmd.split(' '), *args, **options)
 
 
 def pyclean():

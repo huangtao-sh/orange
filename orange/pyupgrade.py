@@ -17,6 +17,16 @@ class PythonUpgrade(object):
         getattr(cls, platform)()
 
     @classmethod
+    def darwin(cls):
+        from .pyver import get_cur_ver
+        curpath = get_cur_ver(Path('/usr/local/Cellar/Python').glob('*/bin'))
+        binpath = Path('/usr/local/bin')
+        print(f'当前安装路径为 {curpath}')
+        for cmd in ('python3', 'pip3'):
+            (binpath/cmd) >> (curpath/cmd)
+            print(f'连接 {cmd} 成功')
+
+    @classmethod
     def win32(cls):
         from .regkey import add_path, HKLM, REG_SZ
         destpath = Path('%ProgramFiles%/Python')
