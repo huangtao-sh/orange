@@ -110,8 +110,8 @@ class RegOperation:
 
 
 # 将类名由 TestCase 格式转换为 test_case
-def convert_cls_name(name): return '_'.join([x.lower() for x in
-                                             R/'[A-Z][a-z0-9]*'/name])
+def convert_cls_name(name):
+    return '_'.join([x.lower() for x in R/'[A-Z][a-z0-9]*'/name])
 
 
 def extract(s, pattern):
