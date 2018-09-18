@@ -13,7 +13,7 @@
 from .path import Path
 from .deploy import run_setup, pyclean
 
-libpath = Path('~/OneDrive/pylib')
+libpath = str(Path('~/OneDrive/pylib'))
 
 
 def pyupload():
