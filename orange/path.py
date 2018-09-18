@@ -10,6 +10,7 @@
 # 修订：2018-05-25 增加write_tables功能
 # 修订：2018-09-12 为 Path 增加 verinfo 功能
 # 修改：2018-09-16 09:00 增加 link_to  功能 以及 >> 和 << 操作符
+# 修订：2018-09-18 20:04 修正 __iter__ 的bug.
 
 
 import pathlib
@@ -168,12 +169,12 @@ class Path(_Parent):
         5、csv文件，按行返回数据。
         '''
         if self.is_dir():
-            return self.glob('*')
+            yield from self.glob('*')
         suffix = self.lsuffix
         if suffix.startswith('.xls'):
-            return self.iter_sheets()
+            yield from self.iter_sheets()
         elif suffix == '.xml':
-            return self.xmlroot.iterchildren()
+            yield from self.xmlroot.iterchildren()
         elif suffix == '.del':
             import re
             none_pattern = re.compile(",(?=,)")
