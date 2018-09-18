@@ -7,13 +7,13 @@
 # 修订：2016-03-19
 # 修订：2016-5-12
 # 修订：2016-9-23 新增pyupload功能，使用run_setup来进行安装调用
+# 修改：2018-09-18 20:18 代码优化
 
-import sys
-import os
-from orange import Path, exec_shell
-from orange.deploy import run_setup, pyclean
 
-libpath = str(Path('~/OneDrive/pylib'))
+from .path import Path
+from .deploy import run_setup, pyclean
+
+libpath = Path('~/OneDrive/pylib')
 
 
 def pyupload():
