@@ -322,6 +322,9 @@ class Path(_Parent):
         self.write_xlsx(writer=writer, *tables, **kw)
 
 
+HOME = Path.home()
+
+
 @command(description='Windows 格式文件转换为 Unix 文件格式')
 @arg('files', nargs='*', help='待转换的文件', metavar='file')
 def convert(files):
