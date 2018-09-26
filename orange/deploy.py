@@ -84,10 +84,13 @@ def find_package(path='.', exclude=None):
         scripts = [str(path) for path in Path('.').glob('scripts/*')]
         if scripts:
             result['scripts'] = scripts
+    ver = Ver.read_file()
+    if ver:
+        result['version'] = str(ver)
     return result
 
 
-def setup(version=None, after_install=None,
+def setup(after_install=None,
           cscripts=None, gscripts=None,
           **kwargs):
     if cscripts or gscripts:
@@ -97,15 +100,13 @@ def setup(version=None, after_install=None,
         if gscripts:
             entry_points['gui_scripts'] = gscripts
         kwargs['entry_points'] = entry_points
-    if not version:
-        # 自动获取版本
-        version = str(Ver.read_file())
 
-    pkginfo = find_package(exclude=('testing', 'scripts'))
-    kwargs = ChainMap(kwargs, pkginfo, DEFAULT)
+    kwargs = ChainMap(kwargs,
+                      find_package(exclude=('testing', 'scripts')),
+                      DEFAULT)
 
     # 安装程序
-    dist = distutils.core.setup(version=version, **kwargs)
+    dist = distutils.core.setup(**kwargs)
     # 处理脚本
     scripts = kwargs.get('scripts', None)
     if 'install' in dist.have_run and POSIX \
