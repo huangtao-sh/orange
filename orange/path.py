@@ -213,6 +213,9 @@ class Path(_Parent):
         if self.is_dir():
             os.chdir(str(self))
 
+    def __sub__(self, other):
+        return self.relative_to(other)
+
     def write_xlsx(self, *args, force: bool = False, formats: dict = None,
                    writer=None, **kw):
         if self and not force:

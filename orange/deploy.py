@@ -11,6 +11,8 @@ import distutils.core
 import setuptools
 from .htutil import shell, run_cmd
 from orange import Path, Ver, POSIX
+from .regex import R
+from collections import ChainMap
 
 
 def get_path(pkg, user=True):
@@ -53,22 +55,39 @@ DEFAULT = {'author': 'huangtao',
            'license': 'GPL', }
 
 
-def _get_requires():
-    result = []
-    requires = Path('requires.txt')
-    if requires:
-        for row in requires.lines:
-            i = row.find('#')
-            if i > -1:
-                row = row[:i]
-            row = row.strip()
-            if row:
-                result.append(row)
+def find_package(path='.', exclude=None):
+    result = {}
+    path = Path(path)
+    packages = [".".join(p.parts[:-1])for p in path.rglob('__init__.py')]
+    if exclude:
+        packages = tuple(set(packages)-set(exclude))
+    if packages:
+        result['packages'] = packages
+    data = {}
+    for pkg in filter(lambda x: "." not in x, packages):
+        root = path/pkg
+        filelist = [str(p-root)for p in root.rglob('*.*')
+                    if p.lsuffix not in ('.py', '.pyw', '.pyc')]
+        if filelist:
+            data[pkg] = filelist
+    if data:
+        result['package_data'] = data
+    requirefile = Path('requires.txt')
+    if requirefile:
+        comm = R/r'#.*'
+        requires = tuple(filter(None,
+                                map(lambda x: (comm/x % '').strip(), requirefile.lines)))
+        if requires:
+            result['install_requires'] = requires
+    scriptpath = Path('scripts')
+    if scriptpath:
+        scripts = [str(path) for path in Path('.').glob('scripts/*')]
+        if scripts:
+            result['scripts'] = scripts
     return result
 
 
-def setup(version=None, packages=None, after_install=None,
-          scripts=None, install_requires=None,
+def setup(version=None, after_install=None,
           cscripts=None, gscripts=None,
           **kwargs):
     if cscripts or gscripts:
@@ -80,29 +99,23 @@ def setup(version=None, packages=None, after_install=None,
         kwargs['entry_points'] = entry_points
     for k, v in DEFAULT.items():
         kwargs.setdefault(k, v)
-    if not packages:
-        # 自动搜索包
-        packages = setuptools.find_packages(exclude=('testing',
-                                                     'scripts'))
     if not version:
         # 自动获取版本
         version = str(Ver.read_file())
-    if not install_requires:  # 从repuires.txt 中获取依赖包
-        install_requires = _get_requires()
-    if not scripts:
-        scripts = [str(path) for path in Path('.').glob('scripts/*')]
+
+    pkginfo = find_package(exclude=('testing', 'scripts'))
+    kwargs = ChainMap(kwargs, pkginfo, DEFAULT)
+
     # 安装程序
-    dist = distutils.core.setup(scripts=scripts, packages=packages,
-                                install_requires=install_requires,
-                                version=version, **kwargs)
+    dist = distutils.core.setup(version=version, **kwargs)
     # 处理脚本
+    scripts = kwargs.get('scripts', None)
     if 'install' in dist.have_run and POSIX \
             and scripts:
-        from sysconfig import get_path
-        prefix = Path(get_path('scripts'))
+        prefix = Path('/usr/local/bin')
         for script in scripts:
             script_name = prefix/(Path(script).name)
-            if script_name.lsuffix in ['.py', '.pyw']\
+            if script_name.lsuffix in ('.py', '.pyw')\
                     and script_name.exists():
                 script_name.replace(script_name.with_suffix(''))
     if 'install' in dist.have_run and after_install:
