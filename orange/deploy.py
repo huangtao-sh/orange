@@ -8,6 +8,7 @@
 
 
 import distutils.core
+import setuptools
 from .htutil import shell, run_cmd
 from orange import Path, Ver, POSIX
 from .regex import R
