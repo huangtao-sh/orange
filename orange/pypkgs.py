@@ -8,15 +8,16 @@
 # 有一台电脑是 win32 的系统，且无法上网，无法自动升级 Python 包。故
 # 编写本程序来对这些程序包进行管理
 
-from orange import Path, shell, arg
+from orange import shell, arg
 import json
 from orange.deploy import run_pip
 from pip._internal.pep425tags import get_supported
 import sys
 from collections import defaultdict
 from orange.pyver import Ver
+from .path import HOME, Path
 
-ROOT = Path('~/OneDrive')
+ROOT = HOME/'OneDrive'
 ConfFile = ROOT / 'conf/pypkgs.conf'
 PyLib = ROOT / 'pylib'
 
@@ -28,8 +29,11 @@ def is_connected(url=None):
     '''
     url = url or 'https://pypi.douban.com/simple'
     from urllib.request import urlopen
-    with urlopen(url) as r:
-        return r.code == 200
+    try:
+        with urlopen(url) as r:
+            return r.code == 200
+    except:
+        return False
 
 
 def batch_download():
@@ -119,7 +123,8 @@ def main(config=False, download=False, upgrade=False, install=False,
             r = input('未连接互联网，请确认是否安装, Y or N?')
             if r.lower() == 'y':
                 for pkg in get_cached_pkgs():
-                    run_pip('install', pkg[-1])
+                    run_pip('install', '--no-deps', '--ignore-installed',
+                            pkg[-1])
 
     if clean:
         cleanlib()

@@ -10,6 +10,7 @@
 # 修订：2018-05-25 增加write_tables功能
 # 修订：2018-09-12 为 Path 增加 verinfo 功能
 # 修改：2018-09-16 09:00 增加 link_to  功能 以及 >> 和 << 操作符
+# 修订：2018-09-18 20:04 修正 __iter__ 的bug.
 
 
 import pathlib
@@ -87,7 +88,7 @@ class Path(_Parent):
         with self.open(*args, **kwargs)as fn:
             return fn.read()
 
-    def ensure(self, parents=True):
+    def ensure(self, parents: bool = True):
         '''确保目录存在，如果目录不存在则直接创建'''
         if not self.exists():
             self.mkdir(parents=parents)
@@ -98,7 +99,7 @@ class Path(_Parent):
         return decode(self.read('rb'))
 
     @text.setter
-    def text(self, text):
+    def text(self, text: str):
         '''写入文本文件'''
         self.write(text=text)
 
@@ -108,22 +109,24 @@ class Path(_Parent):
         return self.text.splitlines()
 
     @lines.setter
-    def lines(self, lines):
+    def lines(self, lines: 'iterable'):
         '''按行写入文件'''
-        self.write(*lines)
+        self.write(lines)
 
-    def write(self, *lines, text=None, data=None, encoding='utf8',
+    def write(self, content=None, text=None, data=None, encoding='utf8',
               parents=False):
         '''写文件'''
         if parents:
             self.parent.ensure()
-        if lines:
-            text = "\n".join(lines)
-        if text:
-            data = text.encode(encoding)
-        if data:
-            with self.open('wb')as fn:
-                fn.write(data)
+        data = content or text or data
+        if isinstance(content, (tuple, list)):
+            data = '\n'.join(content)
+        if isinstance(data, str):
+            with self.open('w', encoding=encoding)as f:
+                f.write(data)
+        elif isinstance(data, bytes):
+            with self.open('wb')as f:
+                f.write(data)
 
     def sheets(self, index=None):
         ''' 提供读取指定worksheet的功能，其中index可以为序号，
@@ -168,12 +171,12 @@ class Path(_Parent):
         5、csv文件，按行返回数据。
         '''
         if self.is_dir():
-            return self.glob('*')
+            yield from self.iterdir()
         suffix = self.lsuffix
         if suffix.startswith('.xls'):
-            return self.iter_sheets()
+            yield from self.iter_sheets()
         elif suffix == '.xml':
-            return self.xmlroot.iterchildren()
+            yield from self.xmlroot.iterchildren()
         elif suffix == '.del':
             import re
             none_pattern = re.compile(",(?=,)")
@@ -185,7 +188,7 @@ class Path(_Parent):
             with self.open() as fn:
                 yield from csv.reader(fn)
 
-    def extractall(self, path='.', members=None):
+    def extractall(self, path: str = '.', members=None):
         '''如本文件为tar打包文件，则解压缩至指定目录'''
         import tarfile
         path = str(Path(path))
@@ -210,7 +213,11 @@ class Path(_Parent):
         if self.is_dir():
             os.chdir(str(self))
 
-    def write_xlsx(self, *args, force=False, formats=None, writer=None, **kw):
+    def __sub__(self, other):
+        return self.relative_to(other)
+
+    def write_xlsx(self, *args, force: bool = False, formats: dict = None,
+                   writer=None, **kw):
         if self and not force:
             s = input('%s 已存在，请确认是否覆盖，Y or N?\n' % self.name)
             if s.upper() != 'Y':
@@ -243,7 +250,7 @@ class Path(_Parent):
         path = str(self.absolute())
         return path.lower() if NT else path
 
-    def link_to(self, target):
+    def link_to(self, target: 'Path'):
         '''
             创建文件或目录连接
             由 self 连接到 target
@@ -257,14 +264,14 @@ class Path(_Parent):
             return
         return self.symlink_to(target, target.is_dir())
 
-    def __rshift__(self, target):
+    def __rshift__(self, target: 'Path'):
         '''
           Path('a.txt') >> Path('b.txt')
           把 a.txt 连接到 b.txt 上
         '''
         return self.link_to(Path(target))
 
-    def __lshift__(self, target):
+    def __lshift__(self, target: 'Path'):
         '''
           Path('a.txt') << Path('b.txt')
           把 b.txt 连接到 a.txt 上
@@ -321,15 +328,12 @@ class Path(_Parent):
         self.write_xlsx(writer=writer, *tables, **kw)
 
 
+HOME = Path.home()
+
+
 @command(description='Windows 格式文件转换为 Unix 文件格式')
 @arg('files', nargs='*', help='待转换的文件', metavar='file')
 def convert(files):
     for file in files:
         Path(file).lines = Path(file).lines
         print('转换文件"%s"成功' % (file))
-
-
-if __name__ == '__main__':
-    root = Path('~/Onedrive/pylib')
-    for path in root.glob('*.*'):
-        print(*path.verinfo, sep='\t')
