@@ -293,6 +293,8 @@ class Path(_Parent):
             if lname.endswith(suffix):
                 name = name[:-len(suffix)]
                 break
+        else:
+            type_=None
         if type_ == 'Source':
             d = name.split('-')
             version = find_ver(d[-1])
