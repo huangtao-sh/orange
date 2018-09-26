@@ -8,7 +8,6 @@
 
 
 import distutils.core
-import setuptools
 from .htutil import shell, run_cmd
 from orange import Path, Ver, POSIX
 from .regex import R
@@ -97,8 +96,6 @@ def setup(version=None, after_install=None,
         if gscripts:
             entry_points['gui_scripts'] = gscripts
         kwargs['entry_points'] = entry_points
-    for k, v in DEFAULT.items():
-        kwargs.setdefault(k, v)
     if not version:
         # 自动获取版本
         version = str(Ver.read_file())
