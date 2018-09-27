@@ -6,8 +6,7 @@
 # 创建：2018-09-14 20:35
 
 import sys
-
-from .path import Path
+from .shell import Path
 
 
 class PythonUpgrade(object):

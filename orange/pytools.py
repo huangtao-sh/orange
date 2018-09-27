@@ -10,10 +10,10 @@
 # 修改：2018-09-18 20:18 代码优化
 
 
-from .path import Path
+from .shell import HOME
 from .deploy import run_setup, pyclean
 
-libpath = Path('~/OneDrive/pylib')
+libpath = HOME/'OneDrive/pylib'
 
 
 def pyupload():
