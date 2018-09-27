@@ -13,7 +13,6 @@ POSIX = os.name == 'posix'
 
 DEFAULT = {
     'capture_output': True,
-    'shell': True,
     'encoding': 'UTF8' if POSIX else 'GBK',
 }
 
@@ -36,7 +35,7 @@ class Shell(type):
         '''
         if not isinstance(args, tuple):
             args = (args,)
-        result = self(args)
+        result = self(*args)
         print(result.stdout, result.stderr, sep='\n')
         return result.returncode
 
