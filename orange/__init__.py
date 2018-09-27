@@ -15,7 +15,7 @@ from .mail import sendmail, tsendmail, Mail, MailClient
 from .utils import command, arg, datetime, LOCAL, UTC, date_add, ONEDAY,\
     LTZ, ONESECOND, now, R, extract, convert_cls_name
 from .__version__ import version
-from .shell import sh, POSIX,is_dev, is_installed, Path, decode, POSIX, HOME
+from .shell import sh, POSIX, is_dev, is_installed, Path, decode, HOME
 
 __all__ = 'get_ver', 'Path', 'get_path', 'HOME',\
     'first', 'last', 'Ver', 'decode',\
