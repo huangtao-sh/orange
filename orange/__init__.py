@@ -9,13 +9,14 @@ from .version import first, last, Ver, get_ver
 from .deploy import get_path, run_pip, run_setup, setup
 from .debug import decorator, trace, config_log, ensure, info, fprint, verbose
 from .htutil import classproperty, cachedproperty, read_shell, write_shell, wlen, encrypt, \
-    decrypt, PY, get_py, exec_shell, split, deprecation, generator, cstr, deprecate, tprint,\
+    decrypt,  exec_shell, split, deprecation, generator, cstr, deprecate, tprint,\
     shell, cformat
 from .mail import sendmail, tsendmail, Mail, MailClient
+
 from .utils import command, arg, datetime, LOCAL, UTC, date_add, ONEDAY,\
-    LTZ, ONESECOND, now, R, extract, convert_cls_name
-from .__version__ import version
+    LTZ, ONESECOND, now, R, extract, convert_cls_name, PY, get_py
 from .shell import sh, POSIX, is_dev, is_installed, Path, decode, HOME
+from .__version__ import version
 
 __all__ = 'get_ver', 'Path', 'get_path', 'HOME',\
     'first', 'last', 'Ver', 'decode',\

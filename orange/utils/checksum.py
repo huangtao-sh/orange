@@ -3,15 +3,11 @@
 # 模块：校验位计算模块
 # 作者：黄涛
 
+from itertools import cycle
+
 
 def checksum(s, calc, Key, Sum):
     return Sum[sum(calc(c, k) for c, k in zip(s, Key)) % len(Sum)]
-
-
-def circle(s):
-    while True:
-        for i in s:
-            yield i
 
 
 def id_card(card_no):
@@ -50,7 +46,7 @@ def bank_card(card_no):
         card_no = card_no[:-1]
         return card_no+checksum(reversed(card_no),
                                 lambda x, y: sum(divmod(int(x)*y, 10)),
-                                circle([2, 1]), Sum)
+                                cycle([2, 1]), Sum)
 
 
 def credit_code(code):
