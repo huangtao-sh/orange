@@ -10,9 +10,10 @@
 import distutils.core
 import setuptools
 from .htutil import shell, run_cmd
-from orange import Path, Ver, POSIX
-from .regex import R
+from .shell import Path, POSIX
+from .utils import R
 from collections import ChainMap
+from .version import Ver
 
 
 def get_path(pkg, user=True):

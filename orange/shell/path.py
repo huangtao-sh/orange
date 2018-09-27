@@ -16,7 +16,15 @@
 import pathlib
 import os
 from codecs import BOM_UTF8, BOM_LE, BOM_BE
-from orange.click import command, arg
+from orange.utils import command, arg
+from tempfile import TemporaryDirectory
+from .shell import POSIX
+
+
+class TempDir(TemporaryDirectory):
+    def __enter__(self):
+        return Path(self.name)
+
 
 BOM_CODE = {
     BOM_UTF8: 'utf_8',
@@ -25,9 +33,6 @@ BOM_CODE = {
 }
 
 DEFAULT_CODES = 'utf8', 'gbk', 'utf16', 'big5'
-
-NT = os.name == 'nt'
-POSIX = os.name == 'posix'
 
 
 def is_installed(file_name: str)->bool:
@@ -74,6 +79,10 @@ class Path(_Parent):
     def __bool__(self):
         '''判断文件是否存在'''
         return self.exists()
+
+    @classmethod
+    def tempdir(cls, *args, **kw):
+        return TempDir(*args, **kw)
 
     def __new__(cls, path='.', *args, **kwargs):
         if isinstance(path, str):
@@ -243,12 +252,12 @@ class Path(_Parent):
     def uri(self):
         '''统一网址'''
         ur = self.resolve().as_uri()
-        return ur.lower() if NT else ur
+        return ur if POSIX else ur.lower()
 
     @property
     def fullname(self):
         path = str(self.absolute())
-        return path.lower() if NT else path
+        return path if POSIX else path.lower()
 
     def link_to(self, target: 'Path'):
         '''
@@ -294,7 +303,7 @@ class Path(_Parent):
                 name = name[:-len(suffix)]
                 break
         else:
-            type_=None
+            type_ = None
         if type_ == 'Source':
             d = name.split('-')
             version = find_ver(d[-1])

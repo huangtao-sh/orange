@@ -9,8 +9,6 @@
 
 from functools import partial
 
-__all__ = 'command', 'arg'
-
 
 class _Command(object):
     kwargs = {}            # ArgumentParser 的参数，由command函数生成

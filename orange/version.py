@@ -5,7 +5,7 @@
 # Email:huangtao.sh@icloud.com
 # 创建：2016-03-11 12:59
 # 修订：2016-09-10 增加Ver 类来管理版本
-from orange.path import Path
+from orange.shell import Path
 from distutils.version import StrictVersion
 from orange.debug import ensure
 

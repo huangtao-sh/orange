@@ -4,18 +4,18 @@
 # 创建：2015-9-2
 # 修订：2018-2-2 新增 __version__
 
-from .path import is_dev, is_installed, Path, decode, POSIX, HOME
+
 from .version import first, last, Ver, get_ver
 from .deploy import get_path, run_pip, run_setup, setup
 from .debug import decorator, trace, config_log, ensure, info, fprint, verbose
 from .htutil import classproperty, cachedproperty, read_shell, write_shell, wlen, encrypt, \
     decrypt, PY, get_py, exec_shell, split, deprecation, generator, cstr, deprecate, tprint,\
     shell, cformat
-from .dateutil import datetime, LOCAL, UTC, date_add, ONEDAY, LTZ, ONESECOND, now
-from .regex import R, extract, convert_cls_name
 from .mail import sendmail, tsendmail, Mail, MailClient
-from .click import command, arg
+from .utils import command, arg, datetime, LOCAL, UTC, date_add, ONEDAY,\
+    LTZ, ONESECOND, now, R, extract, convert_cls_name
 from .__version__ import version
+from .shell import sh, POSIX,is_dev, is_installed, Path, decode, POSIX, HOME
 
 __all__ = 'get_ver', 'Path', 'get_path', 'HOME',\
     'first', 'last', 'Ver', 'decode',\

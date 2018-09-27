@@ -9,7 +9,7 @@
 import sys
 from plistlib import dump, Dict
 from orange import Path
-from orange.click import arg
+from .utils import arg
 
 
 @arg('filename', nargs=1, help='文件名')

@@ -14,7 +14,7 @@ import smtplib
 import io
 import base64
 from .debug import ensure
-from .path import Path
+from .shell import Path
 
 
 def sendmail(*messages):

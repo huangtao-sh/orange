@@ -11,7 +11,7 @@
 import os
 import warnings
 from functools import wraps
-from .regex import R
+from .utils import R
 
 
 def deprecate(func):
@@ -225,7 +225,7 @@ _des = None
 
 
 def __get_des():
-    from .pyDes import des, PAD_PKCS5
+    from orange.utils.pyDes import des, PAD_PKCS5
     global _des
     if _des is None:
         _des = des(key='huangtao', padmode=PAD_PKCS5)
