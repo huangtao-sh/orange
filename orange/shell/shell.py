@@ -6,38 +6,49 @@
 # 创建：2018-09-27 19:21
 
 import os
-from collections import ChainMap
-from subprocess import run, list2cmdline
+from subprocess import getstatusoutput
 
 POSIX = os.name == 'posix'
 
-DEFAULT = {
-    'capture_output': True,
-    'encoding': 'UTF8' if POSIX else 'GBK',
-    'shell': not POSIX
-}
-
 
 class Shell(type):
-    def __call__(self, *args, **kw):
+    def __call__(self, cmd: str, *args: list, prefix: str = '-',
+                 **options)->'code,output':
+        '''
+        调用方式： code,output = sh('dir')
+        返回值：   code 系统返回值
+                  output     命令输出内容
+        '''
+        if prefix == None:
+            prefix = '-' if POSIX else '/'
+        params = [cmd]
+        for arg in args:
+            if not isinstance(arg, str):
+                arg = str(arg)
+            if any(space in arg for space in (' ', '\t'))and not arg.startswith('"'):
+                arg = f'"{arg}"'
+            params.append(arg)
+        for option, arg in options.items():
+            if prefix == '-' and len(option) > 1:
+                p = '--'
+            else:
+                p = prefix
+            if isinstance(arg, bool):
+                if arg:
+                    params.append(f'{p}{option}')
+            else:
+                arg = str(arg)
+                params.append(f'{p}{option}:{arg}')
+        cmd = " ".join(params)
+        return getstatusoutput(cmd)
+
+    def __gt__(self, cmd: str)->int:
         '''
         调用方式： sh > 'dir'
         系统直接打印输出执行命令的输出
         返回值 ：操作系统的返回值
         '''
-        return run(args,  **ChainMap(kw, DEFAULT))
-
-    def __gt__(self, args):
-        '''
-        调用方式： r = sh('dir')
-        返回值： r.returncode 系统返回值
-                r.stdout     命令输出内容
-                r.stderr     错误输出内容
-        '''
-        if not isinstance(args, tuple):
-            args = (args,)
-        result = self(*args, capture_output=False)
-        return result.returncode
+        return os.system(cmd)
 
 
 class sh(metaclass=Shell):
