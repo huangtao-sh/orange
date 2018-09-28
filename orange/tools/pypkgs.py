@@ -15,7 +15,7 @@ from pip._internal.pep425tags import get_supported
 import sys
 from collections import defaultdict
 from orange.pyver import Ver
-from .path import HOME, Path
+from orange.shell import HOME, Path
 
 ROOT = HOME/'OneDrive'
 ConfFile = ROOT / 'conf/pypkgs.conf'

@@ -2,20 +2,20 @@
 import os
 from orange import setup
 
-console_scripts = ['conv=orange.path:convert',
-                   'pysdist=orange.pytools:pysdist',
-                   'pyupload=orange.pytools:pyupload',
-                   'canshu=orange.ggcs:canshu',
+console_scripts = ['conv=orange.utils.path:convert',
+                   'pysdist=orange.tools.pytools:pysdist',
+                   'pyupload=orange.tools.pytools:pyupload',
+                   'canshu=orange.tools.ggcs:canshu',
                    'pyver=orange.pyver:VersionMgr.main',
-                   'plist=orange.plist:main',
-                   'pyinit=orange.init:main',
-                   'gclone=orange.gclone:proc',
+                   'plist=orange.tools.plist:main',
+                   'pyinit=orange.tools.init:main',
+                   'gclone=orange.tools.gclone:proc',
                    'mongodeploy=orange.mongodb:main',
-                   'fkgfw=orange.fkgfw:main',
-                   'sysinit=orange.sysinit:main',
-                   'pkg=orange.pypkgs:main',
-                   'pyupgrade=orange.pyupgrade:PythonUpgrade.main',
-                   'sxtm=orange.math:main',
+                   'fkgfw=orange.tools.fkgfw:main',
+                   'sysinit=orange.tools.sysinit:main',
+                   'pkg=orange.tools.pypkgs:main',
+                   'pyupgrade=orange.tools.pyupgrade:PythonUpgrade.main',
+                   'sxtm=orange.tools.math:main',
                    ]
 
 scripts = ['scripts/pytest.py']

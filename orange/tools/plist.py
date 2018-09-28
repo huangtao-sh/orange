@@ -8,8 +8,8 @@
 
 import sys
 from plistlib import dump, Dict
-from orange import Path
-from .utils import arg
+from orange.shell import Path
+from orange.utils import arg
 
 
 @arg('filename', nargs=1, help='文件名')

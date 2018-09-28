@@ -10,8 +10,8 @@
 # 修改：2018-09-18 20:18 代码优化
 
 
-from .shell import HOME
-from .deploy import run_setup, pyclean
+from orange.shell import HOME
+from orange.deploy import run_setup, pyclean
 
 libpath = HOME/'OneDrive/pylib'
 

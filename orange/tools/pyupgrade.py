@@ -6,7 +6,7 @@
 # 创建：2018-09-14 20:35
 
 import sys
-from .shell import Path
+from orange.shell import Path
 
 
 class PythonUpgrade(object):
@@ -17,7 +17,7 @@ class PythonUpgrade(object):
 
     @classmethod
     def darwin(cls):
-        from .pyver import get_cur_ver
+        from orange.pyver import get_cur_ver
         curpath = get_cur_ver(Path('/usr/local/Cellar/Python').glob('*/bin'))
         binpath = Path('/usr/local/bin')
         print(f'当前安装路径为 {curpath}')
@@ -27,7 +27,7 @@ class PythonUpgrade(object):
 
     @classmethod
     def win32(cls):
-        from .regkey import add_path, HKLM, REG_SZ
+        from orange.regkey import add_path, HKLM, REG_SZ
         destpath = Path('%ProgramFiles%/Python')
         srcpath = Path('%localappdata%/Programs/Python')
         curpath = max(srcpath.glob('Python*'))
