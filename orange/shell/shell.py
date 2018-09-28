@@ -24,7 +24,8 @@ class Shell(type):
         系统直接打印输出执行命令的输出
         返回值 ：操作系统的返回值
         '''
-        return run(args, **ChainMap(kw, DEFAULT))
+        shell = len(args) == 1
+        return run(args, **ChainMap(kw, shell=shell, DEFAULT))
 
     def __gt__(self, args):
         '''
@@ -35,8 +36,7 @@ class Shell(type):
         '''
         if not isinstance(args, tuple):
             args = (args,)
-        result = self(*args)
-        print(result.stdout, result.stderr, sep='\n')
+        result = self(*args, capture_output=False)
         return result.returncode
 
 
