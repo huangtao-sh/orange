@@ -24,8 +24,8 @@ class Shell(type):
         系统直接打印输出执行命令的输出
         返回值 ：操作系统的返回值
         '''
-        shell = len(args) == 1
-        return run(args, **ChainMap(kw, shell=shell, DEFAULT))
+        kw['shell'] = len(args) == 1
+        return run(args,  **ChainMap(kw, DEFAULT))
 
     def __gt__(self, args):
         '''
