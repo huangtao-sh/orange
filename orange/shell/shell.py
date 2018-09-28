@@ -7,13 +7,14 @@
 
 import os
 from collections import ChainMap
-from subprocess import run
+from subprocess import run, list2cmdline
 
 POSIX = os.name == 'posix'
 
 DEFAULT = {
     'capture_output': True,
     'encoding': 'UTF8' if POSIX else 'GBK',
+    'shell': not POSIX
 }
 
 
@@ -24,7 +25,6 @@ class Shell(type):
         系统直接打印输出执行命令的输出
         返回值 ：操作系统的返回值
         '''
-        kw['shell'] = len(args) == 1
         return run(args,  **ChainMap(kw, DEFAULT))
 
     def __gt__(self, args):

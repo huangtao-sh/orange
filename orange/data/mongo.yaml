@@ -1,0 +1,12 @@
+systemLog:
+  destination: file
+  path: "{logpath}/mongodb.log"
+  logAppend: true
+storage:
+  dbPath: "{dbpath}"
+  directoryPerDB: true
+  engine: "{engine}"
+net:
+  bindIp: 127.0.0.1
+  port: 27017
+  
