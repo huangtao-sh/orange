@@ -10,4 +10,3 @@ from .datetime import UTC, LOCAL, now, datetime, FixedOffset, ONEDAY,\
     ONESECOND, date_add, LTZ
 from .regex import R, convert_cls_name, extract
 from .pinyin import get_py, PY
-from .xlsx import Book
