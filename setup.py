@@ -3,8 +3,8 @@ import os
 from orange import setup
 
 console_scripts = ['conv=orange.utils.path:convert',
-                   'pysdist=orange.tools.pytools:pysdist',
-                   'pyupload=orange.tools.pytools:pyupload',
+                   'pysdist=orange.pykit.pysetup:pysdist',
+                   'pyupload=orange.pykit.pysetup:pyupload',
                    'canshu=orange.tools.ggcs:canshu',
                    'pyver=orange.pyver:VersionMgr.main',
                    'plist=orange.tools.plist:main',
@@ -21,9 +21,9 @@ console_scripts = ['conv=orange.utils.path:convert',
 scripts = ['scripts/pytest.py']
 
 if os.name == 'posix':
-    console_scripts.append('pysetup=orange.pysetup:py_setup')
+    console_scripts.append('pysetup=orange.pykit.pysetup:py_setup')
 else:
-    scripts.append('orange/pysetup.py')
+    scripts.append('orange/pykit/pysetup.py')
 
 setup(
     name='orange_kit',

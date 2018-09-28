@@ -12,7 +12,6 @@ import os
 import sys
 from orange import is_dev, read_shell, Path, exec_shell, R, Ver, extract
 from .utils import arg
-from .tools.pytools import pyupload, pysdist
 
 
 class VersionMgr:
@@ -164,10 +163,7 @@ class VersionMgr:
     @arg('-c', '--commit', nargs='?', metavar='message', help='提交变更')
     @arg('-s', '--show', action='store_true', help='查看当前版本状态')
     @arg('-y', '--sync', action='store_true', help='同步程序')
-    @arg('-d', '--sdist', action='store_true', help='源代码打包')
-    @arg('-U', '--upload', action='store_true', help='打包上传')
-    def main(cls, show=None, upgrade=None, commit=None, sync=False,
-             sdist=False, upload=False):
+    def main(cls, show=None, upgrade=None, commit=None, sync=False):
         obj = cls()
         if obj:
             if show:
@@ -180,10 +176,6 @@ class VersionMgr:
                 obj.upgrade_ver()
             if sync:
                 obj.sync()
-            if upload:
-                pyupload()
-            if sdist:
-                pysdist()
 
 
 Pattern = R/r'\d+(\.\d+)*([ab]\d+)?'
