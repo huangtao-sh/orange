@@ -28,19 +28,18 @@ def pip(*args)->int:
 
 
 def pyupload():
-    pysetup('sdist', '--dist-dir', libpath, 'upload')
-    pyclean()
+    pysdist('upload')
 
 
-def pysdist():
-    pysetup('sdist', '--dist-dir', libpath)
+def pysdist(*args):
+    pysetup('sdist',  '--dist-dir', libpath, *args)
     pyclean()
 
 
 def pyclean():
-    Patterns = 'build', 'dist', R/r'.*?egg-info'
+    Patterns = ('build', 'dist', R/r'.*?egg-info')
     for path in Path('.'):
-        if path.is_dir() and any(pattern == path.name for pattern in Patterns):
+        if path.is_dir() and path.name in Patterns:
             path.rmtree()
             print(f'Path {path} have been deleted!')
     return
