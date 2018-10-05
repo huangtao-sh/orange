@@ -198,19 +198,27 @@ class Path(_Parent):
                 yield from csv.reader(fn)
 
     def extractall(self, path='.', members=None):
+        def conv_members(members, sep='/'):
+            if members:
+                repl_sep = '\\' if sep = '/' else '/'
+                return tuple(map(lambda x: x.replace(repl_sep, sep), members))
+
         name = self.name.lower()
         if name.endswith('.rar'):
+            members = conv_members(members,'/' if POSIX else '\\')
             members = " ".join(members) if members else ""
             sh > f'unrar x {self} {members} {path}'
-        elif name.endswith('.tgz') or name.endswith('.tar.gz'):
+        elif any(map(name.endswith, ('.tar.gz', '.tgz', '.gz'))):
             import tarfile
             with tarfile.open(str(self), 'r')as f:
+                members=conv_members(members,'/')
                 members = tuple(map(f.getmember, members)
                                 )if members else f.getmembers()
                 f.extractall(path, members)
         elif name.endswith('.zip'):
             import zipfile
             with zipfile.ZipFile(str(self))as f:
+                members=conv_members(members,'/')
                 for fileinfo in f.filelist:
                     if not (fileinfo.flag_bits and 0x0800):
                         fileinfo.filename = fileinfo.filename.encode(
@@ -219,7 +227,7 @@ class Path(_Parent):
                 f.extractall(path, members)
 
     def pack(self, tarfilename: str, **kw):
-        ''' 
+        '''
         把指定的文件或目录打包成一个压缩文件，
         文件格式为： .tgz
         其中: kw 为 add 参数，可以为：

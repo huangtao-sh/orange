@@ -17,7 +17,7 @@ def run_cmd(cmd: str, *args, **kw)->int:
 def pyclean():
     Patterns = ('build', 'dist', '*egg-info')
     for path in filter(
-            lambda path: path.is_dir() and tuple(filter(path.match, Patterns)), Path('.')):
+            lambda path: any(map(path.match, Patterns)), Path('.')):
         path.rmtree()
         print(f'Path {path} have been deleted!')
 
