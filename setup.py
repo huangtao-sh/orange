@@ -33,6 +33,5 @@ setup(
     url='https://github.com/huangtao-sh/orange.git',
     scripts=scripts,
     cscripts=console_scripts,
-    # entry_points={'console_scripts':console_scripts},
-        license='GPL',
+    license='GPL',
 )
