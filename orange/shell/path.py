@@ -289,7 +289,7 @@ class Path(_Parent):
 
     @property
     def verinfo(self):
-        from .pyver import find_ver
+        from orange.pyver import find_ver
         name = self.name
         TYPES = {
             '.tar.gz': 'Source',
