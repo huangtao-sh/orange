@@ -18,7 +18,7 @@ import os
 from codecs import BOM_UTF8, BOM_LE, BOM_BE
 from orange.utils import command, arg
 from tempfile import TemporaryDirectory
-from .shell import POSIX
+from .shell import POSIX, sh
 
 
 class TempDir(TemporaryDirectory):
@@ -197,11 +197,45 @@ class Path(_Parent):
             with self.open() as fn:
                 yield from csv.reader(fn)
 
-    def extractall(self, path: str = '.', members=None):
-        '''如本文件为tar打包文件，则解压缩至指定目录'''
+    def extractall(self, path='.', members=None):
+        name = self.name.lower()
+        if name.endswith('.rar'):
+            members = " ".join(members) if members else ""
+            sh > f'unrar x {self} {members} {path}'
+        elif name.endswith('.tgz') or name.endswith('.tar.gz'):
+            import tarfile
+            with tarfile.open(str(self), 'r')as f:
+                members = tuple(map(f.getmember, members)
+                                )if members else f.getmembers()
+                f.extractall(path, members)
+        elif name.endswith('.zip'):
+            import zipfile
+            with zipfile.ZipFile(str(self))as f:
+                for fileinfo in f.filelist:
+                    if not (fileinfo.flag_bits and 0x0800):
+                        fileinfo.filename = fileinfo.filename.encode(
+                            'cp437').decode('gbk')
+                        f.NameToInfo[fileinfo.filename] = fileinfo
+                f.extractall(path, members)
+
+    def pack(self, tarfilename: str, **kw):
+        ''' 
+        把指定的文件或目录打包成一个压缩文件，
+        文件格式为： .tgz
+        其中: kw 为 add 参数，可以为：
+        arcname=None, specifies an alternative name for the file in the archive.
+        recursive=True, 是否包括子目录
+        filter=None ，一个函数，过滤不需要的文件
+        '''
         import tarfile
-        path = str(Path(path))
-        tarfile.open(str(self), 'r').extractall(path, members)
+        tarfilename = str(Path(tarfilename).with_suffix('.tgz'))
+        with tarfile.open(tarfilename, 'w:gz')as f:
+            if self.is_dir():
+                cwd, name = self, '.'
+            else:
+                cwd, name = self.parent, self.name
+            cwd.chdir()
+            f.add(name, **kw)
 
     @property
     def lsuffix(self):
