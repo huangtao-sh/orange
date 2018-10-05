@@ -21,7 +21,7 @@ console_scripts = ['conv=orange.utils.path:convert',
 scripts = ['scripts/pytest.py']
 
 if os.name == 'posix':
-    console_scripts.append('pysetup=orange.pykit.pysetup:py_setup')
+    console_scripts.append('pysetup=orange.pykit.pysetup:pyinstall')
 else:
     scripts.append('orange/pykit/pysetup.py')
 
