@@ -4,16 +4,23 @@
 # License:GPL
 # Email:huangtao.sh@icloud.com
 # 创建：2016-03-12 18:05
-# 修改：2018-09-12 10:29 采用 shell 执行系统命令
 
 
 import distutils.core
 import setuptools
-from .htutil import shell, run_cmd
-from .shell import Path, POSIX
-from .utils import R
+from orange.shell import Path, POSIX
+from orange.utils import R
 from collections import ChainMap
-from .version import Ver
+
+VerPattern = R/r'version\s*=\s*"(.*?)"'
+
+
+def get_pkg_ver():
+    for path in Path('.').rglob('__version__.py'):
+        for line in path.lines:
+            g = VerPattern.match(line)
+            if g:
+                return g.group(1)
 
 
 def get_path(pkg, user=True):
@@ -32,22 +39,6 @@ def get_path(pkg, user=True):
         else:
             root = Path('%programdata%') / pkg
             return root, root
-
-
-def run_pip(*args, **options):
-    return run_cmd('pip3', *args, **options)
-
-
-def run_setup(*args, **options):
-    cmd = 'python3 setup.py' if POSIX else 'setup'
-    return run_cmd(*cmd.split(' '), *args, **options)
-
-
-def pyclean():
-    for path in ('build', 'dist', '*egg-info'):
-        for p in Path('.').glob(path):
-            p.rmtree()
-            print(f'Path {p} have been deleted!')
 
 
 DEFAULT = {'author': 'huangtao',
@@ -85,9 +76,9 @@ def find_package(path='.', exclude=None):
         scripts = [str(path) for path in Path('.').glob('scripts/*')]
         if scripts:
             result['scripts'] = scripts
-    ver = Ver.read_file()
+    ver = get_pkg_ver()
     if ver:
-        result['version'] = str(ver)
+        result['version'] = ver
     return result
 
 
