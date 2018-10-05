@@ -1,4 +1,4 @@
-from orange import Path
+from orange import Path, HOME
 import os
 import sys
 
@@ -20,10 +20,9 @@ DARWIN_LINKS = {'conf/vimrc_mac': '.vimrc',
 
 def win_init():
     # 修改注册表，增加.PY 和.PYW 为可执行文件
-    from orange.regkey import HKLM, REG_SZ, HKCU
+    from orange.shell.regkey import HKLM, REG_SZ, HKCU
     with HKCU/'GNU/Emacs' as key:
-        home = str(Path('~'))
-        key['HOME'] = home, REG_SZ
+        key['HOME'] = str(HOME), REG_SZ
         print('设置 Emacs 的 HOME 目录完成。')
 
     with HKLM/'SYSTEM/CurrentControlSet/Control/Session Manager/Environment' as key:
@@ -41,7 +40,7 @@ def do_link():
     elif sys.platform == 'darwin':
         LINKS.update(DARWIN_LINKS)
 
-    home = Path('~')
+    home = HOME
     src = home / 'OneDrive'
 
     for source, dest in LINKS.items():
