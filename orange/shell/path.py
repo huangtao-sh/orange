@@ -168,8 +168,8 @@ class Path(_Parent):
     @property
     def xmlroot(self):
         '''如果指定的文件为xml文件，则返回本文件的根元素'''
-        from lxml.etree import parse
-        return parse(str(self)).getroot()
+        from xml.etree.ElementTree import fromstring
+        return fromstring(self.text)
 
     def __iter__(self):
         '''根据文件的不同，迭代返回不同的内容。支持如下文件：
@@ -185,7 +185,7 @@ class Path(_Parent):
         if suffix.startswith('.xls'):
             yield from self.iter_sheets()
         elif suffix == '.xml':
-            yield from self.xmlroot.iterchildren()
+            yield from self.xmlroot
         elif suffix == '.del':
             import re
             none_pattern = re.compile(",(?=,)")
@@ -205,20 +205,20 @@ class Path(_Parent):
 
         name = self.name.lower()
         if name.endswith('.rar'):
-            members = conv_members(members,'/' if POSIX else '\\')
+            members = conv_members(members, '/' if POSIX else '\\')
             members = " ".join(members) if members else ""
             sh > f'unrar x {self} {members} {path}'
         elif any(map(name.endswith, ('.tar.gz', '.tgz', '.gz'))):
             import tarfile
             with tarfile.open(str(self), 'r')as f:
-                members=conv_members(members,'/')
+                members = conv_members(members, '/')
                 members = tuple(map(f.getmember, members)
                                 )if members else f.getmembers()
                 f.extractall(path, members)
         elif name.endswith('.zip'):
             import zipfile
             with zipfile.ZipFile(str(self))as f:
-                members=conv_members(members,'/')
+                members = conv_members(members, '/')
                 for fileinfo in f.filelist:
                     if not (fileinfo.flag_bits and 0x0800):
                         fileinfo.filename = fileinfo.filename.encode(
@@ -273,7 +273,7 @@ class Path(_Parent):
             s = input('%s 已存在，请确认是否覆盖，Y or N?\n' % self.name)
             if s.upper() != 'Y':
                 return
-        from .xlsx import Book
+        from orange.xlsx import Book
         if callable(writer):
             with Book(str(self), formats=formats)as book:
                 writer(book, *args, **kw)
