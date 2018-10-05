@@ -200,7 +200,7 @@ class Path(_Parent):
     def extractall(self, path='.', members=None):
         def conv_members(members, sep='/'):
             if members:
-                repl_sep = '\\' if sep = '/' else '/'
+                repl_sep = '\\' if sep == '/' else '/'
                 return tuple(map(lambda x: x.replace(repl_sep, sep), members))
 
         name = self.name.lower()
