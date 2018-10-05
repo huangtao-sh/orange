@@ -11,7 +11,7 @@
 import os
 import sys
 from orange import is_dev, read_shell, Path, exec_shell, R, Ver, extract
-from .utils import arg
+from orange.utils import arg
 
 
 class VersionMgr:
