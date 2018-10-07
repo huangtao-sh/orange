@@ -10,8 +10,10 @@
 
 import os
 import sys
-from orange import is_dev, read_shell, Path, exec_shell, R, Ver, extract
+from orange import Path, R, sh
 from orange.utils import arg
+from .version import Ver
+from .setup import get_pkg_ver
 
 
 class VersionMgr:
@@ -44,11 +46,8 @@ class VersionMgr:
             lambda: setattr(self, 'is_clean', True)
         }
 
-        s = read_shell('git status')  # 读取git状态
-        if s == []:
-            self.repository = False
-            return
-        for line in s:
+        out = sh('git status')[1]  # 读取git状态
+        for line in out.splitlines():
             for k, v in patterns.items():
                 r = k.match(line)
                 if r:
@@ -57,21 +56,23 @@ class VersionMgr:
 
     def __init__(self):
         if Path('.git').is_dir():
-            self.ver = Ver.read_file()
-            if self.ver:
+            ver = get_pkg_ver()
+            if ver:
+                self.verfile, ver = ver
+                self.ver = Ver(ver)
                 self.proc_git()
 
-    def write_version_file(self, ver):
-        self.ver.write_file()
+    def write_version_file(self):
+        self.verfile.text = f'version = "{self.ver}"'
 
     def show_version(self):     # 显示版本号与git状态
-        if self.repository:
-            print('\n当前分支： %s' % (self.branch))
-            print('远程版本最否最新：%s' % (self.up_to_date))
-            print('工作区是否干净：%s' % (self.is_clean))
+        if self.branch:
+            print(f'当前分支：           {self.branch}')
+            print(f'远程版本最否最新：   {self.up_to_date}')
+            print(f'工作区是否干净：     {self.is_clean}')
             if self.ver:
-                print('当前版本文件名：%s' % (self.ver.filename))
-                print('当前程序版本：%s' % (self.ver))
+                print(f'当前版本文件名：     {self.verfile}')
+                print(f'当前程序版本：       {self.ver}')
         else:
             print('没有纳入GIT管理')
 
@@ -99,7 +100,7 @@ class VersionMgr:
         if self.not_staged:
             print('以下文件将被提交到git')
             [print('\t%s' % (fil)) for fil in self.not_staged]
-            [exec_shell('git add "%s"' % (fil)) for fil in
+            [sh > f'git add "{fil}"' for fil in
              self.not_staged]
             self.to_be_commited.extend(self.not_staged)
 
@@ -108,9 +109,9 @@ class VersionMgr:
                 ver = str(self.ver)
                 self.ver.upgrade()
                 print('版本号由%s升级到%s' % (ver, self.ver))
-                self.ver.write_file()
-                exec_shell('git commit -a -m "%s"' % (self.commit))
-                exec_shell('git push --all')
+                self.write_version_file()
+                sh > f'git commit -a -m "{self.commit}"'
+                sh > 'git push --all'
 
     def upgrade_ver(self):
         ver = self.ver

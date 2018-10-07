@@ -20,7 +20,7 @@ def get_pkg_ver():
         for line in path.lines:
             g = VerPattern.match(line)
             if g:
-                return g.group(1)
+                return path, g.group(1)
 
 
 def get_path(pkg, user=True):
@@ -78,7 +78,7 @@ def find_package(path='.', exclude=None):
             result['scripts'] = scripts
     ver = get_pkg_ver()
     if ver:
-        result['version'] = ver
+        result['version'] = ver[1]
     return result
 
 
