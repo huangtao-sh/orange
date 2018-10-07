@@ -183,9 +183,7 @@ Pattern = R/r'\d+(\.\d+)*([ab]\d+)?'
 
 
 def find_ver(path):
-    v = extract(str(path), Pattern)
-    if v:
-        return Ver(v)
+    return Ver(str(path))
 
 
 def get_cur_ver(paths):
