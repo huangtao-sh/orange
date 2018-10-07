@@ -134,7 +134,7 @@ class VersionMgr:
         if self.ver:
             self.ver.upgrade(self.upgrade)
             print('版本号由%s升级到%s' % (ver, self.ver))
-            self.ver.write_file()
+            self.write_version_file()
             ver = self.ver
             if ver.prerelease is None:
                 cmds = ['git commit -a -m "升级到最终版"',
@@ -147,15 +147,15 @@ class VersionMgr:
                         'pysdist',
                         'pysetup']
                 for cmd in cmds:
-                    exec_shell(cmd)
+                    sh > cmd
 
     def sync(self):
-        s = read_shell('git status')
+        s = sh('git status')[1].splitlines()
         if 'working directory clean' not in s[-1]:
             print(*s, sep='\n')
         elif "Your branch is ahead of" in s[1]:
-            os.system('git push --all')
-        os.system('git pull --all')
+            sh > 'git push --all'
+        sh > 'git pull --all'
 
     @classmethod
     @arg('-u', '--upgrade', nargs='?', action='store',
