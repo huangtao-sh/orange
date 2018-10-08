@@ -331,30 +331,18 @@ class Path(_Parent):
 
     @property
     def verinfo(self):
-        from orange.pyver import find_ver
-        name = self.name
-        TYPES = {
-            '.tar.gz': 'Source',
-            '.tar': 'Source',
-            '.zip': 'Source',
-            '.whl': 'Wheel',
-        }
-        lname = name.lower()
-        for suffix, type_ in TYPES.items():
-            if lname.endswith(suffix):
-                name = name[:-len(suffix)]
-                break
-        else:
-            type_ = None
-        if type_ == 'Source':
-            d = name.split('-')
-            version = find_ver(d[-1])
+        from orange.pykit.version import Ver
+        if self.match('*.tar.gz', '*.zip'):
+            type_ = 'Source'
+            d = self.name.split('-')
+            version = Ver(d[-1])
             name = '_'.join(d[:-1])
             return name, version, type_
-        elif type_ == 'Wheel':
-            d = name.split('-')
+        elif self.match('*.whl'):
+            type_ = 'Wheel'
+            d = self.name.split('-')
             attrs = dict(zip(('version', 'abi', 'platform'), d[-3:]))
-            version = find_ver(d[-4])
+            version = Ver(d[-4])
             name = '_'.join(d[:-4])
             return name, version, type_, attrs
 
@@ -393,3 +381,21 @@ def convert(files):
     for file in files:
         Path(file).lines = Path(file).lines
         print('转换文件"%s"成功' % (file))
+
+
+def clean_trash():
+    from contextlib import suppress
+    Patterns = ('._.DS_Store',
+                '.DS_Store',
+                '._*',
+                '~$*',
+                'Thumbs.db',
+                '*.tmp',
+                'Icon?')
+    print('开始清查系统垃圾文件！')
+    ROOT = HOME / 'OneDrive/工作'
+    for file_ in ROOT.rglob('*.*'):
+        if any(map(file_.match, Patterns)):
+            with suppress(PermissionError):
+                file_.unlink()
+                print(f'删除文件 {file_.name}')

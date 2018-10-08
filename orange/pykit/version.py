@@ -7,7 +7,6 @@
 
 import re
 from distutils.version import StrictVersion
-from orange import ensure, Path
 
 SEGMENT = {'major': 0, 'm': 0,
            'minor': 1, 'n': 1,
@@ -33,6 +32,7 @@ class Ver(StrictVersion):
     '''
 
     def upgrade(self, segment=4):
+        from orange import ensure
         '''升级版本号
         其中参数 segment可以为：
         major:升级主版本号

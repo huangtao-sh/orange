@@ -10,11 +10,10 @@
 
 from orange import shell, arg
 import json
-from orange.deploy import run_pip
+from orange.pykit import pip, Ver
 from pip._internal.pep425tags import get_supported
 import sys
 from collections import defaultdict
-from orange.pyver import Ver
 from orange.shell import HOME, Path
 
 ROOT = HOME/'OneDrive'
@@ -43,10 +42,10 @@ def batch_download():
     params = conf['params']
     param = ' '.join(f'--{key}={value}' for key, value in params.items())
     for pkg in packages:
-        result = run_pip('download', '-d', str(PyLib), param, pkg)
+        result = pip('download', '-d', str(PyLib), param, pkg)
         if result:
-            run_pip('download', '-d', str(PyLib),
-                    pkg, **{'no-binary': ':all:'})
+            pip('download', '-d', str(PyLib),
+                pkg, **{'no-binary': ':all:'})
 
 
 def get_installed_packages():
@@ -69,7 +68,6 @@ def cleanlib():
     for r in sorted(get_cached_pkgs(), reverse=True):
         if pkg != r[0]:
             pkg = r[0]
-            print(r[0], r[1], sep='\t')
         else:
             r[3].unlink()
             print(f'{r[3]} has been deleted')
@@ -110,7 +108,7 @@ def main(config=False, download=False, upgrade=False, install=False,
             for line in pkglist[2:]:
                 pkg = line.split()
                 if pkg:
-                    run_pip('install', '-U', pkg[0])
+                    pip('install', '-U', pkg[0])
         else:
             print('未连接互联网，无法升级')
 
@@ -120,13 +118,13 @@ def main(config=False, download=False, upgrade=False, install=False,
             pkgs = set([p[0]for p in get_cached_pkgs()])
             pkgs = pkgs-installed_pkgs-excludes
             for pkg in pkgs:
-                run_pip('install', pkg)
+                pip('install', pkg)
         else:
             r = input('未连接互联网，请确认是否安装, Y or N?')
             if r.lower() == 'y':
                 for pkg in get_cached_pkgs():
-                    run_pip('install', '--no-deps', '--ignore-installed',
-                            pkg[-1])
+                    pip('install', '--no-deps', '--ignore-installed',
+                        pkg[-1])
 
     if clean:
         cleanlib()

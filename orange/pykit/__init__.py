@@ -6,3 +6,4 @@
 # 创建：2018-09-28 22:20
 
 from .pysetup import pip, pysetup, run_cmd
+from .version import Ver
