@@ -380,6 +380,9 @@ class Path(_Parent):
 
         self.write_xlsx(writer=writer, *tables, **kw)
 
+    def match(self, *patterns):
+        return any(map(super().match, patterns))
+
 
 HOME = Path.home()
 
