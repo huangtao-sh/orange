@@ -13,6 +13,8 @@ encoding = 'utf8' if POSIX else 'gbk'
 
 
 class Shell(type):
+    __slots__ = ()
+
     def __call__(self, cmd: str, *args: list, prefix: str = '-',
                  input=None, capture_output=True, **options)->'code,output':
         '''
@@ -57,4 +59,5 @@ class Shell(type):
 
 
 class sh(metaclass=Shell):
+    __slots__ = ()
     pass

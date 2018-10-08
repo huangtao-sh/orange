@@ -59,6 +59,7 @@ DSTDIFF = DSTOFFSET - STDOFFSET
 
 
 class LocalTimezone(dt.tzinfo):
+    __slots__ = ()
 
     def utcoffset(self, dt):
         if self._isdst(dt):
@@ -93,6 +94,7 @@ LOCAL = LTZ
 
 
 class datetime(dt.datetime):
+    __slots__ = ()
     '''日期类，支持从字符串转换'''
     def __new__(cls, year, month=0, day=0, hour=0, minute=0, second=0,
                 microsecond=0, tzinfo=None):

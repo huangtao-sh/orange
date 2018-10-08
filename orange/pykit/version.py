@@ -60,5 +60,5 @@ class Ver(StrictVersion):
             nv = [0]*3
             nv[:segment+1] = self.version[:segment+1]
             nv[segment] += 1
-            self.version = nv
+            self.version = tuple(nv)
         return self

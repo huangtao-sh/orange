@@ -1,29 +1,14 @@
 import unittest
-from orange.version import upgrade_ver
 from orange import datetime, convert_cls_name, command, arg, PY
+from orange.pykit import Ver
 
 
 class TestVer(unittest.TestCase):
     def test_ver(self):
-        for ver, seg, new_ver in (('1.0', 'o', '1.0.1a1'),
-                                  ('1.0.1', 'n', '1.1a1'),
-                                  ('1.0.1a1', '#', '1.0.1a2'),
-                                  ('1.0.1a2', 'd', '1.0.1b1'),
-                                  ('1.2.1a3', 'd', '1.2.1b1'),
-                                  ('1.2.1b3', 'dev', '1.2.1'),
-                                  ('1.3.4', 0, '2.0a1'),
-                                  ):
-            self.assertEqual(upgrade_ver(ver, seg), new_ver)
-
-    def test_debug(self):
-        '''
-        from orange.debug import trace
-        @trace
-        def abc(a,b):
-            return a+b            
-
-        abc(1,20)
-        '''
+        self.assertEqual(Ver('1.2a1').upgrade('#'),Ver('1.2a2'))
+        self.assertEqual(Ver('1.2a1').upgrade(3),Ver('1.2b1'))
+        self.assertEqual(Ver('1.2').upgrade(1),Ver('1.3a1'))
+        
 
     def test_datetime(self):
         d = datetime.today()
@@ -37,7 +22,7 @@ class TestVer(unittest.TestCase):
         self.assertEqual('test_case', convert_cls_name('TestCase'))
 
     def test_wlen(self):
-        from orange.htutil import wlen
+        from orange.utils.htutil import wlen
         self.assertEqual(wlen('我们like'), 8)
 
     '''

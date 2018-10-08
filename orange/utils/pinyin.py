@@ -5,6 +5,7 @@
 # Email:huangtao.sh@icloud.com
 # 创建：2018-09-27 21:29
 
+
 def get_py(s, style=4, sep=''):
     '''
     获取拼音字母。
@@ -14,6 +15,7 @@ def get_py(s, style=4, sep=''):
 
 
 class _PY(type):
+    __slots__ = ()
 
     def __truediv__(self, s):
         return get_py(s)
@@ -27,4 +29,5 @@ class PY(metaclass=_PY):
     获取拼音首字母：  PY/'我们'   ===>   'wm'
     获取拼音：       PY|'我们'   ===>    'wo men'
     '''
+    __slots__ = ()
     pass

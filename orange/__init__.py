@@ -8,7 +8,7 @@
 from .version import first, last, Ver, get_ver
 from .pykit.setup import get_path, setup
 from .debug import decorator, trace, config_log, ensure, info, fprint, verbose
-from .htutil import classproperty, cachedproperty, read_shell, write_shell, wlen, encrypt, \
+from orange.utils.htutil import classproperty, cachedproperty, read_shell, write_shell, wlen, encrypt, \
     decrypt,  exec_shell, split, deprecation, generator, cstr, deprecate, tprint,\
     shell, cformat
 from .mail import sendmail, tsendmail, Mail, MailClient

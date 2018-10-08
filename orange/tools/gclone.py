@@ -9,7 +9,7 @@
 # 修改：2018-09-12 10:35 采用 shell 来处理命令行
 
 #from stdlib import parse_args,exec_shell
-from orange import arg, shell, Path
+from orange import arg, sh, Path
 import sys
 
 
@@ -28,6 +28,6 @@ def proc(repos=None, user=None, protocol='SSH'):
     URL = f'git@github.com:{user}' if protocol == 'SSH' else \
         f'https://github.com/{user}'
     for repo in repos:
-        url = '%s/%s.git' % (URL, repo)
+        url = f'{URL}/{repo}.git'
         print('cloning', url)
-        shell > f'git clone {url}'
+        sh > f'git clone {url}'

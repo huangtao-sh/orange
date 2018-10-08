@@ -17,6 +17,7 @@ class _R(type):
     其中pattern可以是str，也可以是list或tuple。
     如pattern为list或tuple，则其格式为 pattern,flag。
     flag的格式可以是"AILUMSX"或是整数。'''
+    __slots__ = ()
 
     def __truediv__(self, pattern):
         if not isinstance(pattern, (list, tuple)):
@@ -39,6 +40,7 @@ class R(metaclass=_R):
        if (R/pattern).match(str):
           pass
     '''
+    __slots__ = ('_regex',)
 
     def __init__(self, pattern, flag=0):
         '''初始化，生成模板。'''
@@ -86,6 +88,7 @@ class RegOperation:
     3、批量替换
       s=R/pattern/str%repl
     '''
+    __slots__ = '_regex', '_search'
 
     def __init__(self, regex, search):
         '''对象初始化，由R对象自动调用。'''
