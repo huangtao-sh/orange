@@ -8,7 +8,7 @@
 import logging
 import sys
 from functools import wraps
-from .shell import is_dev
+from orange.shell import is_dev
 
 
 __all__ = 'decorator', 'trace', 'config_log', 'ensure', 'info', 'fprint', 'verbose'

@@ -13,7 +13,7 @@ from email.header import Header
 import smtplib
 import io
 import base64
-from .debug import ensure
+from orange.utils.debug import ensure
 from .shell import Path
 
 

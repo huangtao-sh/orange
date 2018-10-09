@@ -5,21 +5,20 @@
 # 修订：2018-2-2 新增 __version__
 
 
-from .version import first, last, Ver, get_ver
-from .pykit.setup import get_path, setup
-from .debug import decorator, trace, config_log, ensure, info, fprint, verbose
+from orange.pykit.setup import get_path, setup
+from orange.utils.debug import decorator, trace, config_log, ensure, info, fprint, verbose
 from orange.utils.htutil import classproperty, cachedproperty, read_shell, write_shell, wlen, encrypt, \
     decrypt,  exec_shell, split, deprecation, generator, cstr, deprecate, tprint,\
     shell, cformat
-from .mail import sendmail, tsendmail, Mail, MailClient
+from orange.mail import sendmail, tsendmail, Mail, MailClient
+from orange.utils import command, arg, datetime, LOCAL, UTC, date_add, ONEDAY,\
+    LTZ, ONESECOND, now, R, extract, convert_cls_name, PY, get_py,\
+    first, last, _any, _all
+from orange.shell import sh, POSIX, is_dev, is_installed, Path, decode, HOME
+from orange.__version__ import version
 
-from .utils import command, arg, datetime, LOCAL, UTC, date_add, ONEDAY,\
-    LTZ, ONESECOND, now, R, extract, convert_cls_name, PY, get_py
-from .shell import sh, POSIX, is_dev, is_installed, Path, decode, HOME
-from .__version__ import version
-
-__all__ = 'get_ver', 'Path', 'get_path', 'HOME',\
-    'first', 'last', 'Ver', 'decode',\
+__all__ = 'Path', 'get_path', 'HOME',\
+    'first', 'last', 'decode',\
     'setup', 'decorator', 'trace', 'config_log', 'ensure', 'info',\
     'classproperty', 'is_installed', 'is_dev', 'cachedproperty',\
     'read_shell', 'write_shell', 'exec_shell', 'wlen',\

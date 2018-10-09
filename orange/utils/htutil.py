@@ -12,6 +12,25 @@ import os
 import warnings
 from functools import wraps
 from .regex import R
+from contextlib import suppress
+
+
+def first(iterable):
+    with suppress(Exception):
+        return tuple(iterable)[0]
+
+
+def last(iterable):
+    with suppress(Exception):
+        return tuple(iterable)[-1]
+
+
+def _any(func, iterable):
+    return any(map(func, iterable))
+
+
+def _all(func, iterable):
+    return all(map(func, iterable))
 
 
 def deprecate(func):
