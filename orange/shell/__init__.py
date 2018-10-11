@@ -6,4 +6,5 @@
 # 创建：2018-09-27 19:28
 
 from .shell import POSIX, sh
-from .path import is_dev, is_installed, Path, decode, POSIX, HOME
+from .path import is_dev, is_installed, Path, decode, POSIX, HOME,\
+    tempdir, tempfile

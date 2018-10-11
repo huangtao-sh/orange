@@ -17,13 +17,34 @@ import pathlib
 import os
 from codecs import BOM_UTF8, BOM_LE, BOM_BE
 from orange.utils import command, arg
-from tempfile import TemporaryDirectory
+from tempfile import TemporaryDirectory, NamedTemporaryFile
 from .shell import POSIX, sh
+from contextlib import contextmanager
 
 
 class TempDir(TemporaryDirectory):
     def __enter__(self):
         return Path(self.name)
+
+
+tempdir = TempDir
+
+
+@contextmanager
+def tempfile(data=None, writer=None, **kw):
+    if data:
+        kw['mode'] = 'wb' if isinstance(data, bytes) else 'w'
+    kw['delete'] = False
+    try:
+        with NamedTemporaryFile(**kw) as f:
+            if data:
+                f.write(data)
+            if callable(writer):
+                writer(f)
+            tmp = Path(f.name)
+        yield tmp
+    finally:
+        tmp.unlink()
 
 
 BOM_CODE = {
@@ -186,16 +207,8 @@ class Path(_Parent):
             yield from self.iter_sheets()
         elif suffix == '.xml':
             yield from self.xmlroot
-        elif suffix == '.del':
-            import re
-            none_pattern = re.compile(",(?=,)")
-            for line in self.lines:
-                if line:
-                    yield eval(none_pattern.sub(",None", line))
-        elif suffix == '.csv':
-            import csv
-            with self.open() as fn:
-                yield from csv.reader(fn)
+        elif suffix in('.del', '.csv'):
+            yield from self.iter_csv()
 
     def extractall(self, path='.', members=None):
         def conv_members(members, sep='/'):
