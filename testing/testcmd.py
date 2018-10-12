@@ -35,33 +35,3 @@ class TestVer(unittest.TestCase):
         self.assertListEqual(s, a)
         self.assertEqual(s[0], a[0])
 
-    '''
-    def test_crawler(this):
-        from orange.hclient import Crawler,wait,BS4
-        class TestCrawler(Crawler):
-            root='http://localhost'
-            async def run(self):
-                soup=await self.get_soup('blog')
-                this.assertTrue(soup.title.text.startswith('Well'))
-                await self.json()
-            async def json(self):
-                j=await self.get_json('vacation/2017')
-                this.assertTrue('anpai' in j)
-                
-        TestCrawler.start()
-    '''
-
-    def test_args(self):
-        @command(description='command show')
-        def show():
-            pass
-
-        @command(description='command work')
-        @arg('-a', '--appear')
-        def work():
-            pass
-
-        @command(show, work, description='main command')
-        @arg('-p', '--pear')
-        def main():
-            pass
