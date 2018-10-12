@@ -1,5 +1,5 @@
 import unittest
-from orange import datetime, convert_cls_name, command, arg, PY
+from orange import datetime, convert_cls_name, command, arg, PY, Path
 from orange.pykit import Ver
 from orange import tempfile, tempdir
 
@@ -27,13 +27,13 @@ class TestVer(unittest.TestCase):
 
     def test_path(self):
         s = ['abc', 'def']
-        with tempfile(data="\n".join(s), suffix='.csv')as f:
+        with Path.tempfile(data="\n".join(s), suffix='.csv')as f:
             a = list(x[0] for x in f.iter_csv())
-            self.assertEqual(f.suffix,'.csv')
+            self.assertEqual(f.suffix, '.csv')
             self.assertTrue(f)
         self.assertFalse(f)
         self.assertListEqual(s, a)
-        self.assertEqual(s[0],a[0])
+        self.assertEqual(s[0], a[0])
 
     '''
     def test_crawler(this):

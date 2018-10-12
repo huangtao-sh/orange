@@ -105,6 +105,10 @@ class Path(_Parent):
     def tempdir(cls, *args, **kw):
         return TempDir(*args, **kw)
 
+    @classmethod
+    def tempfile(cls, data=None, writer=None, suffix=None, **kw):
+        return tempfile(data=data, writer=writer, suffix=suffix, **kw)
+
     def __new__(cls, path='.', *args, **kwargs):
         if isinstance(path, str):
             if path.startswith('~'):  # 支持用户目录开头
