@@ -20,6 +20,9 @@ class Ver(StrictVersion):
     version_re = re.compile(r'.*?(\d+) \. (\d+) (\. (\d+))? ([ab](\d+))?',
                             re.VERBOSE | re.ASCII)
 
+    def __init__(self,vstring,*args,**kw):
+        super().__init__(str(vstring),*args,**kw)
+
     def _cmp(self, other):
         if isinstance(other, str):
             other = Ver(other)

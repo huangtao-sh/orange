@@ -388,6 +388,11 @@ class Path(_Parent):
     def match(self, *patterns):
         return any(map(super().match, patterns))
 
+    def find(self, pattern: str, key=None, reverse: bool = True)->'Path':
+        result = tuple(sorted(self.rglob(pattern), key=key, reverse=reverse))
+        if result:
+            return result[0]
+
 
 HOME = Path.home()
 
