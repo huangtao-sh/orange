@@ -185,7 +185,7 @@ class Path(_Parent):
         import csv
 
         def reader():
-            with open(str(self), encoding=encoding, errors=errors) as f:
+            with self.open(encoding=encoding, errors=errors) as f:
                 yield from f
 
         return csv.reader(reader(), dialect=dialect, **kw)
