@@ -188,7 +188,7 @@ class Path(_Parent):
             with self.open(encoding=encoding, errors=errors) as f:
                 yield from f
 
-        return csv.reader(reader(), dialect=dialect, **kw)
+        return csv.reader(reader()if encoding else self.lines, dialect=dialect, **kw)
 
     @property
     def xmlroot(self):
