@@ -23,6 +23,8 @@ from contextlib import contextmanager
 
 
 class TempDir(TemporaryDirectory):
+    __slots__ = ()
+
     def __enter__(self):
         return Path(self.name)
 
@@ -60,15 +62,17 @@ def is_installed(file_name: str)->bool:
     '''
     确认指定的文件是否已被安装。
     '''
-    from sysconfig import get_path
-    paths = [str(Path(get_path(name)).resolve()) for name in ('platlib', 'scripts')]
-    cmdfile = Path(file_name).resolve()
-    return any(map(str(cmdfile).startswith, paths))
+    if file_name:
+        from sysconfig import get_path
+        paths = [str(Path(get_path(name)).resolve())
+                for name in ('platlib', 'scripts')]
+        cmdfile = Path(file_name).resolve()
+        return any(map(str(cmdfile).startswith, paths))
 
 
-def is_dev(cmd: str=None)->bool:
+def is_dev(cmd: str = None)->bool:
     import sys
-    cmd=cmd or sys.argv[0]
+    cmd = cmd or sys.argv[0]
     if('wsgi' in cmd):
         return False
     return 'test' in cmd or (not is_installed(cmd))
@@ -89,11 +93,11 @@ def decode(d: bytes)->str:
     raise Exception('解码失败')
 
 
-_Parent=pathlib.WindowsPath if os.name == 'nt' else pathlib.PosixPath
+_Parent = pathlib.WindowsPath if os.name == 'nt' else pathlib.PosixPath
 
 
 class Path(_Parent):
-    __slots__=()
+    __slots__ = ()
 
     def __bool__(self):
         '''判断文件是否存在'''
@@ -110,9 +114,9 @@ class Path(_Parent):
     def __new__(cls, path='.', *args, **kwargs):
         if isinstance(path, str):
             if path.startswith('~'):  # 支持用户目录开头
-                path=os.path.expanduser(path)
+                path = os.path.expanduser(path)
             elif path[0] in('%', '$'):  # 支持环境变量转义
-                path=os.path.expandvars(path)
+                path = os.path.expandvars(path)
         return super().__new__(cls, path, *args, **kwargs)
 
     def read(self, *args, **kwargs):
@@ -120,7 +124,7 @@ class Path(_Parent):
         with self.open(*args, **kwargs)as fn:
             return fn.read()
 
-    def ensure(self, parents: bool=True):
+    def ensure(self, parents: bool = True):
         '''确保目录存在，如果目录不存在则直接创建'''
         if not self.exists():
             self.mkdir(parents=parents)
@@ -150,9 +154,9 @@ class Path(_Parent):
         '''写文件'''
         if parents:
             self.parent.ensure()
-        data=content or text or data
+        data = content or text or data
         if isinstance(content, (tuple, list)):
-            data='\n'.join(content)
+            data = '\n'.join(content)
         if isinstance(data, str):
             with self.open('w', encoding=encoding)as f:
                 f.write(data)
@@ -164,18 +168,18 @@ class Path(_Parent):
         ''' 提供读取指定worksheet的功能，其中index可以为序号，
             也可以为表的名称。'''
         import xlrd
-        book=xlrd.open_workbook(filename=str(self))
+        book = xlrd.open_workbook(filename=str(self))
         if isinstance(index, int):
-            sheet=book.sheet_by_index(index)
+            sheet = book.sheet_by_index(index)
         elif isinstance(index, str):
-            sheet=book.sheet_by_name(index)
+            sheet = book.sheet_by_name(index)
         return sheet and sheet._cell_values
 
     def iter_sheets(self):
         '''如果指定的文件为excel文件，则可以迭代读取本文件的数据。
         返回：表的索引、表名、数据'''
         import xlrd
-        book=xlrd.open_workbook(filename=str(self))
+        book = xlrd.open_workbook(filename=str(self))
         for index, sheet in enumerate(book.sheets()):
             yield index, sheet.name, sheet._cell_values
 
@@ -204,7 +208,7 @@ class Path(_Parent):
         '''
         if self.is_dir():
             yield from self.iterdir()
-        suffix=self.lsuffix
+        suffix = self.lsuffix
         if suffix.startswith('.xls'):
             yield from self.iter_sheets()
         elif suffix == '.xml':
@@ -215,30 +219,30 @@ class Path(_Parent):
     def extractall(self, path='.', members=None):
         def conv_members(members, sep='/'):
             if members:
-                repl_sep='\\' if sep == '/' else '/'
+                repl_sep = '\\' if sep == '/' else '/'
                 return tuple(map(lambda x: x.replace(repl_sep, sep), members))
 
-        name=self.name.lower()
+        name = self.name.lower()
         if name.endswith('.rar'):
-            members=conv_members(members, '/' if POSIX else '\\')
-            members=" ".join(members) if members else ""
+            members = conv_members(members, '/' if POSIX else '\\')
+            members = " ".join(members) if members else ""
             sh > f'unrar x {self} {members} {path}'
         elif any(map(name.endswith, ('.tar.gz', '.tgz', '.gz'))):
             import tarfile
             with tarfile.open(str(self), 'r')as f:
-                members=conv_members(members, '/')
-                members=tuple(map(f.getmember, members)
+                members = conv_members(members, '/')
+                members = tuple(map(f.getmember, members)
                                 )if members else f.getmembers()
                 f.extractall(path, members)
         elif name.endswith('.zip'):
             import zipfile
             with zipfile.ZipFile(str(self))as f:
-                members=conv_members(members, '/')
+                members = conv_members(members, '/')
                 for fileinfo in f.filelist:
                     if not (fileinfo.flag_bits and 0x0800):
-                        fileinfo.filename=fileinfo.filename.encode(
+                        fileinfo.filename = fileinfo.filename.encode(
                             'cp437').decode('gbk')
-                        f.NameToInfo[fileinfo.filename]=fileinfo
+                        f.NameToInfo[fileinfo.filename] = fileinfo
                 f.extractall(path, members)
 
     def pack(self, tarfilename: str, **kw):
@@ -251,12 +255,12 @@ class Path(_Parent):
         filter=None ，一个函数，过滤不需要的文件
         '''
         import tarfile
-        tarfilename=str(Path(tarfilename).with_suffix('.tgz'))
+        tarfilename = str(Path(tarfilename).with_suffix('.tgz'))
         with tarfile.open(tarfilename, 'w:gz')as f:
             if self.is_dir():
-                cwd, name=self, '.'
+                cwd, name = self, '.'
             else:
-                cwd, name=self.parent, self.name
+                cwd, name = self.parent, self.name
             cwd.chdir()
             f.add(name, **kw)
 
@@ -282,10 +286,10 @@ class Path(_Parent):
     def __sub__(self, other):
         return self.relative_to(other)
 
-    def write_xlsx(self, *args, force: bool=False, formats: dict=None,
+    def write_xlsx(self, *args, force: bool = False, formats: dict = None,
                    writer=None, **kw):
         if self and not force:
-            s=input('%s 已存在，请确认是否覆盖，Y or N?\n' % self.name)
+            s = input('%s 已存在，请确认是否覆盖，Y or N?\n' % self.name)
             if s.upper() != 'Y':
                 return
         from orange.xlsx import Book
@@ -308,12 +312,12 @@ class Path(_Parent):
     @property
     def uri(self):
         '''统一网址'''
-        ur=self.resolve().as_uri()
+        ur = self.resolve().as_uri()
         return ur if POSIX else ur.lower()
 
     @property
     def fullname(self):
-        path=str(self.absolute())
+        path = str(self.absolute())
         return path if POSIX else path.lower()
 
     def link_to(self, target: 'Path'):
@@ -348,17 +352,17 @@ class Path(_Parent):
     def verinfo(self):
         from orange.pykit.version import Ver
         if self.match('*.tar.gz', '*.zip'):
-            type_='Source'
-            d=self.name.split('-')
-            version=Ver(d[-1])
-            name='_'.join(d[:-1])
+            type_ = 'Source'
+            d = self.name.split('-')
+            version = Ver(d[-1])
+            name = '_'.join(d[:-1])
             return name, version, type_
         elif self.match('*.whl'):
-            type_='Wheel'
-            d=self.name.split('-')
-            attrs=dict(zip(('version', 'abi', 'platform'), d[-3:]))
-            version=Ver(d[-4])
-            name='_'.join(d[:-4])
+            type_ = 'Wheel'
+            d = self.name.split('-')
+            attrs = dict(zip(('version', 'abi', 'platform'), d[-3:]))
+            version = Ver(d[-4])
+            name = '_'.join(d[:-4])
             return name, version, type_, attrs
 
     @property
@@ -378,7 +382,7 @@ class Path(_Parent):
         '''
         def writer(book, *tables):
             for table in tables:
-                pos=table.pop('pos', 'A1')
+                pos = table.pop('pos', 'A1')
                 book.add_table(pos, **table)
 
         self.write_xlsx(writer=writer, *tables, **kw)
@@ -386,26 +390,26 @@ class Path(_Parent):
     def match(self, *patterns):
         return any(map(super().match, patterns))
 
-    def find(self, pattern: str, key=None, reverse: bool=True)->'Path':
-        result=tuple(sorted(self.rglob(pattern), key=key, reverse=reverse))
+    def find(self, pattern: str, key=None, reverse: bool = True)->'Path':
+        result = tuple(sorted(self.rglob(pattern), key=key, reverse=reverse))
         if result:
             return result[0]
 
 
-HOME=Path.home()
+HOME = Path.home()
 
 
 @command(description='Windows 格式文件转换为 Unix 文件格式')
 @arg('files', nargs='*', help='待转换的文件', metavar='file')
 def convert(files):
     for file in files:
-        Path(file).lines=Path(file).lines
+        Path(file).lines = Path(file).lines
         print('转换文件"%s"成功' % (file))
 
 
 def clean_trash():
     from contextlib import suppress
-    Patterns=('._.DS_Store',
+    Patterns = ('._.DS_Store',
                 '.DS_Store',
                 '._*',
                 '~$*',
@@ -413,7 +417,7 @@ def clean_trash():
                 '*.tmp',
                 'Icon?')
     print('开始清查系统垃圾文件！')
-    ROOT=HOME / 'OneDrive/工作'
+    ROOT = HOME / 'OneDrive/工作'
     for file_ in ROOT.rglob('*.*'):
         if any(map(file_.match, Patterns)):
             with suppress(PermissionError):
