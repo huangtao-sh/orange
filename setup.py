@@ -10,12 +10,11 @@ console_scripts = ['conv=orange.utils.path:convert',
                    'plist=orange.tools.plist:main',
                    'pyinit=orange.tools.init:main',
                    'gclone=orange.tools.gclone:proc',
-                   'mongodeploy=orange.tools.mongodb:main',
                    'dpmongo=orange.tools.mongodb:main',
                    'fkgfw=orange.tools.fkgfw:main',
                    'sysinit=orange.tools.sysinit:main',
                    'pkg=orange.tools.pypkgs:main',
-                   'pyupgrade=orange.tools.pyupgrade:PythonUpgrade.main',
+                   'dppy=orange.tools.deppython:PythonUpgrade.main',
                    'sxtm=orange.tools.math:main',
                    'cleanwork=orange.shell.path:clean_trash'
                    ]
