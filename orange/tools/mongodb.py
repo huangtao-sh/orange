@@ -7,9 +7,8 @@
 
 import sys
 import platform
-from orange.deploy import get_path
 from orange import exec_shell, read_shell, Path
-from orange.pyver import Ver, get_cur_ver
+from orange.pykit.pyver import Ver, get_cur_ver
 
 MONGOCONFIG = '''
 systemLog:
@@ -46,9 +45,10 @@ def win_deploy():
     except:
         print('未安装MongoDb服务')
 
-    root = get_path(SERVERNAME, False)[0]
+    root = Path('%Programdata%/Mongodb')
+    root.ensure()
     data_path = root / 'data'
-    if not data_path.exists():
+    if not data_path:
         data_path.ensure()
         print('创建数据目录：%s' % (data_path))
     config_file = root/'mongo.conf'
