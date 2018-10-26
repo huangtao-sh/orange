@@ -33,6 +33,7 @@ def win_init():
         key['PATHEXT'] = pathext, REG_SZ
     bin = str(HOME/'OneDrive/bin')
     add_path(bin, bin)
+    print(f'设置路径：{bin}')
 
 
 def do_link():
