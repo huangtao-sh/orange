@@ -2,13 +2,13 @@ from orange import Path, HOME
 import os
 import sys
 
-LINKS = {'bin': 'bin',
-         'emacsd/emacs': '.emacs',
-         'conf/gitconfig': '.gitconfig',
-         'conf/ssh': '.ssh',
-         'conf/pypirc': '.pypirc',
+LINKS = {
+    'emacsd/emacs': '.emacs',
+    'conf/gitconfig': '.gitconfig',
+    'conf/ssh': '.ssh',
+    'conf/pypirc': '.pypirc',
 
-         }
+}
 
 WIN32_LINKS = {'conf/pip/pip.conf': 'AppData/Roaming/pip/pip.ini',
                'conf/vimrc_win': '_vimrc',
