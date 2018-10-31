@@ -267,7 +267,7 @@ def decrypt(code):
     return b.decode('utf8')
 
 
-generator = type((x for x in 'hello'))
+generator = type(x for x in 'hello world.')
 
 
 def split(data, size=1000):

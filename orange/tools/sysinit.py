@@ -20,7 +20,7 @@ DARWIN_LINKS = {'conf/vimrc_mac': '.vimrc',
 
 def win_init():
     # 修改注册表，增加.PY 和.PYW 为可执行文件
-    from orange.shell.regkey import HKLM, REG_SZ, HKCU
+    from orange.shell.regkey import HKLM, REG_SZ, HKCU, add_path
     with HKCU/'GNU/Emacs' as key:
         key['HOME'] = str(HOME), REG_SZ
         print('设置 Emacs 的 HOME 目录完成。')
@@ -31,6 +31,9 @@ def win_init():
             if ext not in set(pathext.split(';')):
                 pathext += ';'+ext
         key['PATHEXT'] = pathext, REG_SZ
+    bin = str(HOME/'OneDrive/bin')
+    add_path(bin, bin)
+    print(f'设置路径：{bin}')
 
 
 def do_link():
