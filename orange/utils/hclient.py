@@ -5,10 +5,11 @@
 # Email:huangtao.sh@icloud.com
 # 创建：2016-12-26 17:08
 # 修订：2017-01-14
+# 修订：2018-11-01 23:13 从 asyncio 引入 wait 和 run
 
 from aiohttp import ClientSession
-from orange.coroutine import wait, start
 from orange import Path
+from asyncio import run, wait
 from bs4 import BeautifulSoup as BS4
 
 __all__ = 'Crawler', 'wait', 'BS4'
@@ -84,4 +85,4 @@ class Crawler(ClientSession):
         async def _main():
             async with cls(**kw)as sess:
                 await target(sess, *args, **kwargs)
-        start(_main())
+        run(_main())
