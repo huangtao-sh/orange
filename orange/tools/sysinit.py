@@ -1,21 +1,31 @@
+# 项目：   工具库软件
+# 模块：   系统初始化
+# 作者：   黄涛
+# License: GPL
+# Email:   huangtao.sh@icloud.com
+# 创建：2018-11-17 10:10
+
 from orange import Path, HOME
 import os
 import sys
 
 LINKS = {
-    'emacsd/emacs': '.emacs',
-    'conf/gitconfig': '.gitconfig',
-    'conf/ssh': '.ssh',
-    'conf/pypirc': '.pypirc',
+    'emacsd/emacs':     '.emacs',
+    'conf/gitconfig':   '.gitconfig',
+    'conf/ssh':         '.ssh',
+    'conf/pypirc':      '.pypirc',
 
 }
 
-WIN32_LINKS = {'conf/pip/pip.conf': 'AppData/Roaming/pip/pip.ini',
-               'conf/vimrc_win': '_vimrc',
-               }
+WIN32_LINKS = {
+    'conf/pip/pip.conf':    'AppData/Roaming/pip/pip.ini',
+    'conf/vimrc_win':       '_vimrc',
+}
 
-DARWIN_LINKS = {'conf/vimrc_mac': '.vimrc',
-                'conf/pip': '.pip', }
+DARWIN_LINKS = {
+    'conf/vimrc_mac':       '.vimrc',
+    'conf/pip':             '.pip',
+}
 
 
 def win_init():
