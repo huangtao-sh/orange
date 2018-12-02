@@ -23,7 +23,7 @@ def main():
         dest = Path('%SystemRoot%/System32/drivers/etc/hosts')
     src.ensure()
     src.chdir()
-    if not (src / 'hosts'):
+    if not (src / 'hosts/.git'):
         os.system('git clone %s' % (repo))
     else:
         (src/'hosts').chdir()

@@ -16,7 +16,8 @@ console_scripts = ['conv=orange.utils.path:convert',
                    'pkg=orange.tools.pypkgs:main',
                    'dppy=orange.tools.deppython:PythonUpgrade.main',
                    'sxtm=orange.tools.math:main',
-                   'cleanwork=orange.shell.path:clean_trash'
+                   'cleanwork=orange.shell.path:clean_trash',
+                   'imgbak=orange.tools.imgbackup:main',
                    ]
 
 scripts = ['scripts/pytest.py']
