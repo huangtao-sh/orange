@@ -46,7 +46,7 @@ def win_init():
     print(f'设置路径：{bin}')
     if os.name == 'nt':
         import platform
-        if platform.win32_ver()[0] = '7':
+        if platform.win32_ver()[0] == '7':
             # 设置 Console 支持 "Microsoft YaHei Mono"字体
             with HKLM/"SOFTWARE/Microsoft/Windows NT/CurrentVersion/Console/TrueTypeFont" as key:
                 key['00936'] = 'Microsoft YaHei Mono', REG_SZ
