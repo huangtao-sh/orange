@@ -164,6 +164,12 @@ class Path(_Parent):
             with self.open('wb')as f:
                 f.write(data)
 
+    @property
+    def worksheets(self):
+        import xlrd
+        with xlrd.open_workbook(filename=str(self)) as book:
+            return book.sheets()
+
     def sheets(self, index=None):
         ''' 提供读取指定worksheet的功能，其中index可以为序号，
             也可以为表的名称。'''
