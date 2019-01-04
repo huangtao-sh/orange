@@ -197,6 +197,8 @@ class datetime(dt.datetime):
             fmt = fmt.replace('%Q', '%s-%s' % (self.year, self.quartor))
         if '%q' in fmt:
             fmt = fmt.replace('%q', str(self.quartor))
+        if '%x' in fmt:
+            fmt=fmt.replace('%x',f"{self.year}年{self.month}月{self.day}日")
         return super().strftime(fmt)
 
     # 使用date%'%Y-%m-%d'的语法来格式化日期
