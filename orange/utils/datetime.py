@@ -19,6 +19,7 @@ ZERO = dt.timedelta(0)
 ONEDAY = dt.timedelta(days=1)
 ONESECOND = dt.timedelta(seconds=1)
 _Pattern = R / r'%.'
+_MONTHS = ' ,一,二,三,四,五,六,七,八,九,十,十一,十二'.split(',')
 
 # A class building tzinfo objects for fixed-offset time zones.
 # Note that FixedOffset(0, "UTC") is a different way to build a
@@ -199,8 +200,8 @@ class datetime(dt.datetime):
             '%Q': f'{self.year}-{self.quartor}',
             '%x': f"{self.year}年{self.month}月{self.day}日",
             '%a': "星期"+"一二三四五六日"[self.weekday()],
-            '%b': '0,一,二,三,四,五,六,七,八,九,十,十一,十二'.split(',')[self.month] +'月',
-            '%B': '0,一,二,三,四,五,六,七,八,九,十,十一,十二'.split(',')[self.month] +'月份',
+            '%b': _MONTHS[self.month] + '月',
+            '%B': _MONTHS[self.month] + '月份',
             '%k': '0一二三四'[self.quartor]+'季度',
             '%K': f'{self.year}年{self.quartor}季度',
         }
