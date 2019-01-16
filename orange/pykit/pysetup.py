@@ -7,6 +7,7 @@
 
 from orange.shell import Path, sh, POSIX, HOME
 from orange.utils.click import command, arg
+from .config import config
 
 libpath = HOME/'OneDrive/pylib'
 
