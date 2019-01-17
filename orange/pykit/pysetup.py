@@ -5,6 +5,7 @@
 # Email:huangtao.sh@icloud.com
 # 创建：2018-09-28 21:52
 
+import sysconfig
 from orange.shell import Path, sh, POSIX, HOME
 from orange.utils.click import command, arg
 from .config import config
@@ -45,14 +46,33 @@ def pysdist(*args):
     pysetup('sdist', '--dist-dir', libpath, *args)
 
 
+ver = sysconfig._PY_VERSION_SHORT_NO_DOT
+BINARY_PARAMS = {
+    'implementation': 'cp',
+    'platform': 'win32',
+    'python-version': ver,
+    'abi': f'cp{ver}m',
+    'only-binary': ':all:',
+}
+
+
+def pydownload(*pkgs, source=True):
+    if source:
+        pip('download', *pkgs, '-d', str(libpath), '--no-binary=:all:')
+    else:
+        pip('download', *pkgs, '-d', str(libpath),
+            *(f'--{k}={v}'for k, v in BINARY_PARAMS.items()))
+
+
 @command(allow_empty=True)
 @arg('packages', help='python package', nargs='*', metavar='package')
 @arg('-p', '--path', default=libpath, help='指定的目录')
 @arg('-d', '--download', help='默认的包目录', action='store_true')
-def pyinstall(packages=None, path=None, download=None, upgrade=False):
+@arg('-b', '--binary', action='store_true', help='下载二进制程序包')
+def pyinstall(packages=None, path=None, download=None, upgrade=False, binary=False):
     root = Path(path)
     if download:
-        pip('download', '-d', str(root), *packages)
+        pydownload(*packages, source=not binary)
     else:
         if packages:
             pkgs = []
