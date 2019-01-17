@@ -35,7 +35,7 @@ class Connection():
         kw['database'] = database
         cls._config = kw
 
-    def __init__(self, database: str=None, **kw):
+    def __init__(self, database: str = None, **kw):
         if not database:
             kw = self._config.copy()
             database = kw.pop('database')
@@ -125,7 +125,12 @@ class Connection():
         return cls.execute(sql)
 
     @classmethod
-    def executefile(cls, pkg, filename):
+    def executefile(cls, pkg: str, filename: str):
+        '''
+        执行程序中附带的资源文件
+        pkg         : 所在包的名称
+        filename    : 相关于包的文件名，包括路径
+        '''
         from pkgutil import get_data
         data = get_data(pkg, filename)
         sql = decode(data)
