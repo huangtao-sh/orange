@@ -9,6 +9,7 @@ import sysconfig
 from orange.shell import Path, sh, POSIX, HOME
 from orange.utils.click import command, arg
 from .config import config
+from .version import Ver
 
 libpath = HOME/'OneDrive/pylib'
 
@@ -76,17 +77,12 @@ def pyinstall(packages=None, path=None, download=None, upgrade=False, binary=Fal
     else:
         if packages:
             pkgs = []
-            cached_pkgs = get_pkgs(root)
             for pkg in packages:
-                pkg = pkg.replace('-', '_')
-                if pkg in cached_pkgs:
-                    path, ver = cached_pkgs[pkg]
-                    pkgs.append(str(path))
-                    print(f'Add pkg {pkg} version: {ver}')
+                filename=root.find(f'{pkg}*',key=Ver)
+                if filename:
+                    pkgs.append(filename)
                 else:
                     pkgs.append(pkg)
-                    info(f'Add pkg {pkg}')
-            root.chdir()
             pip('install', *pkgs)
         else:
             if Path('setup.py'):
