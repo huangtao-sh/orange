@@ -6,6 +6,8 @@
 # 创建：2018-09-28 21:52
 
 from orange.shell import Path, sh, POSIX, HOME
+from orange.utils.click import command, arg
+from .config import config
 
 libpath = HOME/'OneDrive/pylib'
 
@@ -43,8 +45,34 @@ def pysdist(*args):
     pysetup('sdist', '--dist-dir', libpath, *args)
 
 
-def pyinstall():
-    pysetup('install')
+@command(allow_empty=True)
+@arg('packages', help='python package', nargs='*', metavar='package')
+@arg('-p', '--path', default=libpath, help='指定的目录')
+@arg('-d', '--download', help='默认的包目录', action='store_true')
+def pyinstall(packages=None, path=None, download=None, upgrade=False):
+    root = Path(path)
+    if download:
+        pip('download', '-d', str(root), *packages)
+    else:
+        if packages:
+            pkgs = []
+            cached_pkgs = get_pkgs(root)
+            for pkg in packages:
+                pkg = pkg.replace('-', '_')
+                if pkg in cached_pkgs:
+                    path, ver = cached_pkgs[pkg]
+                    pkgs.append(str(path))
+                    print(f'Add pkg {pkg} version: {ver}')
+                else:
+                    pkgs.append(pkg)
+                    info(f'Add pkg {pkg}')
+            root.chdir()
+            pip('install', *pkgs)
+        else:
+            if Path('setup.py'):
+                pysetup('install')
+            else:
+                print('Can''t find the file setup.py!')
 
 
 if __name__ == '__main__':
