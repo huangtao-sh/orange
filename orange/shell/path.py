@@ -66,6 +66,8 @@ def is_installed(file_name: str)->bool:
         from sysconfig import get_path
         paths = [str(Path(get_path(name)).resolve())
                 for name in ('platlib', 'scripts')]
+        if POSIX:
+            paths.append('/usr')
         cmdfile = Path(file_name).resolve()
         return any(map(str(cmdfile).startswith, paths))
 
