@@ -106,6 +106,11 @@ class Connection():
         return cls.find(sql, params, multi=False)
 
     @classmethod
+    def findvalue(cls, sql: str, params=None):
+        row = cls.findone(sql, params)
+        return row and row[0]
+
+    @classmethod
     def droptable(cls, *tables):
         script = ";".join('drop table if exists %s\n' % (table)
                           for table in tables)
@@ -157,6 +162,8 @@ executescript = Connection.executescript
 executefile = Connection.executefile
 find = Connection.find
 findone = Connection.findone
+findvalue= Connection.findvalue
 droptable = Connection.droptable
 createtable = Connection.createtable
 insert = Connection.insert
+
