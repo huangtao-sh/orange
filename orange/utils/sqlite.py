@@ -49,7 +49,7 @@ def executescript(sql: str):
     return connect().executescript(sql)
 
 
-def executefile(cls, pkg: str, filename: str):
+def executefile(pkg: str, filename: str):
     '''
     执行程序中附带的资源文件
     pkg         : 所在包的名称
