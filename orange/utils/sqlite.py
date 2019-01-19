@@ -37,6 +37,17 @@ def connect():
     return _conn
 
 
+@contextmanager
+def trans():
+    try:
+        conn = connect()
+        yield conn
+        conn.commit()
+    except Exception as e:
+        conn.rollback()
+        raise e
+
+
 def execute(sql: str, params: list = []):
     return connect().execute(sql, params)
 
@@ -57,8 +68,7 @@ def executefile(pkg: str, filename: str):
     '''
     from pkgutil import get_data
     data = get_data(pkg, filename)
-    sql = decode(data)
-    return executescript(sql)
+    return executescript(data.decode())
 
 
 def find(sql: str, params: list = [], multi=True):
@@ -74,14 +84,3 @@ def findone(sql: str, params: list = []):
 def findvalue(sql: str, params: list = []):
     row = findone(sql, params)
     return row and row[0]
-
-
-@contextmanager
-def trans():
-    try:
-        conn = connect()
-        yield
-        conn.commit()
-    except Exception as e:
-        conn.rollback()
-        raise e
