@@ -20,6 +20,9 @@ class Ordinal(object):
         self._xh += 1
         return s
 
+    def __iter__(self):
+        return self
+
     @property
     def xh(self):
         return str(self._xh)
@@ -36,4 +39,4 @@ class Ordinal(object):
         return "".join((b, s, g))
 
     def __str__(self):
-        return "".join([self.suffix, self.capital if self._captial else self.xh, self.suffix])
+        return "".join([self.prefix, self.capital if self._captial else self.xh, self.suffix])
