@@ -15,7 +15,7 @@ _conn = None
 _config = {}
 
 __all__ = 'db_config', 'connect', 'execute', 'executemany', 'executescript', 'executefile',\
-    'find', 'findone', 'findvalue', 'trans'
+    'find', 'findone', 'findvalue', 'trans', 'fetch', 'fetchone', 'fetchvalue'
 
 
 def db_config(database: str, **kw):
@@ -84,3 +84,8 @@ def findone(sql: str, params: list = []):
 def findvalue(sql: str, params: list = []):
     row = findone(sql, params)
     return row and row[0]
+
+
+fetch = find
+fetchone = findone
+fetchvalue = findvalue
