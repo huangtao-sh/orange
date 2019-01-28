@@ -9,13 +9,14 @@ import atexit
 import sqlite3
 from contextlib import contextmanager, closing
 from orange import is_dev, decode, Path
+from functools import wraps
 
 ROOT = Path('~/OneDrive') / ('testdb' if is_dev() else 'db')
 _conn = None
 _config = {}
 
 __all__ = 'db_config', 'connect', 'execute', 'executemany', 'executescript', 'executefile',\
-    'find', 'findone', 'findvalue', 'trans', 'fetch', 'fetchone', 'fetchvalue'
+    'find', 'findone', 'findvalue', 'trans', 'fetch', 'fetchone', 'fetchvalue', 'executetrans'
 
 
 def db_config(database: str, **kw):
@@ -46,6 +47,14 @@ def trans():
     except Exception as e:
         conn.rollback()
         raise e
+
+
+def executetrans(func):
+    @wraps(func)
+    def _(*args, **kw):
+        with trans():
+            func(*args, **kw)
+    return _
 
 
 def execute(sql: str, params: list = []):
