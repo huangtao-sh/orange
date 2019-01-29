@@ -4,6 +4,8 @@
 # License:GPL
 # Email:huangtao.sh@icloud.com
 # 创建：2016-09-30 17:18
+# 修改：2019-01-29 15:19 采用 reduce 来更新参数
+
 
 import re
 from functools import reduce
