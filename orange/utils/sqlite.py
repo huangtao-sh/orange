@@ -49,11 +49,16 @@ def trans():
         raise e
 
 
-def executetrans(func):
+def transaction(func):
     @wraps(func)
     def _(*args, **kw):
-        with trans():
+        try:
+            conn = connect()
             func(*args, **kw)
+            conn.commit()
+        except Exception as e:
+            conn.rollback()
+            raise e
     return _
 
 
