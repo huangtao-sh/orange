@@ -6,8 +6,9 @@
 # 创建：2016-09-30 17:18
 
 import re
+from functools import reduce 
 
-_FLAGS = 'AILUMSX'
+_FLAGS = 'TILMSUXA'
 
 __all__ = 'R', 'convert_cls_name', 'extract'
 
@@ -45,11 +46,7 @@ class R(metaclass=_R):
     def __init__(self, pattern, flag=0):
         '''初始化，生成模板。'''
         if flag and isinstance(flag, str):
-            n = 0
-            for i in flag.upper():
-                if i in _FLAGS:
-                    n |= getattr(re, i)
-            flag = n
+            flag=reduce(lambda a,b:a|b,[getattr(re,i)for i in flag.upper()])
         self._regex = re.compile(pattern, flag)
 
     def __eq__(self, s):
