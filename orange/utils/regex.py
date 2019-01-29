@@ -6,7 +6,7 @@
 # 创建：2016-09-30 17:18
 
 import re
-from functools import reduce 
+from functools import reduce
 
 _FLAGS = 'TILMSUXA'
 
@@ -46,7 +46,8 @@ class R(metaclass=_R):
     def __init__(self, pattern, flag=0):
         '''初始化，生成模板。'''
         if flag and isinstance(flag, str):
-            flag=reduce(lambda a,b:a|b,[getattr(re,i)for i in flag.upper()])
+            flag = reduce(lambda a, b: a | b, [getattr(
+                re, i)for i in flag.upper() if i in _FLAGS])
         self._regex = re.compile(pattern, flag)
 
     def __eq__(self, s):
