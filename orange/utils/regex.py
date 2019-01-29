@@ -117,8 +117,8 @@ def convert_cls_name(name):
     return '_'.join([x.lower() for x in R/'[A-Z][a-z0-9]*'/name])
 
 
-def extract(s, pattern):
+def extract(s, pattern, group=0):
     if isinstance(pattern, str):
         pattern = R/pattern
     result = pattern.search(s)
-    return result and result.group()
+    return result and result.group(group)
