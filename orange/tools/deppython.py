@@ -27,21 +27,18 @@ class PythonUpgrade(object):
     @classmethod
     def win32(cls):
         from orange.shell.regkey import add_path, HKLM, REG_SZ
-        destpath = Path('%ProgramFiles%/Python')
         srcpath = Path('%localappdata%/Programs/Python')
         curpath = max(srcpath.glob('Python*'))
         if curpath:
             print(f'Python 的安装路径为  {curpath}')
-            destpath >> curpath  # 连接安装目录
-            print(f'连接安装目录： {destpath} -> {curpath}')
-            scripts = destpath / 'Scripts'
-            path = ';'.join([str(destpath), str(scripts)])
+            scripts = srcpath / 'Scripts'
+            path = ';'.join([str(srcpath), str(scripts)])
             add_path(path, replace='Python')
             print('设置 Path 成功！')
 
-        with HKLM/'SYSTEM/CurrentControlSet/Control/Session Manager/Environment' as key:
-            pythonpath = ";".join([str(destpath/'DLLs'),
-                                   str(destpath/'Lib'),
-                                   str(destpath/'Lib/site-packages')])
-            key['PYTHONPATH'] = pythonpath, REG_SZ
-            print('设置 PYTHONPATH 环境变量成功！')
+            with HKLM/'SYSTEM/CurrentControlSet/Control/Session Manager/Environment' as key:
+                pythonpath = ";".join([str(srcpath/'DLLs'),
+                                       str(srcpath/'Lib'),
+                                       str(srcpath/'Lib/site-packages')])
+                key['PYTHONPATH'] = pythonpath, REG_SZ
+                print('设置 PYTHONPATH 环境变量成功！')
