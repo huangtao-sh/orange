@@ -16,7 +16,7 @@ _conn = None
 _config = {}
 
 __all__ = 'db_config', 'connect', 'execute', 'executemany', 'executescript', 'executefile',\
-    'find', 'findone', 'findvalue', 'trans', 'fetch', 'fetchone', 'fetchvalue', 'executetrans'
+    'find', 'findone', 'findvalue', 'trans', 'fetch', 'fetchone', 'fetchvalue', 'transaction'
 
 
 def db_config(database: str, **kw):
