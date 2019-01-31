@@ -85,6 +85,18 @@ def executefile(pkg: str, filename: str):
     return executescript(data.decode())
 
 
+def insert(cls, table, data, fields=None, method='insert'):
+    data = tuple(data)
+    if fields:
+        fields = '(%s)' % (','.join(fields))
+        values = ','.join(['?']*len(fields))
+    else:
+        fields = ''
+        values = ','.join(['?']*len(data[0]))
+    sql = f'{method} into {table}{fields} values({values})'
+    return executemany(sql, data)
+
+
 def find(sql: str, params: list = [], multi=True):
     cur = execute(sql, params)
     with closing(cur):
