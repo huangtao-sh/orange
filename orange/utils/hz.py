@@ -29,7 +29,7 @@ class Ordinal(object):
 
     @property
     def capital(self):
-        bw, sw, gw = (int(x)for x in '%03d' % self._xh)
+        bw, sw, gw = map(int, '%03d' % self._xh)
         b, g = ORDINALNUMBER[bw] + \
             '百' if bw else "", ORDINALNUMBER[gw]if gw else ""
         if sw:
