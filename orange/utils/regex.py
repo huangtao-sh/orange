@@ -8,7 +8,7 @@
 
 
 import re
-from functools import reduce
+from functools import reduce, partial
 from operator import or_
 
 _FLAGS = 'TILMSUXA'
@@ -49,8 +49,7 @@ class R(metaclass=_R):
     def __init__(self, pattern, flag=0):
         '''初始化，生成模板。'''
         if flag and isinstance(flag, str):
-            flag = reduce(or_, [getattr(
-                re, i)for i in flag.upper() if i in _FLAGS])
+            flag = reduce(or_, map(partial(getattr,re),flag.upper())
         self._regex = re.compile(pattern, flag)
 
     def __eq__(self, s):
