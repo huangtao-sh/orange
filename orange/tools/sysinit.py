@@ -14,7 +14,7 @@ LINKS = {
     'conf/gitconfig':   '.gitconfig',
     'conf/ssh':         '.ssh',
     'conf/pypirc':      '.pypirc',
-
+    'conf/vscode':      '.vscode',
 }
 
 WIN32_LINKS = {
