@@ -62,7 +62,8 @@ class YamlConfig(BaseConfig):
 
     def save(self):
         with self.file.open('w', encoding='utf8')as f:
-            yaml.dump(self.config, f, default_flow_style=False, indent=2)
+            yaml.dump(self.config, f, default_flow_style=False,
+                      indent=2, allow_unicode=True)
 
 
 class JsonConfig(BaseConfig):
