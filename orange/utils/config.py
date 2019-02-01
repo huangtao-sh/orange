@@ -76,4 +76,4 @@ class JsonConfig(BaseConfig):
 
     def save(self):
         with self.file.open('w', encoding='utf8')as f:
-            json.dump(self.config, f, indent=4)
+            json.dump(self.config, f, indent=4, ensure_ascii=False)
