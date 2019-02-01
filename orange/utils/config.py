@@ -20,12 +20,15 @@ class BaseConfig(object):
     __slots__ = 'config', '_config', 'backup'
 
     def __init__(self, default=None, **kw):
-        self.config = self.load(**kw) or default or {}      # 从文件中加载配置
-        self.backup = self.config.copy()         # 对参数进行备份
+        self.backup = self.load(**kw)
+        if self.backup:
+            self.config = self.backup.copy()
+        else:
+            self.config = default or {}
         atexit.register(self.exit)                        # 注程程序退出处理程序
 
     def load(self, **kw):                       # 加载文件，子类应实现此方法
-        raise Exception('子类未实现 load 方法')
+        return {}
 
     def save(self, **kw):
         raise Exception('子类未实现 save 方法')  # 保存文件，子类应实现此方法
