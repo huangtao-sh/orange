@@ -7,6 +7,7 @@
 
 import yaml
 import atexit
+import json
 from orange import Path, info
 from collections import ChainMap
 from orange import decrypt, encrypt
@@ -62,3 +63,17 @@ class YamlConfig(BaseConfig):
     def save(self):
         with self.file.open('w', encoding='utf8')as f:
             yaml.dump(self.config, f, default_flow_style=False, indent=2)
+
+
+class JsonConfig(BaseConfig):
+    __slots__ = 'file',
+
+    def load(self, filename):
+        self.file = Path(filename)
+        if self.file:
+            with self.file.open('r', encoding='utf8')as f:
+                return json.load(f)
+
+    def save(self):
+        with self.file.open('w', encoding='utf8')as f:
+            json.dump(self.config, f, indent=4)
