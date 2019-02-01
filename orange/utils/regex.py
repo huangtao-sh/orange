@@ -49,7 +49,7 @@ class R(metaclass=_R):
     def __init__(self, pattern, flag=0):
         '''初始化，生成模板。'''
         if flag and isinstance(flag, str):
-            flag = reduce(or_, attrgetter(*tuple(flag.upper())))
+            flag = reduce(or_, attrgetter(*tuple(flag.upper()))(re))
         self._regex = re.compile(pattern, flag)
 
     def __eq__(self, s):
