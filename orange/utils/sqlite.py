@@ -19,14 +19,18 @@ __all__ = 'db_config', 'connect', 'execute', 'executemany', 'executescript', 'ex
     'find', 'findone', 'findvalue', 'trans', 'fetch', 'fetchone', 'fetchvalue', 'transaction'
 
 
-def db_config(database: str, **kw):
-    global _config
+def fix_db_name(database: str)->str:
     if not str(database).startswith(':'):
         db = Path(database)
         if not db.root:
             db = ROOT/db
         database = str(db.with_suffix('.db'))
-    kw['database'] = str(database)
+    return database
+
+
+def db_config(database: str, **kw):
+    global _config
+    kw['database'] = str(fix_db_name(database))
     _config = kw
 
 
@@ -85,7 +89,7 @@ def executefile(pkg: str, filename: str):
     return executescript(data.decode())
 
 
-def insert(cls, table, data, fields=None, method='insert'):
+def insert(table: str, data: list, fields: list = None, method: str = 'insert'):
     data = tuple(data)
     if fields:
         fields = '(%s)' % (','.join(fields))
@@ -95,6 +99,17 @@ def insert(cls, table, data, fields=None, method='insert'):
         values = ','.join(['?']*len(data[0]))
     sql = f'{method} into {table}{fields} values({values})'
     return executemany(sql, data)
+
+
+def attach(filename: Path, name: str):
+    '''附加数据库'''
+    filename = fix_db_name(filename)
+    return execute(f'attach database {filename} as {name}')
+
+
+def detach(name: str):
+    ''' 分离数据库 '''
+    return execute(f'detach database {name}')
 
 
 def find(sql: str, params: list = [], multi=True):
