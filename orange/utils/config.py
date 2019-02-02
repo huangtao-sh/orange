@@ -8,9 +8,9 @@
 import yaml
 import atexit
 import json
-from orange import Path, info
+from orange.shell.path import Path
 from collections import ChainMap
-from orange import decrypt, encrypt
+from .htutil import decrypt, encrypt
 
 
 def is_passwd(name):

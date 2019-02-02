@@ -8,16 +8,15 @@
 # 有一台电脑是 win32 的系统，且无法上网，无法自动升级 Python 包。故
 # 编写本程序来对这些程序包进行管理
 
+from orange.pykit.config import config
 from orange import shell, arg
 import json
 from orange.pykit import pip, Ver
-from pip._internal.pep425tags import get_supported
 import sys
 from collections import defaultdict
 from orange.shell import HOME, Path
 
 ROOT = HOME/'OneDrive'
-ConfFile = ROOT / 'conf/pypkgs.conf'
 PyLib = ROOT / 'pylib'
 
 excludes = set(['green-mongo', 'orange-kit', 'coco', 'glemon', 'lzbg'])
@@ -74,20 +73,19 @@ def cleanlib():
 
 
 def config_pkg():
-    packages = get_installed_packages()
-    t = get_supported()[0]
-    params = {
-        'implementation': t[0][:2],
-        'python-version': t[0][2:],
-        'abi': t[1],
-        'platform': 'win32',
-        'only-binary': ':all:'
-    }
-    conf = {'packages': packages,
-            'params': params}
-    with ConfFile.open('w')as f:
-        json.dump(conf, f, indent='    ')
-    print('写配置文件成功！')
+    local = config['Local']
+    wheel, source = [], []
+    for path in PyLib.glob('*.*'):
+        verinfo = path.verinfo
+        if verinfo:
+            name, type_ = verinfo[0], verinfo[2]
+            print(name, type_, sep='\t')
+            if type_ == 'Wheel':
+                wheel.append(name)
+            elif type_ == 'Source' and name not in local:
+                source.append(name)
+    config['Wheel'] = wheel
+    config['Source'] = source
 
 
 @arg('-f', '--config', action='store_true', help='获取配置')
