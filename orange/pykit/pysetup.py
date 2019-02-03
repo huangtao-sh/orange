@@ -14,7 +14,7 @@ from orange.pykit.version import Ver
 libpath = HOME/'OneDrive/pylib'
 
 
-def run_cmd(cmd: str, *args, **kw)->int:
+def run_cmd(cmd: str, *args, **kw) -> int:
     return sh(cmd, *args, capture_output=False, **kw)
 
 
@@ -26,7 +26,7 @@ def pyclean():
         print(f'Path {path} have been deleted!')
 
 
-def pysetup(*args)->int:
+def pysetup(*args) -> int:
     if not Path('setup.py'):
         print('Can''t find file setup.py!')
         exit(1)
@@ -35,7 +35,7 @@ def pysetup(*args)->int:
     pyclean()
 
 
-def pip(*args)->int:
+def pip(*args) -> int:
     return run_cmd('pip3', *args)
 
 
@@ -59,9 +59,10 @@ BINARY_PARAMS = {
 
 def pydownload(*pkgs, source=True):
     if source:
-        pip('download', *pkgs, '-d', str(libpath), '--no-binary=:all:')
-    else:
         pip('download', *pkgs, '-d', str(libpath),
+            '--no-binary=:all:', '--no-deps')
+    else:
+        pip('download', *pkgs, '-d', str(libpath), '--no-deps',
             *(f'--{k}={v}'for k, v in BINARY_PARAMS.items()))
 
 
@@ -78,7 +79,7 @@ def pyinstall(packages=None, path=None, download=None, upgrade=False, binary=Fal
         if packages:
             pkgs = []
             for pkg in packages:
-                filename=root.find(f'{pkg}*',key=Ver)
+                filename = root.find(f'{pkg}*', key=Ver)
                 if filename:
                     pkgs.append(filename)
                 else:
