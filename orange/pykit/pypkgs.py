@@ -108,6 +108,7 @@ def main(config=False, download=False, upgrade=False, install=False,
     if install:
         if is_connected():
             pkgs = config['Wheel']+config['Source']
+            print(pkgs)
             for pkg in pkgs:
                 pip('install', pkg)
         else:
