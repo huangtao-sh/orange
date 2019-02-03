@@ -5,9 +5,7 @@
 # Email:   huangtao.sh@icloud.com
 # 创建：2019-01-18 19:26
 
-import yaml
 import atexit
-import json
 from orange.shell.path import Path
 from collections import ChainMap
 from .htutil import decrypt, encrypt
@@ -55,12 +53,14 @@ class YamlConfig(BaseConfig):
     __slots__ = 'file',
 
     def load(self, filename):
+        import yaml
         self.file = Path(filename)
         if self.file:
             with self.file.open('r', encoding='utf8')as f:
                 return yaml.load(f)
 
     def save(self):
+        import yaml
         with self.file.open('w', encoding='utf8')as f:
             yaml.dump(self.config, f, default_flow_style=False,
                       indent=2, allow_unicode=True)
@@ -70,11 +70,13 @@ class JsonConfig(BaseConfig):
     __slots__ = 'file',
 
     def load(self, filename):
+        import json
         self.file = Path(filename)
         if self.file:
             with self.file.open('r', encoding='utf8')as f:
                 return json.load(f)
 
     def save(self):
+        import json
         with self.file.open('w', encoding='utf8')as f:
             json.dump(self.config, f, indent=4, ensure_ascii=False)

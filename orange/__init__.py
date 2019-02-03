@@ -16,7 +16,10 @@ from orange.utils import command, arg, datetime, LOCAL, UTC, date_add, ONEDAY,\
     first, last, _any, _all
 from orange.shell import sh, POSIX, is_dev, is_installed, Path, decode, HOME,\
     tempdir, tempfile
+from orange.utils.config import YamlConfig
 from orange.__version__ import version
+
+Config = YamlConfig
 
 __all__ = 'Path', 'get_path', 'HOME',\
     'first', 'last', 'decode',\
@@ -27,4 +30,5 @@ __all__ = 'Path', 'get_path', 'HOME',\
     'LOCAL', 'UTC', 'now', 'datetime', 'fprint', 'date_add', 'ONEDAY', 'LTZ',\
     'ONESECOND', 'R', 'sendmail', 'tsendmail', 'Mail', 'PY', 'MailClient',\
     'convert_cls_name', 'verbose', 'arg', 'command', 'generator', 'version',\
-    'extract', 'cstr', 'deprecate', 'tprint', 'shell', 'POSIX', 'cformat'
+    'extract', 'cstr', 'deprecate', 'tprint', 'shell', 'POSIX', 'cformat',\
+    'Config'
