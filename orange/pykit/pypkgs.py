@@ -88,9 +88,8 @@ def config_pkg():
 @arg('-u', '--upgrade', action='store_true', help='升级文件')
 @arg('-i', '--install', action='store_true', help='批量安装')
 @arg('-c', '--clean', action='store_true', help='清理无用的包')
-def main(config=False, download=False, upgrade=False, install=False,
-         clean=False):
-    if config:
+def main(download=False, upgrade=False, install=False, **options):
+    if options['config']:
         config_pkg()
     if download:
         batch_download()
@@ -108,7 +107,6 @@ def main(config=False, download=False, upgrade=False, install=False,
     if install:
         if is_connected():
             pkgs = config['Wheel']+config['Source']
-            print(pkgs)
             for pkg in pkgs:
                 pip('install', pkg)
         else:
@@ -118,5 +116,5 @@ def main(config=False, download=False, upgrade=False, install=False,
                     pip('install', '--no-deps', '--ignore-installed',
                         pkg[-1])
 
-    if clean:
+    if options['clean']:
         cleanlib()
