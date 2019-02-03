@@ -12,7 +12,7 @@ console_scripts = ['conv=orange.utils.path:convert',
                    'gclone=orange.tools.gclone:proc',
                    'fkgfw=orange.tools.fkgfw:main',
                    'sysinit=orange.tools.sysinit:main',
-                   'pkg=orange.tools.pypkgs:main',
+                   'pkg=orange.pykit.pypkgs:main',
                    'dppy=orange.tools.deppython:PythonUpgrade.main',  # 部署 python
                    'dpmongo=orange.tools.mongodb:main',               # 部署 mongodb
                    'sxtm=orange.tools.math:main',

@@ -7,17 +7,16 @@
 
 # 有一台电脑是 win32 的系统，且无法上网，无法自动升级 Python 包。故
 # 编写本程序来对这些程序包进行管理
-
-from orange.pykit.config import config
-from orange import shell, arg
-import json
-from orange.pykit import pip, Ver
 import sys
+import json
+from .config import config
+from orange import shell, arg, tprint
+from orange.pykit import pip, Ver
 from collections import defaultdict
 from orange.shell import HOME, Path
-
+from .pysetup import pydownload
 ROOT = HOME/'OneDrive'
-PyLib = ROOT / 'pylib'
+PyLib = ROOT/'pylib'
 
 excludes = set(['green-mongo', 'orange-kit', 'coco', 'glemon', 'lzbg'])
 
@@ -35,16 +34,10 @@ def is_connected(url=None):
 
 
 def batch_download():
-    with ConfFile.open('r')as f:
-        conf = json.load(f)
-    packages = set(conf['packages'])-excludes
-    params = conf['params']
-    param = ' '.join(f'--{key}={value}' for key, value in params.items())
-    for pkg in packages:
-        result = pip('download', '-d', str(PyLib), param, pkg)
-        if result:
-            pip('download', '-d', str(PyLib),
-                pkg, **{'no-binary': ':all:'})
+    for pkg in config['Wheel']:
+        pydownload(pkg, source=False)
+    for pkg in config['Source']:
+        pydownload(pkg, source=True)
 
 
 def get_installed_packages():
@@ -75,17 +68,19 @@ def cleanlib():
 def config_pkg():
     local = config['Local']
     wheel, source = [], []
+    data = []
     for path in PyLib.glob('*.*'):
         verinfo = path.verinfo
         if verinfo:
-            name, type_ = verinfo[0], verinfo[2]
-            print(name, type_, sep='\t')
+            name, ver, type_ = verinfo[:3]
+            data.append([name, str(ver), type_])
             if type_ == 'Wheel':
                 wheel.append(name)
             elif type_ == 'Source' and name not in local:
                 source.append(name)
     config['Wheel'] = wheel
     config['Source'] = source
+    tprint(data, {0: '20', 1: '10'}, sep='    ')
 
 
 @arg('-f', '--config', action='store_true', help='获取配置')
@@ -111,10 +106,8 @@ def main(config=False, download=False, upgrade=False, install=False,
             print('未连接互联网，无法升级')
 
     if install:
-        installed_pkgs = set(get_installed_packages())
         if is_connected():
-            pkgs = set([p[0]for p in get_cached_pkgs()])
-            pkgs = pkgs-installed_pkgs-excludes
+            pkgs = config['Wheel']+config['Source']
             for pkg in pkgs:
                 pip('install', pkg)
         else:
