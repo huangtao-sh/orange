@@ -132,7 +132,10 @@ class Mail:
     def add_image(self, filename, cid=None):
         msg = MIMEImage(Path(filename).read_bytes())
         if cid:
-            msg.add_header('content-id', cid)
+            msg.add_header('Content-ID', f'<{cid}>')
+            msg.add_header('X-Attachment-Id', cid)
+            msg.add_header('content-disposition', 'inline',
+                           filename=encode(Path(filename).name))
         self.attachments.append(msg)
 
     def post(self, mailclient=None):
@@ -153,8 +156,8 @@ if __name__ == '__main__':
     with MailClient() as client:
         s = client.Mail(sender='黄涛 <hunto@163.com>',
                         to='张三 <huang.t@live.cn> , 李四 <huangtao.sh@icloud.com> , 李起 <hunto@163.com>',
-                        subject='天空之城',
+                        subject='春天来了，你在这里等着我回来',
                         body=body)
         s.attach('~/假期参数表20180101.xlsx')
-        s.add_image('d:/风车.png', cid='fengche')
+        s.add_image('~/风车.png', cid='fengche')
         s.post()
