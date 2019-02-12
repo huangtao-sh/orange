@@ -6,7 +6,7 @@
 
 
 from orange.pykit.setup import get_path, setup
-from orange.utils.debug import decorator, trace, config_log, ensure, info, fprint, verbose
+from orange.utils.debug import decorator, trace, config_log, ensure, info, fprint, verbose, debug
 from orange.utils.htutil import classproperty, cachedproperty, read_shell, write_shell, wlen, encrypt, \
     decrypt,  exec_shell, split, deprecation, generator, cstr, deprecate, tprint,\
     shell, cformat
@@ -31,4 +31,4 @@ __all__ = 'Path', 'get_path', 'HOME',\
     'ONESECOND', 'R', 'sendmail', 'tsendmail', 'Mail', 'PY', 'MailClient',\
     'convert_cls_name', 'verbose', 'arg', 'command', 'generator', 'version',\
     'extract', 'cstr', 'deprecate', 'tprint', 'shell', 'POSIX', 'cformat',\
-    'Config'
+    'Config', 'debug'

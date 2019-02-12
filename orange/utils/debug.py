@@ -11,9 +11,10 @@ from functools import wraps
 from orange.shell import is_dev
 
 
-__all__ = 'decorator', 'trace', 'config_log', 'ensure', 'info', 'fprint', 'verbose'
+__all__ = 'decorator', 'trace', 'config_log', 'ensure', 'info', 'fprint', 'verbose', 'debug'
 
 info = logging.info
+debug = logging.debug
 
 
 def decorator(decorator):
