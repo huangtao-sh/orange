@@ -6,15 +6,20 @@
 # 创建：2016-10-26 10:25
 
 from email.mime.text import MIMEText
-from email.message import Message
+from email.mime.application import MIMEApplication
 from email.mime.image import MIMEImage
 from email.mime.multipart import MIMEMultipart
-from email.header import Header
+from email.charset import Charset
+from orange.utils.debug import ensure
+from orange.shell import Path
+from orange import deprecate
 import smtplib
 import io
-import base64
-from orange.utils.debug import ensure
-from .shell import Path
+
+
+def encode(filename):
+    return Charset('utf8').header_encode(filename) \
+        if any(map(lambda x: ord(x) > 127, filename)) else filename
 
 
 def sendmail(*messages):
@@ -28,6 +33,10 @@ def tsendmail(*args):
     '''采用线程发送邮件'''
     from threading import Thread
     Thread(target=sendmail, args=args).start()
+
+
+def mail_config(**conf):
+    MailClient.config = conf.copy()
 
 
 class MailClient(smtplib.SMTP):
@@ -65,7 +74,7 @@ class Mail:
 
     def __init__(self, sender=None, to=None, subject=None, body=None,
                  cc=None, bcc=None, client=None):
-        '''初绍化邮件'''
+        '''初始化邮件'''
         self.attachments = []
         self.subject = subject
         self.to = to
@@ -78,7 +87,10 @@ class Mail:
     @property
     def message(self):
         '''获取邮件的MESSAGE属性'''
-        body = MIMEText(self.body, 'html', 'utf-8')
+        body = self.body
+        subtype = 'html' if body.startswith(
+            '<')and body.endswith('>') else 'plain'
+        body = MIMEText(body, subtype, 'utf-8')
         if self.attachments:
             msg = MIMEMultipart()
             msg.attach(body)
@@ -98,32 +110,51 @@ class Mail:
     def __str__(self):
         return self.message.as_string()
 
-    def add_file(self, filename):
-        fn = Path(filename)
-        ensure(fn.is_file(), '文件不存在！')
-        self.add_fp(fn.open('rb'), fn.name)
-
-    def add_fp(self, fp, filename, encoding='utf8'):
-        filename = '=?utf-8?b?%s?=' % (base64.b64encode(
-            filename.encode('UTF-8')).decode('utf-8'))
+    def add_fp(self, fp, filename):
         if callable(fp):
             with io.BytesIO() as _fp:
                 fp(_fp)
-            fp = _fp
-        fp.seek(0)
-        a = MIMEText(fp.read(), 'base64', encoding)
-        a['Content-Type'] = 'application/octet-stream'
-        a['Content-Disposition'] = 'attachment; filename= %s' % (filename)
-        self.attachments.append(a)
+                _fp.seek(0)
+                msg = MIMEApplication(_fp.read())
+                msg.add_header('content-disposition', 'attachment',
+                               filename=encode(filename))
+                self.attachments.append(msg)
+
+    def attach(self, filename):
+        file = Path(filename)
+        msg = MIMEApplication(file.read_bytes())
+        msg.add_header('content-disposition', 'attachment',
+                       filename=encode(file.name))
+        self.attachments.append(msg)
+
+    add_file = attach
 
     def add_image(self, filename, cid=None):
-        with open(filename, 'rb')as fn:
-            msg = MIMEImage(fn.read())
-            if cid:
-                msg['Content-ID'] = cid
-            self.attachments.append(msg)
+        msg = MIMEImage(Path(filename).read_bytes())
+        if cid:
+            msg.add_header('content-id', cid)
+        self.attachments.append(msg)
 
     def post(self, mailclient=None):
         mailclient = mailclient or self.client
         if mailclient:
             mailclient.send_message(self.message)
+
+
+if __name__ == '__main__':
+    body = '''<html>
+    <body>你在快乐的跳吗？<br/>
+    年轻的心，因此而动.
+    <img src="cid:fengche"/>
+    </body></html>'''
+
+    mail_config(host='smtp.163.com', user='hunto@163.com',
+                passwd='Huangtao1978')
+    with MailClient() as client:
+        s = client.Mail(sender='黄涛 <hunto@163.com>',
+                        to='张三 <huang.t@live.cn> , 李四 <huangtao.sh@icloud.com> , 李起 <hunto@163.com>',
+                        subject='天空之城',
+                        body=body)
+        s.attach('~/假期参数表20180101.xlsx')
+        s.add_image('d:/风车.png', cid='fengche')
+        s.post()
