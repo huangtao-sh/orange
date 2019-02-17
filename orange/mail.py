@@ -299,7 +299,7 @@ class Mail:
         if self.inline_attachments:                        # 合并内嵌附件
             msg = combine('related', msg, *self.inline_attachments)
         if self.attachments:                               # 合并附件
-            msg = combine('fixed', msg, *self.attachments)
+            msg = combine('mixed', msg, *self.attachments)
         msg.add_header('Subject', self.Subject)            # 设置标题
         for name in ('Sender', 'To', 'Cc', 'Bcc'):         # 设置收件人及发件人
             val = getattr(self, name)
