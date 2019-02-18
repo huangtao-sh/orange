@@ -18,7 +18,7 @@ import smtplib
 import io
 
 
-def combine(type_='mixed', *subparts):
+def combine(type_: str = 'mixed', *subparts):
     '''合并邮件的各个部分，
     type_可以为以下几个值：
     related:     合并正文和内嵌附件；
@@ -28,13 +28,13 @@ def combine(type_='mixed', *subparts):
     return MIMEMultipart(type_, _subparts=subparts)
 
 
-def encode(filename):
+def encode(filename: str) -> str:
     '''对文件进行编码'''
     return Charset('utf8').header_encode(filename) \
         if any(map(lambda x: ord(x) > 127, filename)) else filename
 
 
-def fmtaddr(addrs):
+def fmtaddr(addrs: str) -> str:
     '''格式化邮件地址'''
     return ';'.join(map(formataddr, getaddresses([addrs])))
 
