@@ -5,6 +5,8 @@
 # License:GPL
 # Email:huangtao.sh@icloud.com
 # 创建：2016-10-26 10:25
+# 修改：2019-02-14 15:54 对部分代码进行修订
+
 
 from email.mime.text import MIMEText, Charset
 from email.mime.base import MIMEBase
