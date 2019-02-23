@@ -18,6 +18,7 @@ console_scripts = ['conv=orange.utils.path:convert',
                    'sxtm=orange.tools.math:main',
                    'cleanwork=orange.shell.path:clean_trash',
                    'imgbak=orange.tools.imgbackup:main',
+                   'musicdl=orange.tools.neteasesong:main',
                    ]
 
 scripts = ['scripts/pytest.py']

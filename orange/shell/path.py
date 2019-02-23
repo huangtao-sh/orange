@@ -11,6 +11,7 @@
 # 修订：2018-09-12 为 Path 增加 verinfo 功能
 # 修改：2018-09-16 09:00 增加 link_to  功能 以及 >> 和 << 操作符
 # 修订：2018-09-18 20:04 修正 __iter__ 的bug.
+# 修改：2019-02-23 13:42 增加音乐文件的 metadata 及 tags 功能
 
 
 import pathlib
@@ -58,21 +59,21 @@ BOM_CODE = {
 DEFAULT_CODES = 'utf8', 'gbk', 'utf16', 'big5'
 
 
-def is_installed(file_name: str)->bool:
+def is_installed(file_name: str) -> bool:
     '''
     确认指定的文件是否已被安装。
     '''
     if file_name:
         from sysconfig import get_path
         paths = [str(Path(get_path(name)).resolve())
-                for name in ('platlib', 'scripts')]
+                 for name in ('platlib', 'scripts')]
         if POSIX:
             paths.append('/usr')
         cmdfile = Path(file_name).resolve()
         return any(map(str(cmdfile).startswith, paths))
 
 
-def is_dev(cmd: str = None)->bool:
+def is_dev(cmd: str = None) -> bool:
     import sys
     cmd = cmd or sys.argv[0]
     if('wsgi' in cmd):
@@ -80,7 +81,7 @@ def is_dev(cmd: str = None)->bool:
     return 'test' in cmd or (not is_installed(cmd))
 
 
-def decode(d: bytes)->str:
+def decode(d: bytes) -> str:
     '''
     对指定的二进制，进行智能解码，适配适当的编码。按行返回字符串。
     '''
@@ -99,7 +100,7 @@ _Parent = pathlib.WindowsPath if os.name == 'nt' else pathlib.PosixPath
 
 
 class Path(_Parent):
-    __slots__ = ()
+    __slots__ = ('_music_meta')
 
     def __bool__(self):
         '''判断文件是否存在'''
@@ -398,10 +399,27 @@ class Path(_Parent):
     def match(self, *patterns):
         return any(map(super().match, patterns))
 
-    def find(self, pattern: str, key=None, reverse: bool = True)->'Path':
+    def find(self, pattern: str, key=None, reverse: bool = True) -> 'Path':
         result = tuple(sorted(self.rglob(pattern), key=key, reverse=reverse))
         if result:
             return result[0]
+
+    @property
+    def music_meta(self):
+        if not hasattr(self, '_music_meta'):
+            import mutagen
+            self._music_meta = mutagen.File(self, easy=True)
+        return self._music_meta
+
+    @property
+    def music_tags(self):
+        meta = self.music_meta
+        if meta:
+            return meta.tags
+
+    @music_tags.setter
+    def music_tags(self, values):
+        pass
 
 
 HOME = Path.home()
