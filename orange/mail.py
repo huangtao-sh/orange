@@ -13,9 +13,7 @@ from email.mime.base import MIMEBase
 from email.mime.multipart import MIMEMultipart
 from email.utils import getaddresses, formataddr
 from email import encoders
-from orange.shell import Path
-from orange import deprecate
-from orange.utils.debug import ensure
+from pathlib import Path
 import smtplib
 import io
 
@@ -91,8 +89,10 @@ MIMETYPE = (
     ('.bmp', 'image/bmp'),
     ('.c', 'text/plain'),
     ('.css', 'text/css'),
+    ('.dotx', 'application/vnd.openxmlformats-officedocument.wordprocessingml.template'),
+    ('.docx', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'),
     ('.doc', 'application/msword'),
-    ('.docx', 'application/msword'),
+    ('.dot', 'application/msword'),
     ('.exe', 'application/octet-stream'),
     ('.gif', 'image/gif'),
     ('.gz', 'application/x-gzip'),
@@ -123,6 +123,7 @@ MIMETYPE = (
     ('.ppm', 'image/x-portable-pixmap'),
     ('.pps', 'application/vnd.ms-powerpoint'),
     ('.ppt', 'application/vnd.ms-powerpoint'),
+    ('.pptx', 'application/vnd.openxmlformats-officedocument.presentationml.presentation'),
     ('.ps', 'application/postscript'),
     ('.pub', 'application/x-mspublisher'),
     ('.qt', 'video/quicktime'),
@@ -143,6 +144,7 @@ MIMETYPE = (
     ('.wav', 'audio/x-wav'),
     ('.xlm', 'application/vnd.ms-excel'),
     ('.xls', 'application/vnd.ms-excel'),
+    ('.xlsx', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'),
     ('.xlt', 'application/vnd.ms-excel'),
     ('.xlw', 'application/vnd.ms-excel'),
     ('.z', 'application/x-compress'),
@@ -205,7 +207,7 @@ class Mail:
         '''
         file = Path(filename)
         msg = MIMEBase(*MIMETYPES.get(
-            file.lsuffix, 'application/octet-stream').split('/'))
+            file.suffix.lower(), 'application/octet-stream').split('/'))
         if callable(writer):
             with io.BytesIO() as fp:
                 writer(fp)
@@ -251,4 +253,3 @@ if __name__ == '__main__':
         s.attach('d:/测试邮件.docx')
         s.add_image('d:/沙漠.jpg', cid='fengche')
         # s.post()
-        Path('d:/a.eml').text = str(s)
