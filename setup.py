@@ -19,7 +19,7 @@ console_scripts = ['conv=orange.utils.path:convert',
                    'cleanwork=orange.shell.path:clean_trash',
                    'imgbak=orange.tools.imgbackup:main',
                    'musicdl=orange.tools.neteasesong:main',
-                   'dve=orange.tools.dvd:main',
+                   'dvd=orange.tools.dvd:main',
                    ]
 
 scripts = ['scripts/pytest.py']
