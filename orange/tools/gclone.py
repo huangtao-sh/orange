@@ -25,9 +25,11 @@ def proc(repos=None, user=None, protocol='SSH'):
         except:
             raise Exception('用户不存在！')
     protocol = protocol.upper()
-    URL = f'git@github.com:{user}' if protocol == 'SSH' else \
-        f'https://github.com/{user}'
+    URL = f'git@github.com:' if protocol == 'SSH' else \
+        f'https://github.com/'
     for repo in repos:
+        if '/' not in repo:
+            repo = f'{user}/{repo}'
         url = f'{URL}/{repo}.git'
         print('cloning', url)
         sh > f'git clone {url}'
