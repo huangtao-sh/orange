@@ -100,7 +100,7 @@ _Parent = pathlib.WindowsPath if os.name == 'nt' else pathlib.PosixPath
 
 
 class Path(_Parent):
-    __slots__ = ('_music_meta')
+    __slots__ = ()
 
     def __bool__(self):
         '''判断文件是否存在'''
@@ -405,9 +405,20 @@ class Path(_Parent):
             return result[0]
 
     @property
-    def music_tags(self):
+    def music_tag(self):
         from orange.utils.musictag import MusicTag
         return MusicTag(self)
+
+    def repare_name(self):
+        '''修复网络下载的乱字符文件名'''
+        import urllib
+        name = decode(self.name.encode('latin1'))
+        if '%' in name:
+            name = urllib.parse.unquote_plus(name)
+        new_name = self.with_name(name)
+        if new_name!=self.name:
+            print(self.name, '->', new_name)
+            self.rename(self.with_name(name))
 
 
 HOME = Path.home()
@@ -437,3 +448,13 @@ def clean_trash():
             with suppress(PermissionError):
                 file_.unlink()
                 print(f'删除文件 {file_.name}')
+
+
+@command(description='修复文件名的乱码')
+@arg('pathes', nargs='+', metavar='path', help='文件名或路径')
+def repare_filename(pathes):
+    for path in map(Path, pathes):
+        if path.is_dir():
+            [p.repare_name() for p in path]
+        else:
+            path.repare_name()
