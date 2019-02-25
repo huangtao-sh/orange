@@ -10,7 +10,7 @@
 
 import datetime as dt
 import time as _time
-from .regex import R
+from orange.utils.regex import R
 
 __all__ = 'UTC', 'LOCAL', 'now', 'datetime', 'FixedOffset', 'ONEDAY',\
     'ONESECOND', 'date_add', 'LTZ'

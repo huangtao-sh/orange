@@ -68,26 +68,26 @@ class MusicTag(dict):
         if modified:
             self.file.save()
 
-
-for src in Path('~/Downloads'):
-    from orange import decode
-    from urllib.parse import unquote
-    name = src.name
-    name = decode(name.encode('latin1'))
-    if '%' in name:
-        name = unquote(name)
-    print(name)
-    continue
-    suffix = src.lsuffix
-    if suffix in ('.ape', '.flac', '.m4a', 'mp3'):
-        s = MusicTag(src)
-        s.fixtags()
-        d = s.libpath(suffix='.m4a' if suffix in ('.ape', '.flac')else suffix)
-        if not d:
-            d.parent.ensure()
-            if suffix in ('.ape', '.flac'):
-                cmd = f'ffmpeg -i "{src}" -acodec alac "{d}"'
-                sh > cmd
-            elif suffix in ('.m4a', '.mp3'):
-                shutil.copyfile(src, d)
-            print(f'create: {d.name}')
+def main():
+    for src in Path('~/Downloads'):
+        from orange import decode
+        from urllib.parse import unquote
+        name = src.name
+        name = decode(name.encode('latin1'))
+        if '%' in name:
+            name = unquote(name)
+        print(name)
+        continue
+        suffix = src.lsuffix
+        if suffix in ('.ape', '.flac', '.m4a', 'mp3'):
+            s = MusicTag(src)
+            s.fixtags()
+            d = s.libpath(suffix='.m4a' if suffix in ('.ape', '.flac')else suffix)
+            if not d:
+                d.parent.ensure()
+                if suffix in ('.ape', '.flac'):
+                    cmd = f'ffmpeg -i "{src}" -acodec alac "{d}"'
+                    sh > cmd
+                elif suffix in ('.m4a', '.mp3'):
+                    shutil.copyfile(src, d)
+                print(f'create: {d.name}')
