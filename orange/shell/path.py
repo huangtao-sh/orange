@@ -405,21 +405,9 @@ class Path(_Parent):
             return result[0]
 
     @property
-    def music_meta(self):
-        if not hasattr(self, '_music_meta'):
-            import mutagen
-            self._music_meta = mutagen.File(self, easy=True)
-        return self._music_meta
-
-    @property
     def music_tags(self):
-        meta = self.music_meta
-        if meta:
-            return meta.tags
-
-    @music_tags.setter
-    def music_tags(self, values):
-        pass
+        from orange.utils.musictag import MusicTag
+        return MusicTag(self)
 
 
 HOME = Path.home()
