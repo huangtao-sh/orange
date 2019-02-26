@@ -10,7 +10,7 @@ import shutil
 from orange import Path, R, sh
 
 FixPatterns = (
-    (R / '\[.*?\]', ''),
+    (R / r'\[.*?\]', ''),
 )
 FixTags = 'title', 'album', 'artist'
 
@@ -68,6 +68,7 @@ class MusicTag(dict):
         if modified:
             self.file.save()
 
+
 def main():
     for src in Path('~/Downloads'):
         from orange import decode
@@ -82,7 +83,8 @@ def main():
         if suffix in ('.ape', '.flac', '.m4a', 'mp3'):
             s = MusicTag(src)
             s.fixtags()
-            d = s.libpath(suffix='.m4a' if suffix in ('.ape', '.flac')else suffix)
+            d = s.libpath(suffix='.m4a' if suffix in (
+                '.ape', '.flac')else suffix)
             if not d:
                 d.parent.ensure()
                 if suffix in ('.ape', '.flac'):
