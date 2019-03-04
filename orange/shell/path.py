@@ -21,7 +21,7 @@ from codecs import BOM_UTF8, BOM_LE, BOM_BE
 from orange.utils import command, arg
 from tempfile import TemporaryDirectory, NamedTemporaryFile
 from .shell import POSIX, sh
-from contextlib import contextmanager
+from contextlib import contextmanager, suppress
 
 
 class TempDir(TemporaryDirectory):
@@ -92,11 +92,9 @@ def decode(d: bytes) -> str:
         if k == d[:len(k)]:
             return d[len(k):].decode(BOM_CODE[k])
     for encoding in DEFAULT_CODES:
-        try:
+        with suppress(UnicodeDecodeError):
             return d.decode(encoding)
-        except:
-            pass
-    raise Exception('解码失败')
+    raise UnicodeDecodeError
 
 
 _Parent = pathlib.WindowsPath if os.name == 'nt' else pathlib.PosixPath
@@ -416,16 +414,17 @@ class Path(_Parent):
         '''修复网络下载的乱字符文件名'''
         import urllib
         name = self.name
-        if POSIX:
-            from unicodedata import normalize
-            name = normalize('NFC', name)
         if _UrlPattern.search(name):
             name = urllib.parse.unquote_plus(name)
-        elif all(x < 256 for x in map(ord, name)):
-            name = decode(bytes(map(ord, name)))
-        new_name = self.with_name(name)
-        if new_name != self.name:
-            print(self.name, '->', new_name)
+        else:
+            if POSIX:
+                from unicodedata import normalize
+                name = normalize('NFC', name)
+            with suppress(UnicodeEncodeError):
+                data = decode(name.encode('latin1'))
+                name = decode(data)
+        if name != self.name:
+            print(self.name, '->', name)
             self.rename(self.with_name(name))
 
 
