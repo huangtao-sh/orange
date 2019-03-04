@@ -16,6 +16,7 @@
 
 import pathlib
 import os
+import re
 from codecs import BOM_UTF8, BOM_LE, BOM_BE
 from orange.utils import command, arg
 from tempfile import TemporaryDirectory, NamedTemporaryFile
@@ -31,6 +32,8 @@ class TempDir(TemporaryDirectory):
 
 
 tempdir = TempDir
+
+_UrlPattern = re.compile(r'\%[0-9A-E]{2}')
 
 
 @contextmanager
@@ -412,11 +415,16 @@ class Path(_Parent):
     def repare_name(self):
         '''修复网络下载的乱字符文件名'''
         import urllib
-        name = decode(self.name.encode('latin1'))
-        if '%' in name:
+        name = self.name
+        if POSIX:
+            from unicodedata import normalize
+            name = normalize('NFC', name)
+        if _UrlPattern.search(name):
             name = urllib.parse.unquote_plus(name)
+        elif all(x < 256 for x in map(ord, name)):
+            name = decode(bytes(map(ord, name)))
         new_name = self.with_name(name)
-        if new_name!=self.name:
+        if new_name != self.name:
             print(self.name, '->', new_name)
             self.rename(self.with_name(name))
 
