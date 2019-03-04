@@ -421,8 +421,7 @@ class Path(_Parent):
                 from unicodedata import normalize
                 name = normalize('NFC', name)
             with suppress(UnicodeEncodeError):
-                data = decode(name.encode('latin1'))
-                name = decode(data)
+                name = decode(name.encode('latin1'))
         if name != self.name:
             print(self.name, '->', name)
             self.rename(self.with_name(name))
