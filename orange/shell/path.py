@@ -12,6 +12,7 @@
 # 修改：2018-09-16 09:00 增加 link_to  功能 以及 >> 和 << 操作符
 # 修订：2018-09-18 20:04 修正 __iter__ 的bug.
 # 修改：2019-02-23 13:42 增加音乐文件的 metadata 及 tags 功能
+# 修改：2019-03-04 14:21 增加修复网络下载文件名的功能
 
 
 import pathlib
@@ -20,7 +21,7 @@ import re
 from codecs import BOM_UTF8, BOM_LE, BOM_BE
 from orange.utils import command, arg
 from tempfile import TemporaryDirectory, NamedTemporaryFile
-from .shell import POSIX, sh
+from orange.shell import POSIX, sh
 from contextlib import contextmanager, suppress
 
 
@@ -412,9 +413,9 @@ class Path(_Parent):
 
     def repare_name(self):
         '''修复网络下载的乱字符文件名'''
-        import urllib
         name = self.name
         if _UrlPattern.search(name):
+            import urllib
             name = urllib.parse.unquote_plus(name)
         else:
             if POSIX:
@@ -439,7 +440,6 @@ def convert(files):
 
 
 def clean_trash():
-    from contextlib import suppress
     Patterns = ('._.DS_Store',
                 '.DS_Store',
                 '._*',
