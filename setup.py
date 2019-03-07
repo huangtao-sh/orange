@@ -20,7 +20,8 @@ console_scripts = ['conv=orange.utils.path:convert',
                    'imgbak=orange.tools.imgbackup:main',
                    'musicdl=orange.tools.neteasesong:main',
                    'dvd=orange.tools.dvd:main',
-                   'repare=orange.shell.path:repare_filename'
+                   'repare=orange.shell.path:repare_filename',
+                   'aml=orange.shell.path:add_music_lib',
                    ]
 
 scripts = ['scripts/pytest.py']

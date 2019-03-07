@@ -464,3 +464,23 @@ def repare_filename(pathes):
             [p.repare_name() for p in path]
         else:
             path.repare_name()
+
+
+@command(description='对下载的音乐进行转换，并加入 iTunes 音乐库', allow_empty=True)
+@arg('path', default='~/Downloads', help='音乐文件目录')
+def add_music_lib(path=None):
+    src = Path(path or '~/Downloads')
+    dest = HOME / 'Music/iTunes/iTunes Media/Automatically Add to iTunes.localized'
+    for path in src:
+        if path.lsuffix in ('.flac', '.ape', '.mp3', '.m4a','.wav'):
+            path.music_tag.fixtags()
+            if path.lsuffix in ('.mp3', '.m4a'):        # 无需转码的音乐文件
+                path.rename(dest / path.name)           # 直接修改文件名
+                print(f'copy 文件 {path.name}')
+            else:                                       # 无损音乐转成 .m4a 格式
+                destname = (dest / path.name).with_suffix('.m4a')
+                if not destname:
+                    # 进行转码
+                    sh > f'ffmpeg -i "{path}" -acodec alac "{destname}"'
+                if destname:
+                    path.unlink()                       # 目标文件建立成功，删除源文件
