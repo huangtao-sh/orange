@@ -31,8 +31,10 @@ class CueTime(object):
 
     @property
     def time(self):
-        m, s = divmod(self.value, 60*75)
-        return '%02d:%.2f' % (m, s/75)
+        s, f = divmod(self.value, 75)
+        m, s = divmod(s, 60)
+        f = f*100//75
+        return '%d:%02d:%02d' % (m, s, f)
 
     def __repr__(self):
         return 'CueTime("%s")' % (self)
@@ -109,6 +111,8 @@ if __name__ == '__main__':
     dest.ensure()
     if music_file:
         for cmd, tags in a:
+            print(cmd)
+            continue
             destfile = dest / f'{tags["title"]}.m4a'
             sh > f'ffmpeg -i "{music_file}" {cmd} -acodec alac "{destfile}"'
             tag = destfile.music_tag
