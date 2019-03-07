@@ -17,7 +17,7 @@ class CueTime(object):
     def __init__(self, value: str):
         if isinstance(value, str):
             m, s, f = map(int, value.split(':'))
-            self.value = m * 60*75+s*75+f
+            self.value = m*60*75+s*75+f
         else:
             self.value = value
 
@@ -55,10 +55,6 @@ class CueSheet(object):
             else:
                 self.default(cmd, *args)
 
-    @property
-    def count(self):
-        return len(self.tracks)
-
     def track(self, no, type_):
         self.trackno = no
         self.cur_track = {}
@@ -86,25 +82,24 @@ class CueSheet(object):
         self.type_ = type_
 
     def __iter__(self):
-        end = None
+        end = None  # 上一首歌的结束时间
+        count_ = len(self.tracks)
         for no, tags in reversed(tuple(self.tracks.items())):
-            begin = tags.pop('01')
-            if end:
+            begin = tags.pop('01')   # 取本首歌的开始时间
+            if end:                  # 如果有本首歌的结束时间，则定义曲长
                 cmd = f'-ss {begin.time} -t {(end-begin).time}'
             else:
-                cmd = f'-ss {begin.time}'
+                cmd = f'-ss {begin.time}'  # 无本首歌的结束时间，则忽略
             try:
-                end = tags.pop('00')
+                end = tags.pop('00')      # 取本首歌的空白开始时间，
             except:
                 end = begin
-            tags = tags.copy()
-            count_ = self.count
+            tags = tags.copy()            # 取本首歌的信息
             tags.update(tracknumber=f'{no}/{count_}', **self.album)
             yield cmd, tags
 
 
 if __name__ == '__main__':
-
     a = CueSheet('~/a.cue')
     music_file = Path('~') / a.filename
     dest = Path('~') / a.album['album']
@@ -112,7 +107,6 @@ if __name__ == '__main__':
     if music_file:
         for cmd, tags in a:
             print(cmd)
-            continue
             destfile = dest / f'{tags["title"]}.m4a'
             sh > f'ffmpeg -i "{music_file}" {cmd} -acodec alac "{destfile}"'
             tag = destfile.music_tag
