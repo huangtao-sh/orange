@@ -14,7 +14,6 @@ from orange.utils.regex import R
 
 __all__ = 'UTC', 'LOCAL', 'now', 'datetime', 'FixedOffset', 'ONEDAY',\
     'ONESECOND', 'date_add', 'LTZ'
-
 ZERO = dt.timedelta(0)
 ONEDAY = dt.timedelta(days=1)
 ONESECOND = dt.timedelta(seconds=1)
