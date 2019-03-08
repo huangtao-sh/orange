@@ -88,11 +88,8 @@ class CueSheet(object):
                 cmd = f'-ss {begin.time} -t {(end-begin).time}'
             else:
                 cmd = f'-ss {begin.time}'  # 无本首歌的结束时间，则忽略
-            try:
-                end = tags.pop('00')      # 取本首歌的空白开始时间，
-            except:
-                end = begin
-            tags = tags.copy()            # 取本首歌的信息
+            end = tags.pop('00', begin)    # 取本首歌的空白开始时间，
+            tags = tags.copy()             # 取本首歌的信息
             tags.update(tracknumber=f'{no}/{count_}', **self.album)
             yield cmd, tags
 
