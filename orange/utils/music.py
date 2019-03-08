@@ -27,7 +27,7 @@ class CueTime(object):
     def __str__(self):
         s, f = divmod(self.value, 75)
         m, s = divmod(s, 60)
-        return '%2d:%02d:%02d' % (m, s, f)
+        return '%d:%02d:%02d' % (m, s, f)
 
     @property
     def time(self):
@@ -35,7 +35,7 @@ class CueTime(object):
         return '%d:%05.2f' % (m, s/75)
 
     def __repr__(self):
-        return 'CueTime("%s")' % (self)
+        return f'CueTime("{self}")'
 
 
 class CueSheet(object):
