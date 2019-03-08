@@ -12,7 +12,7 @@ Pattern = R/r'".*?"|\S+'
 
 
 class CueTime(object):
-    __slots__ = 'value',
+    __slots__ = 'value'
 
     def __init__(self, value: str):
         if isinstance(value, str):
