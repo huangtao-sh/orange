@@ -31,10 +31,8 @@ class CueTime(object):
 
     @property
     def time(self):
-        s, f = divmod(self.value, 75)
-        m, s = divmod(s, 60)
-        f = int(round(f*100//75, 0))
-        return '%d:%02d:%02d' % (m, s, f)
+        m, s = divmod(self.value, 75*60)
+        return '%d:%05.2f' % (m, s/75)
 
     def __repr__(self):
         return 'CueTime("%s")' % (self)
