@@ -19,7 +19,7 @@ __all__ = 'db_config', 'connect', 'execute', 'executemany', 'executescript', 'ex
     'find', 'findone', 'findvalue', 'trans', 'fetch', 'fetchone', 'fetchvalue', 'transaction'
 
 
-def fix_db_name(database: str)->str:
+def fix_db_name(database: str) -> str:
     if not str(database).startswith(':'):
         db = Path(database)
         if not db.root:
@@ -89,7 +89,7 @@ def executefile(pkg: str, filename: str):
     return executescript(data.decode())
 
 
-def insert(table: str, data: list, fields: list = None, method: str = 'insert'):
+def insert(table: str, data: list, fields: list = None, method: str = 'insert') -> "Cursor":
     data = tuple(data)
     if fields:
         fields = '(%s)' % (','.join(fields))
