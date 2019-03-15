@@ -13,6 +13,8 @@
 # 修订：2018-09-18 20:04 修正 __iter__ 的bug.
 # 修改：2019-02-23 13:42 增加音乐文件的 metadata 及 tags 功能
 # 修改：2019-03-04 14:21 增加修复网络下载文件名的功能
+# 修改：2019-03-15 09:10 Path.iter_csv 增加 columns 参数
+
 
 
 import pathlib
@@ -194,14 +196,19 @@ class Path(_Parent):
         for index, sheet in enumerate(book.sheets()):
             yield index, sheet.name, sheet._cell_values
 
-    def iter_csv(self, encoding=None, errors=None, dialect='excel', **kw):
+    def iter_csv(self, encoding=None, errors=None, columns=None, dialect='excel', **kw):
         import csv
 
         def reader():
             with self.open(encoding=encoding, errors=errors) as f:
                 yield from f
 
-        return csv.reader(reader()if encoding else self.lines, dialect=dialect, **kw)
+        data = csv.reader(reader()if encoding else self.lines,
+                          dialect=dialect, **kw)
+        if columns:
+            import operator
+            data = map(operator.itemgetter(*columns), data)
+        return data
 
     @property
     def xmlroot(self):
@@ -472,7 +479,7 @@ def add_music_lib(path=None):
     src = Path(path or '~/Downloads')
     dest = HOME / 'Music/iTunes/iTunes Media/Automatically Add to iTunes.localized'
     for path in src:
-        if path.lsuffix in ('.flac', '.ape', '.mp3', '.m4a','.wav'):
+        if path.lsuffix in ('.flac', '.ape', '.mp3', '.m4a', '.wav'):
             path.music_tag.fixtags()
             if path.lsuffix in ('.mp3', '.m4a'):        # 无需转码的音乐文件
                 path.rename(dest / path.name)           # 直接修改文件名
