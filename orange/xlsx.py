@@ -6,6 +6,7 @@
 # Email:huangtao.sh@icloud.com
 # 创建：2016-10-12 08:24
 # 修订：2018-05-25 修改add_table的参数格式
+# 修订：2019-03-16 21:38 新增 Header 函数
 
 from orange import R, Path
 from xlsxwriter import Workbook
@@ -33,6 +34,16 @@ DefaultFormat = (('currency', {'num_format': '#,##0.00'}),
                              'font_size': 12, 'align': 'center'}),
                  ('datetime', {'num_format': 'yyyy-mm-dd hh:mm:ss'}),
                  ('timestamp', {'num_format': 'yyyy-mm-dd hh:mm:ss.0'}))
+
+
+def Header(header: str, width=None, format=None, **kw):
+    # 设置 Excel 表头
+    kw['header'] = header
+    if width:
+        kw['width'] = width
+    if format:
+        kw['format'] = format
+    return kw
 
 
 class Book(Workbook):
