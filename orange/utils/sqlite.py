@@ -4,6 +4,7 @@
 # License: GPL
 # Email:   huangtao.sh@icloud.com
 # 创建：2019-01-18 19:30
+# 修订：2019-03-16 21:21 增加 insertone 函数
 
 import atexit
 import sqlite3
@@ -89,16 +90,20 @@ def executefile(pkg: str, filename: str):
     return executescript(data.decode())
 
 
-def insert(table: str, data: list, fields: list = None, method: str = 'insert') -> "Cursor":
+def insert(table: str, data: list, fields: list = None, method: str = 'insert', multi: bool = True) -> "Cursor":
     data = tuple(data)
     if fields:
         fields = '(%s)' % (','.join(fields))
         values = ','.join(['?']*len(fields))
     else:
         fields = ''
-        values = ','.join(['?']*len(data[0]))
+        values = ','.join(['?']*len(data[0]if multi else data))
     sql = f'{method} into {table}{fields} values({values})'
-    return executemany(sql, data)
+    return executemany(sql, data) if multi else execute(sql, data)
+
+
+def insertone(table: str, data: list, fields: list = None, method: str = 'insert') -> "Cursor":
+    return insert(table, data, fields, method, multi=False)
 
 
 def attach(filename: Path, name: str):
