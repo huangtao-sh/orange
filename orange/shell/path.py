@@ -14,7 +14,7 @@
 # 修改：2019-02-23 13:42 增加音乐文件的 metadata 及 tags 功能
 # 修改：2019-03-04 14:21 增加修复网络下载文件名的功能
 # 修改：2019-03-15 09:10 Path.iter_csv 增加 columns 参数
-
+# 修订：2019-03-19 14:00 优化 Path.pack　功能
 
 
 import pathlib
@@ -275,12 +275,9 @@ class Path(_Parent):
         import tarfile
         tarfilename = str(Path(tarfilename).with_suffix('.tgz'))
         with tarfile.open(tarfilename, 'w:gz')as f:
-            if self.is_dir():
-                cwd, name = self, '.'
-            else:
-                cwd, name = self.parent, self.name
-            cwd.chdir()
-            f.add(name, **kw)
+            if self.is_dir() and 'arcname' not in kw:
+                kw['arcname'] = '/'
+            f.add(self, **kw)
 
     @property
     def lsuffix(self):
