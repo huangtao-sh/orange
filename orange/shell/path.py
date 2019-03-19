@@ -257,7 +257,7 @@ class Path(_Parent):
             with zipfile.ZipFile(str(self))as f:
                 members = conv_members(members, '/')
                 for fileinfo in f.filelist:
-                    if not (fileinfo.flag_bits and 0x0800):
+                    if not (fileinfo.flag_bits & 0x0800):
                         fileinfo.filename = fileinfo.filename.encode(
                             'cp437').decode('gbk')
                         f.NameToInfo[fileinfo.filename] = fileinfo
