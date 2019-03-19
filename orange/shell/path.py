@@ -285,10 +285,10 @@ class Path(_Parent):
         '''
         import zipfile
         with zipfile.ZipFile(zipfilename, 'w', zipfile.ZIP_DEFLATED, 5) as z:
-            if self.is_dir():
+            if self.is_dir():   # 如为目录则打包整个文件夹
                 for file in self.rglob('*.*'):
                     z.write(file, file-self)
-            else:
+            else:               # 如为文件则只打包当前文件
                 z.write(self, self.name)
 
     @property
