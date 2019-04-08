@@ -118,7 +118,7 @@ class datetime(dt.datetime):
             elif isinstance(year, str):
                 '''将字符串转换为DATETIME类型'''
                 if R/'\d{8}' == year:
-                    args = [int x for x in (year[:4], year[4:6], year[6:])]
+                    args = [int(x) for x in (year[:4], year[4:6], year[6:])]
                 args = [int(x) for x in R/r'\d+'/year]
             elif isinstance(year, (int, float)):
                 '''将整数或浮点数转换成日期类型
