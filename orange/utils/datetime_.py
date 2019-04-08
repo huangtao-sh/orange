@@ -7,6 +7,8 @@
 # 修改：2016-03-12 18:53
 # 修改：2016-09-06 增加 ONEDAY,ONESECOND
 # 修改：2016-11-19 将datetime 修改为按类实现
+# 修改：2019-04-08 13:43 支持 YYYYMMDD 格式的日期
+
 
 import datetime as dt
 import time as _time
@@ -119,7 +121,8 @@ class datetime(dt.datetime):
                 '''将字符串转换为DATETIME类型'''
                 if R/'\d{8}' == year:
                     args = [int(x) for x in (year[:4], year[4:6], year[6:])]
-                args = [int(x) for x in R/r'\d+'/year]
+                else:
+                    args = [int(x) for x in R/r'\d+'/year]
             elif isinstance(year, (int, float)):
                 '''将整数或浮点数转换成日期类型
                 如果小于100000，则按EXCEL的格式转换；
