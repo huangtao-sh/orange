@@ -234,7 +234,7 @@ class Path(_Parent):
         elif suffix in('.del', '.csv'):
             yield from self.iter_csv()
 
-    def extractall(self, path='.', password:str=None, members=None):
+    def extractall(self, path='.', password: str = None, members=None):
         def conv_members(members, sep='/'):
             if members:
                 repl_sep = '\\' if sep == '/' else '/'
@@ -244,7 +244,7 @@ class Path(_Parent):
         if name.endswith('.rar'):
             members = conv_members(members, '/' if POSIX else '\\')
             members = " ".join(members) if members else ""
-            cmd=f'unrar x -p{password}' if password else 'unrar x'
+            cmd = f'unrar x -p{password}' if password else 'unrar x'
             sh > f'{cmd} {self} {members} {path}'
         elif any(map(name.endswith, ('.tar.gz', '.tgz', '.gz'))):
             import tarfile
@@ -306,6 +306,7 @@ class Path(_Parent):
         '''删除整个目录'''
         import shutil
         shutil.rmtree(str(self))
+    deltree = rmtree
 
     def chdir(self):
         if self.is_dir():
