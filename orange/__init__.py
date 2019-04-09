@@ -13,7 +13,7 @@ from orange.utils.htutil import classproperty, cachedproperty, read_shell, write
 from orange.mail import sendmail, tsendmail, Mail, MailClient
 from orange.utils import command, arg, datetime, LOCAL, UTC, date_add, ONEDAY,\
     LTZ, ONESECOND, now, R, extract, convert_cls_name, PY, get_py,\
-    first, last, _any, _all
+    first, last, _any, _all, desensitize
 from orange.shell import sh, POSIX, is_dev, is_installed, Path, decode, HOME,\
     tempdir, tempfile
 from orange.utils.config import YamlConfig
@@ -31,4 +31,4 @@ __all__ = 'Path', 'get_path', 'HOME',\
     'ONESECOND', 'R', 'sendmail', 'tsendmail', 'Mail', 'PY', 'MailClient',\
     'convert_cls_name', 'verbose', 'arg', 'command', 'generator', 'version',\
     'extract', 'cstr', 'deprecate', 'tprint', 'shell', 'POSIX', 'cformat',\
-    'Config', 'debug'
+    'Config', 'debug', 'desensitize'
