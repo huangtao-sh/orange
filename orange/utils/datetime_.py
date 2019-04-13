@@ -119,7 +119,7 @@ class datetime(dt.datetime):
                 args.extend([year.microsecond, tzinfo])
             elif isinstance(year, str):
                 '''将字符串转换为DATETIME类型'''
-                if R/'\d{8}' == year:
+                if R/r'\d{8}' == year:
                     args = [int(x) for x in (year[:4], year[4:6], year[6:])]
                 else:
                     args = [int(x) for x in R/r'\d+'/year]
@@ -219,14 +219,16 @@ class datetime(dt.datetime):
     # 使用date%'%Y-%m-%d'的语法来格式化日期
     __mod__ = strftime = format
 
-    def iter(self, end, step={'days': 1}, fmt=lambda x: x):
+    def iter(self, end, step={'days': 1}, fmt=None):
         '''遍历日期，如果days 为整数，则遍历days 指定的天数,
         若days 为非整数，则days 应为终止的日期,
         fmt 为返回格式：如为字符串，则格式化日期；若为可调用对象，则调用该日期'''
         if isinstance(fmt, str):
+            def _fmt(d): return d % fmt
+        elif callable(fmt):
             _fmt = fmt
-
-            def fmt(x): return x.strftime(_fmt)
+        else:
+            _fmt = None
 
         if isinstance(end, dict):
             p, a = {}, {}
@@ -241,7 +243,7 @@ class datetime(dt.datetime):
         else:
             end_day = datetime(end)
         while self < end_day:
-            yield fmt(self)
+            yield _fmt(self) if _fmt else self
             self = self.add(**step)
 
 
