@@ -25,6 +25,7 @@ from orange.utils import command, arg
 from tempfile import TemporaryDirectory, NamedTemporaryFile
 from orange.shell import POSIX, sh
 from contextlib import contextmanager, suppress
+from orange.utils.htutil import split
 
 
 class TempDir(TemporaryDirectory):
@@ -196,7 +197,17 @@ class Path(_Parent):
         for index, sheet in enumerate(book.sheets()):
             yield index, sheet.name, sheet._cell_values
 
-    def iter_csv(self, encoding=None, errors=None, columns=None, dialect='excel', **kw):
+    def iter_csv(self, encoding=None, errors=None, columns=None, dialect='excel',
+                 rows=0, _filter=None, **kw):
+        '''读取 csv 数据
+        encoding :  指定文件的编码
+        errors:     指定编码解码错误时的处理策略
+        _filter:    过滤器，过滤指定数据，默认过滤空行
+        columns:    指定返回的列，如（1，2，4）
+        rows:       0,逐行返回数据，>0 按 rows 指定的行数返回数据
+        dialet:     csv 处理方式，默认为 excel
+        kw:         其他 csv.reader 所需参数
+        '''
         import csv
 
         def reader():
@@ -208,6 +219,10 @@ class Path(_Parent):
         if columns:
             import operator
             data = map(operator.itemgetter(*columns), data)
+        if _filter:
+            data = filter(_filter, data)
+        if rows:
+            data = split(data, rows)
         return data
 
     @property
