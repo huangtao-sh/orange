@@ -13,16 +13,18 @@ import warnings
 from functools import wraps
 from .regex import R
 from contextlib import suppress
+from itertools import islice
 
 
 def first(iterable):
-    with suppress(Exception):
-        return tuple(iterable)[0]
+    for item in iterable:
+        return item
 
 
 def last(iterable):
-    with suppress(Exception):
-        return tuple(iterable)[-1]
+    for item in iterable:
+        pass
+    return item
 
 
 def _any(func, iterable):
@@ -287,8 +289,14 @@ def decrypt(code):
 generator = type(x for x in 'hello world.')
 
 
-def split(data, size=1000):
+def split(data: 'iterable', size: int = 1000) -> 'iterable':
     '''拆分数据，其中datas应为list,size为每批数据的数量'''
+    data = iter(data)
+    row = tuple(islice(data, size))
+    while row:
+        yield row
+        row = tuple(islice(data, size))
+    '''
     if isinstance(data, generator):
         data = tuple(data)
     length = len(data)
@@ -297,3 +305,4 @@ def split(data, size=1000):
         yield data[i - size:i]
     else:
         yield data[i:]
+        '''
