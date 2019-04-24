@@ -217,8 +217,7 @@ class Path(_Parent):
         data = csv.reader(reader()if encoding else self.lines,
                           dialect=dialect, **kw)
         if columns:
-            import operator
-            data = map(operator.itemgetter(*columns), data)
+            data = map(lambda row:[row[x]for x in columns], data)
         if _filter:
             data = filter(_filter, data)
         if rows:
