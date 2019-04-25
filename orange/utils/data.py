@@ -6,17 +6,23 @@
 # 创建：2019-04-25 11:09
 
 from functools import partial
-from .htutil import split
+from .htutil import split, tprint
 
 
-def _convert(converter, row):
-    for idx, conv in converter.items():
-        row[idx] = conv(row[idx])
-    return row
+def _convert(converter):
+    '''数据转换'''
+    def _(row):
+        for idx, conv in converter.items():
+            row[idx] = conv(row[idx])
+        return row
+    return _
 
 
-def itemgetter(columns, row):
-    return [row[col]for col in columns]
+def itemgetter(columns):
+    '获取'
+    def _(row):
+        return [row[col]for col in columns]
+    return _
 
 
 class Data():
@@ -47,10 +53,10 @@ class Data():
             if callable(converter):
                 self._data = map(converter, self._data)
             else:
-                self._data = map(partial(_convert, converter), self._data)
+                self._data = map(_convert(converter), self._data)
 
     def columns(self, columns):
-        self._data = map(partial(itemgetter, columns), self._data)
+        self._data = map(itemgetter(columns), self._data)
 
     def __iter__(self):
         if self._rows:
@@ -59,3 +65,6 @@ class Data():
 
     def split(self, count=10000):
         self._rows = count
+
+    def print(self, format_spec, sep=' '):
+        tprint(self._data, format_spec=format_spec, sep=sep)
