@@ -28,6 +28,7 @@ class Data():
             self.header(header)
         for k, v in kw.items():
             getattr(self, k)(v)
+        self._rows = rows
 
     def header(self, header):
         for row in self._data:
@@ -37,6 +38,9 @@ class Data():
                     self.convert(
                         {idx: conv for idx, conv in enumerate(header.values())if conv})
                 break
+
+    def filter(self, filter_):
+        self._data = filter(filter_, self._data)
 
     def convert(self, converter):
         if converter:
