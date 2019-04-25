@@ -25,7 +25,7 @@ from orange.utils import command, arg
 from tempfile import TemporaryDirectory, NamedTemporaryFile
 from orange.shell import POSIX, sh
 from contextlib import contextmanager, suppress
-from orange.utils.htutil import split
+from orange.utils import Data
 
 
 class TempDir(TemporaryDirectory):
@@ -216,12 +216,8 @@ class Path(_Parent):
 
         data = csv.reader(reader()if encoding else self.lines,
                           dialect=dialect, **kw)
-        if columns:
-            data = map(lambda row:[row[x]for x in columns], data)
-        if _filter:
-            data = filter(_filter, data)
-        if rows:
-            data = split(data, rows)
+        if any([columns, _filter, rows]):
+            data = Data(data, rows=rows, filter=filter, columns=columns)
         return data
 
     @property

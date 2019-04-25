@@ -18,8 +18,9 @@ def _convert(converter):
     return _
 
 
-def itemgetter(columns):
-    '获取'
+def itemgetter(columns: 'iterable') -> 'func':
+    '获取提定对象的指定列'
+    'columns 为 tuple 或者 list'
     def _(row):
         return [row[col]for col in columns]
     return _
