@@ -42,14 +42,14 @@ class Data():
             if all(x in row for x in header):
                 self.columns([row.index(title)for title in header])
                 if isinstance(header, dict):
-                    self.convert(
+                    self.converter(
                         {idx: conv for idx, conv in enumerate(header.values())if conv})
                 break
 
     def filter(self, filter_):
         self._data = filter(filter_, self._data)
 
-    def convert(self, converter):
+    def converter(self, converter):
         if converter:
             if callable(converter):
                 self._data = map(converter, self._data)

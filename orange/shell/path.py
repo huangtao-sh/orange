@@ -198,7 +198,7 @@ class Path(_Parent):
             yield index, sheet.name, sheet._cell_values
 
     def iter_csv(self, encoding=None, errors=None, columns=None, dialect='excel',
-                 rows=0, _filter=None, **kw):
+                 rows=0, _filter=None, converter=None, **kw):
         '''读取 csv 数据
         encoding :  指定文件的编码
         errors:     指定编码解码错误时的处理策略
@@ -216,8 +216,9 @@ class Path(_Parent):
 
         data = csv.reader(reader()if encoding else self.lines,
                           dialect=dialect, **kw)
-        if any([columns, _filter, rows]):
-            data = Data(data, rows=rows, filter=filter, columns=columns)
+        if any([columns, _filter, rows, converter]):
+            data = Data(data, rows=rows, filter=_filter,
+                        converter=converter, columns=columns)
         return data
 
     @property
