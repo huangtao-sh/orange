@@ -16,26 +16,26 @@ from orange import decrypt, encrypt, Path
 
 
 class Config:
-    def __init__(self, config_path=None, data_path=None,
-                 is_dev=None, project=None):
+    def __init__(self,
+                 config_path=None,
+                 data_path=None,
+                 is_dev=None,
+                 project=None):
         if is_dev is None:
             self.is_dev = orange.is_dev()
         else:
             self.is_dev = is_dev
         if project is None:
-            self.project = os.path.splitext(
-                os.path.basename(sys.argv[0]))[0]
+            self.project = os.path.splitext(os.path.basename(sys.argv[0]))[0]
         else:
             self.project = project
         self.os_name = os.name
         if self.os_name == 'posix':
             config_ext = '.conf'
-            self.config_path = os.path.expanduser(
-                "~/.%s" % (self.project))
+            self.config_path = os.path.expanduser("~/.%s" % (self.project))
         else:
             config_ext = '.ini'
-            self.config_path = os.path.join(os.getenv("APPDATA"),
-                                            self.project)
+            self.config_path = os.path.join(os.getenv("APPDATA"), self.project)
         if self.is_dev:
             self.config_path = os.path.abspath("appdata")
         else:
@@ -44,7 +44,7 @@ class Config:
         if not hasattr(self, "data_path"):
             self.data_path = self.config_path
         self.config_file = os.path.join(self.data_path,
-                                        self.project+config_ext)
+                                        self.project + config_ext)
         self.modified = False
         self.load_config()
 
@@ -100,13 +100,12 @@ class Config:
         # ensure_path(os.path.dirname(self.cur_file))
         Path(self.cur_file).parent.ensure()
         if self.modified:
-            with open(self.cur_file, 'w', encoding='utf8')as fn:
+            with open(self.cur_file, 'w', encoding='utf8') as fn:
                 self.parser.write(fn)
 
     def init_logging(self):
         import logging
-        file_name = os.path.join(self.data_path,
-                                 self.project+'.log')
+        file_name = os.path.join(self.data_path, self.project + '.log')
         if self.is_dev:
             level = 'DEBUG'
         else:
@@ -115,7 +114,8 @@ class Config:
             'filename': file_name,
             'level': level,
             'format': '%(asctime)s %(levelname)s\t%(message)s',
-            'datefmt': '%Y-%m-%d %H:%M'}
+            'datefmt': '%Y-%m-%d %H:%M'
+        }
         default.update(self.get('logging'))
         logging.basicConfig(**default)
 
