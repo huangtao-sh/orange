@@ -7,9 +7,9 @@
 
 # 有一台电脑是 win32 的系统，且无法上网，无法自动升级 Python 包。故
 # 编写本程序来对这些程序包进行管理
+from orange.utils.config import YamlConfig
 import sys
 import json
-from .config import config
 from orange import shell, arg, tprint
 from orange.pykit import pip, Ver
 from collections import defaultdict
@@ -17,6 +17,15 @@ from orange.shell import HOME, Path
 from .pysetup import pydownload
 ROOT = HOME/'OneDrive'
 PyLib = ROOT/'pylib'
+
+
+DefaultConfig = {
+    'Local': ['orange_kit', 'gmono', 'glemon', 'lzbg', 'pygui'],
+    'Wheel': [],
+    'Source': []
+}
+
+ConfFile = HOME / 'OneDrive/conf/pypkgs.yaml'    # 配置文件路径
 
 excludes = set(['green-mongo', 'orange-kit', 'coco', 'glemon', 'lzbg'])
 
@@ -33,7 +42,7 @@ def is_connected(url=None):
         return False
 
 
-def batch_download():
+def batch_download(config):
     for pkg in config['Wheel']:
         pydownload(pkg, source=False)
     for pkg in config['Source']:
@@ -65,7 +74,7 @@ def cleanlib():
             print(f'{r[3]} has been deleted')
 
 
-def config_pkg():
+def config_pkg(config):
     local = config['Local']
     wheel, source = [], []
     data = []
@@ -89,10 +98,11 @@ def config_pkg():
 @arg('-i', '--install', action='store_true', help='批量安装')
 @arg('-c', '--clean', action='store_true', help='清理无用的包')
 def main(download=False, upgrade=False, install=False, **options):
+    config = YamlConfig(default=DefaultConfig, filename=ConfFile)
     if options['config']:
-        config_pkg()
+        config_pkg(config)
     if download:
-        batch_download()
+        batch_download(config)
     if upgrade:
         if is_connected():
             pkglist = shell('pip3 list -o')

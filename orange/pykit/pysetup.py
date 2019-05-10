@@ -8,9 +8,6 @@
 import sysconfig
 from orange.shell import Path, sh, POSIX, HOME
 from orange.utils.click import command, arg
-from orange.pykit.config import config
-from orange.pykit.version import Ver
-
 libpath = HOME/'OneDrive/pylib'
 
 
