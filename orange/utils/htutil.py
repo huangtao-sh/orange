@@ -123,6 +123,7 @@ def desensitize(s: str, start: int = 0, stop: int = 0, width: int = 0, chr: str 
     s:     需要脱敏的字符串
     start: 脱敏的起始位置，可以为负数
     stop:  脱敏的终止位置，可以为负数
+    width: 脱敏字符串的长度，stop 未设置时使用
     chr:   替代字符，脱敏时替代的安符
     '''
     parts = []
