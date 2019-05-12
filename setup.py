@@ -23,6 +23,7 @@ console_scripts = ['conv=orange.utils.path:convert',
                    'repare=orange.shell.path:repare_filename',
                    'aml=orange.shell.path:add_music_lib',
                    'execsql=orange.utils.sqlite:execsql',
+                   'py=orange.utils:py'
                    ]
 
 scripts = ['scripts/pytest.py']

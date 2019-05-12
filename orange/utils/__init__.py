@@ -13,3 +13,10 @@ from .pinyin import get_py, PY
 from .htutil import first, last, _any, _all, desensitize
 from .hz import Ordinal
 from .data import Data
+
+
+@arg('module', nargs='?', help='指定模块')
+@arg('tokens', nargs='?', help='该函数所需的参数')
+def py(module, tokens):
+    result = exec(f'import {module};{tokens}')
+    result and print(result)
