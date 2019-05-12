@@ -118,7 +118,7 @@ def tprint(data, format_spec={}, sep=' '):
             print(x)
 
 
-def desensitize(s: str, start: int = 0, stop: int = 0, chr: str = '*') -> str:
+def desensitize(s: str, start: int = 0, stop: int = 0, width: int = 0, chr: str = '*') -> str:
     '''对指定的数据进行脱敏处理'
     s:     需要脱敏的字符串
     start: 脱敏的起始位置，可以为负数
@@ -128,6 +128,8 @@ def desensitize(s: str, start: int = 0, stop: int = 0, chr: str = '*') -> str:
     parts = []
     if start:
         parts.append(s[:start])
+    if not stop and width:
+        stop = start+width
     if stop:
         parts.extend([chr*len(s[start:stop]), s[stop:]])
     else:
