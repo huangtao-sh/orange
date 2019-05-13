@@ -13,6 +13,7 @@ from xlsxwriter import Workbook
 from xlsxwriter.format import Format
 from xlsxwriter.worksheet import convert_cell_args, convert_column_args, convert_range_args, cell_blank_tuple,\
     xl_col_to_name
+from functools import partial
 
 Pattern = R/r'([A-Z]{1,2})(\d*)([:_]([A-Z]{1,2})(\d*))?'
 Row = R/r'(\{([+-]?\d+)\})'
@@ -44,6 +45,12 @@ def Header(header: str, width=None, format=None, **kw):
     if format:
         kw['format'] = format
     return kw
+
+
+Account = partial(Header, 25)
+AcName = partial(Header, 52)
+Date = partial(Header, 14)
+Balance = partial(Header, 18, format='currency')
 
 
 class Book(Workbook):
