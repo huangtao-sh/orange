@@ -57,7 +57,8 @@ class Data():
                 self._data = map(_convert(converter), self._data)
 
     def columns(self, columns):
-        self._data = map(itemgetter(columns), self._data)
+        if columns:
+            self._data = map(itemgetter(columns), self._data)
 
     def __iter__(self):
         if self._rows:
