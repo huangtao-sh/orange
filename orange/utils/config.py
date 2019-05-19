@@ -57,7 +57,7 @@ class YamlConfig(BaseConfig):
         self.file = Path(filename)
         if self.file:
             with self.file.open('r', encoding='utf8')as f:
-                return yaml.load(f)
+                return yaml.load(f, Loader=yaml.FullLoader)
 
     def save(self):
         import yaml
