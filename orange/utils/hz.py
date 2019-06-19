@@ -9,18 +9,19 @@ ORDINALNUMBER = '零一二三四五六七八九'
 
 
 class Ordinal(object):
-    def __init__(self, start=1, prefix='', suffix='', capital=False):
+    def __init__(self, start=1, prefix='', suffix='', capital=False, step=1):
         self._xh = start
         self.prefix = prefix
         self.suffix = suffix
         self._captial = capital
+        self._step = step
 
     def __next__(self):
-        s = str(self)
-        self._xh += 1
-        return s
+        self._xh += self._step
+        return str(self._xh)
 
     def __iter__(self):
+        self._xh -= self._step
         return self
 
     @property
