@@ -16,22 +16,19 @@ class Ordinal(object):
         self._capital = capital
         self._step = step
 
-    def __next__(self):
-        self._xh += self._step
-        return str(self._xh)
-
     def __call__(self):
-        s = str(self._xh)
-        self._xh += 1
+        s = str(self)
+        self._xh += self._step
         return s
 
     def __iter__(self):
-        self._xh -= self._step
         return self
+
+    __next__ = __call__
 
     @property
     def xh(self):
-        return str(self)
+        return str(self.xh)
 
     @property
     def capital(self):
@@ -45,4 +42,4 @@ class Ordinal(object):
         return "".join((b, s, g))
 
     def __str__(self):
-        return "".join([self.prefix, self.capital if self._capital else self.xh, self.suffix])
+        return "".join([self.prefix, self.capital if self._capital else str(self._xh), self.suffix])
