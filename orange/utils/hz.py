@@ -28,7 +28,7 @@ class Ordinal(object):
 
     @property
     def xh(self):
-        return str(self.xh)
+        return str(self._xh)
 
     @property
     def capital(self):
