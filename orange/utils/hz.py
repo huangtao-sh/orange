@@ -20,7 +20,10 @@ class Ordinal(object):
         self._xh += self._step
         return str(self._xh)
 
-    __call__ = __next__
+    def __call__(self):
+        s = str(self._xh)
+        self._xh += 1
+        return s
 
     def __iter__(self):
         self._xh -= self._step
