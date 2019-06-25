@@ -63,7 +63,7 @@ def darwin_deploy():
     config_path = Path('/usr/local/etc/mongod.conf')
     plist_file = Path('/Library/LaunchDaemons/com.mongodb.plist')
     config_path.text = MONGOCONFIG.format(**config)
-    plist_file.text = get_data('mongo', 'data/mongo.plist').decode()
+    plist_file.text = get_data('orange', 'data/mongo.plist').decode()
 
 
 def linux_deploy():
@@ -72,7 +72,7 @@ def linux_deploy():
     Path(dbpath).ensure()
     config = {'dbpath': dbpath, 'logpath': logpath}
     config_path = Path('/usr/local/etc/mongod.conf')
-    MONGOCONFIG = get_data('mongo', 'data/mongo_linux.yaml').decode()
+    MONGOCONFIG = get_data('orange', 'data/mongo_linux.yaml').decode()
     config_path.text = MONGOCONFIG.format(**config)
 
 
