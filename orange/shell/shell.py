@@ -15,8 +15,13 @@ encoding = 'utf8' if POSIX else 'gbk'
 class Shell(type):
     __slots__ = ()
 
-    def __call__(self, cmd: str, *args: list, prefix: str = '-',
-                 input=None, capture_output=True, **options)->'code,output':
+    def __call__(self,
+                 cmd: str,
+                 *args: list,
+                 prefix: str = '-',
+                 input=None,
+                 capture_output=True,
+                 **options) -> 'code,output':
         '''
         调用方式： code,output = sh('dir')
         返回值：   code 系统返回值
@@ -44,11 +49,14 @@ class Shell(type):
                 arg = str(arg)
                 params.append(f'{p}{option}:{arg}')
         cmd = " ".join(params)
-        rt = run(cmd, input=input, encoding=encoding,
-                 capture_output=capture_output, shell=True)
+        rt = run(cmd,
+                 input=input,
+                 encoding=encoding,
+                 capture_output=capture_output,
+                 shell=True)
         return (rt.returncode, rt.stdout) if capture_output else rt.returncode
 
-    def __gt__(self, cmd: str)->int:
+    def __gt__(self, cmd: str) -> int:
         '''
         调用方式： sh > 'dir'
         系统直接打印输出执行命令的输出
@@ -60,4 +68,3 @@ class Shell(type):
 
 class sh(metaclass=Shell):
     __slots__ = ()
-    pass
