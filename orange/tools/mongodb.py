@@ -10,8 +10,8 @@ from orange.pykit.pyver import Ver, get_cur_ver
 from orange import sh, Path
 from pkgutil import get_data
 
-MONGOFILES = ('mongo.exe', 'mongod.exe', 'mongodump.exe',
-              'mongoexport.exe', 'mongoimport.exe')
+MONGOFILES = ('mongo.exe', 'mongod.exe', 'mongodump.exe', 'mongoexport.exe',
+              'mongoimport.exe')
 
 SERVERNAME = 'MongoDb'
 MONGOCONFIG = get_data('orange', 'data/mongo.yaml').decode()
@@ -25,11 +25,12 @@ def win_deploy():
     if not data_path:
         data_path.ensure()
         print('创建数据目录：%s' % (data_path))
-    config_file = root/'mongo.conf'
+    config_file = root / 'mongo.conf'
     config = {
         'dbpath': data_path.as_posix(),
         'logpath': root.as_posix(),
-        'engine': 'wiredTiger'}
+        'engine': 'wiredTiger'
+    }
     if platform.architecture()[0] != '64bit':
         config['engine'] = 'mmapv1'
         print('本机使用32位处理器，使用 mmapv1 引擎')
@@ -42,8 +43,8 @@ def win_deploy():
     print(f'最新版程序安装路径为：{prg_path}')
     dest = Path('%windir%')
     for exefile in MONGOFILES:
-        (dest/exefile) >> (prg_path/exefile)
-        print('连接 %s 到 %s 成功' % (dest/exefile, prg_path/exefile))
+        (dest / exefile) >> (prg_path / exefile)
+        print('连接 %s 到 %s 成功' % (dest / exefile, prg_path / exefile))
     print('删除服务配置')
     sh > f'sc delete {SERVERNAME}'
     print('重新配置服务')
@@ -57,11 +58,21 @@ def darwin_deploy():
     config = {
         'dbpath': '/usr/local/var/mongodb',
         'logpath': 'usr/local/var/log',
-        'engine': 'wiredTiger'}
+        'engine': 'wiredTiger'
+    }
     config_path = Path('/usr/local/etc/mongod.conf')
     plist_file = Path('/Library/LaunchDaemons/com.mongodb.plist')
     config_path.text = MONGOCONFIG.format(**config)
     plist_file.text = get_data('mongo', 'data/mongo.plist').decode()
+
+
+def linux_deploy():
+    dbpath = '/var/local/mongodb'
+    logpath = '/var/log'
+    Path(dbpath).ensure()
+    config = {'dbpath': dbpath, 'logpath': logpath, 'engine': 'wiredTiger'}
+    config_path = Path('/usr/local/etc/mongod.conf')
+    config_path.text = MONGOCONFIG.format(**config)
 
 
 def main():
@@ -70,5 +81,7 @@ def main():
         win_deploy()
     elif sys.platform == 'darwin':
         darwin_deploy()
+    elif sys.platform == 'linux':
+        linux_deploy()
     else:
         print('操作系统%下的配置未实现')
