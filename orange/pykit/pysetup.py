@@ -28,7 +28,7 @@ def pysetup(*args) -> int:
         print('Can' 't find file setup.py!')
         exit(1)
     cmd = 'python3 setup.py' if POSIX else 'setup'
-    run_cmd(cmd, *args)
+    sh > " ".join([cmd, *args])
     pyclean()
 
 
