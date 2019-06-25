@@ -85,7 +85,8 @@ def pyinstall(packages=None,
                     pkgs.append(filename)
                 else:
                     pkgs.append(pkg)
-            pip('install', *pkgs)
+            # pip('install', *pkgs)
+            sh > " ".join(['pip3', *pkgs])
         else:
             if Path('setup.py'):
                 pysetup('install')
