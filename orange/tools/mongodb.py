@@ -70,8 +70,9 @@ def linux_deploy():
     dbpath = '/var/local/mongodb'
     logpath = '/var/log'
     Path(dbpath).ensure()
-    config = {'dbpath': dbpath, 'logpath': logpath, 'engine': 'wiredTiger'}
+    config = {'dbpath': dbpath, 'logpath': logpath}
     config_path = Path('/usr/local/etc/mongod.conf')
+    MONGOCONFIG = get_data('mongo', 'data/mongo_linux.yaml').decode()
     config_path.text = MONGOCONFIG.format(**config)
 
 
