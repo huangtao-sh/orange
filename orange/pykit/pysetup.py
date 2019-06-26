@@ -8,7 +8,8 @@
 import sysconfig
 from orange.shell import Path, sh, POSIX, HOME
 from orange.utils.click import command, arg
-libpath = HOME/'OneDrive/pylib'
+from orange.pykit.version import Ver
+libpath = HOME / 'OneDrive/pylib'
 
 
 def run_cmd(cmd: str, *args, **kw) -> int:
@@ -17,18 +18,17 @@ def run_cmd(cmd: str, *args, **kw) -> int:
 
 def pyclean():
     Patterns = ('build', 'dist', '*egg-info')
-    for path in filter(
-            lambda path: any(map(path.match, Patterns)), Path('.')):
+    for path in filter(lambda path: any(map(path.match, Patterns)), Path('.')):
         path.rmtree()
         print(f'Path {path} have been deleted!')
 
 
 def pysetup(*args) -> int:
     if not Path('setup.py'):
-        print('Can''t find file setup.py!')
+        print('Can' 't find file setup.py!')
         exit(1)
     cmd = 'python3 setup.py' if POSIX else 'setup'
-    run_cmd(cmd, *args)
+    sh > " ".join([cmd, *args])
     pyclean()
 
 
@@ -56,11 +56,11 @@ BINARY_PARAMS = {
 
 def pydownload(*pkgs, source=True):
     if source:
-        pip('download', *pkgs, '-d', str(libpath),
-            '--no-binary=:all:', '--no-deps')
+        pip('download', *pkgs, '-d', str(libpath), '--no-binary=:all:',
+            '--no-deps')
     else:
         pip('download', *pkgs, '-d', str(libpath), '--no-deps',
-            *(f'--{k}={v}'for k, v in BINARY_PARAMS.items()))
+            *(f'--{k}={v}' for k, v in BINARY_PARAMS.items()))
 
 
 @command(allow_empty=True)
@@ -68,7 +68,11 @@ def pydownload(*pkgs, source=True):
 @arg('-p', '--path', default=libpath, help='指定的目录')
 @arg('-d', '--download', help='默认的包目录', action='store_true')
 @arg('-b', '--binary', action='store_true', help='下载二进制程序包')
-def pyinstall(packages=None, path=None, download=None, upgrade=False, binary=False):
+def pyinstall(packages=None,
+              path=None,
+              download=None,
+              upgrade=False,
+              binary=False):
     root = Path(path)
     if download:
         pydownload(*packages, source=not binary)
@@ -81,12 +85,13 @@ def pyinstall(packages=None, path=None, download=None, upgrade=False, binary=Fal
                     pkgs.append(filename)
                 else:
                     pkgs.append(pkg)
-            pip('install', *pkgs)
+            # pip('install', *pkgs)
+            sh > " ".join(['pip3', *pkgs])
         else:
             if Path('setup.py'):
                 pysetup('install')
             else:
-                print('Can''t find the file setup.py!')
+                print('Can' 't find the file setup.py!')
 
 
 if __name__ == '__main__':
