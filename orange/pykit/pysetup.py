@@ -28,7 +28,7 @@ def pysetup(*args) -> int:
         print('Can' 't find file setup.py!')
         exit(1)
     cmd = 'python3 setup.py' if POSIX else 'setup'
-    sh(cmd, *args)
+    run_cmd(cmd, *args)
     pyclean()
 
 
@@ -86,8 +86,7 @@ def pyinstall(packages=None,
                     pkgs.append(filename)
                 else:
                     pkgs.append(pkg)
-            # pip('install', *pkgs)
-            sh('pip3', *pkgs)
+            pip('install', *pkgs)
         else:
             if Path('setup.py'):
                 pysetup('install')
