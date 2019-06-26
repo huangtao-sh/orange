@@ -16,7 +16,7 @@ encoding = 'utf8' if POSIX else 'gbk'
 class Shell(type):
     __slots__ = ()
 
-    def __call__(self, cmd: str, *args: list, stdout=None, stderr=None,  prefix: str = '-',
+    def __call__(self, cmd: str, *args: list, prefix: str = '-',
                  input=None, capture_output=True, **options) -> 'code,output':
         '''
         调用方式： code,output = sh('dir')
@@ -50,8 +50,9 @@ class Shell(type):
                      capture_output=capture_output, shell=True)
         else:
             if capture_output:
-                stdout = stdout or PIPE
-                stderr = stderr or PIPE
+                stdout, stderr = PIPE, PIPE
+            else:
+                stdout, stderr = None, None
             rt = run(cmd, input=input, stdout=stdout, stderr=stderr, encoding=encoding,
                      shell=True)
         return (rt.returncode, rt.stdout) if capture_output else rt.returncode
