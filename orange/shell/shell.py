@@ -16,7 +16,7 @@ encoding = 'utf8' if POSIX else 'gbk'
 class Shell(type):
     __slots__ = ()
 
-    def __call__(self, cmd: str, stdout=None, stderr=None, *args: list, prefix: str = '-',
+    def __call__(self, cmd: str, *args: list, stdout=None, stderr=None,  prefix: str = '-',
                  input=None, capture_output=True, **options) -> 'code,output':
         '''
         调用方式： code,output = sh('dir')
@@ -46,7 +46,7 @@ class Shell(type):
                 params.append(f'{p}{option}:{arg}')
         cmd = " ".join(params)
         if version_info[:2] >= (3, 7):
-            rt = run(cmd, input=input, encoding=encoding, stdout=stdout, stderr=stderr,
+            rt = run(cmd, input=input, encoding=encoding,
                      capture_output=capture_output, shell=True)
         else:
             if capture_output:
