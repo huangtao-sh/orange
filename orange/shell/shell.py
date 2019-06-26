@@ -46,7 +46,7 @@ class Shell(type):
                 params.append(f'{p}{option}:{arg}')
         cmd = " ".join(params)
         if version_info[:2] >= (3, 7):
-            rt = run(cmd, input=input, encoding=encoding,
+            rt = run(cmd, input=input, encoding=encoding, stdout=stdout, stderr=stderr,
                      capture_output=capture_output, shell=True)
         else:
             if capture_output:
