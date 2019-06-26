@@ -16,18 +16,8 @@ encoding = 'utf8' if POSIX else 'gbk'
 class Shell(type):
     __slots__ = ()
 
-<<<<<<< HEAD
     def __call__(self, cmd: str, stdout=None, stderr=None, *args: list, prefix: str = '-',
                  input=None, capture_output=True, **options) -> 'code,output':
-=======
-    def __call__(self,
-                 cmd: str,
-                 *args: list,
-                 prefix: str = '-',
-                 input=None,
-                 capture_output=True,
-                 **options) -> 'code,output':
->>>>>>> 543a09fea1e06db8642d5ff66eaa691862fa555f
         '''
         调用方式： code,output = sh('dir')
         返回值：   code 系统返回值
