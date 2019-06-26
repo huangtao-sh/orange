@@ -42,7 +42,6 @@ def pyupload():
 
 def pysdist(*args):
     pysetup('sdist', '--dist-dir', libpath, *args)
-    print('打包成功')
 
 
 ver = sysconfig._PY_VERSION_SHORT_NO_DOT
