@@ -134,7 +134,7 @@ def insertone(table: str, data: list, fields: list = None, method: str = 'insert
 def attach(filename: Path, name: str):
     '''附加数据库'''
     filename = fix_db_name(filename)
-    return execute(f'attach database {filename} as {name}')
+    return execute(f'attach database "{filename}" as {name}')
 
 
 def detach(name: str):
