@@ -54,10 +54,15 @@ class YamlConfig(BaseConfig):
 
     def load(self, filename):
         import yaml
+        from orange.pykit.version import Ver
+        ver = Ver(yaml.__version__)
         self.file = Path(filename)
         if self.file:
             with self.file.open('r', encoding='utf8')as f:
-                return yaml.load(f, Loader=yaml.FullLoader)
+                if ver >= Ver('5.1'):
+                    return yaml.load(f, Loader=yaml.FullLoader)
+                else:
+                    return yaml.load(f)
 
     def save(self):
         import yaml
