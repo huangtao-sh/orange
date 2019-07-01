@@ -30,19 +30,19 @@ class VersionMgr:
     def proc_git(self):
         from re import compile
         patterns = {
-            compile(r'On branch (?P<branch>\w+)'):
+            compile(r'(On branch|位于分支) (?P<branch>\w+)'):
             lambda branch: setattr(self, 'branch', branch),
-            compile(r"Your branch is up-to-date with '.*?'."):
+            compile(r"(Your branch is up-to-date with|您的分支与上游分支) '.*?'."):
             lambda: setattr(self, 'up_to_date', True),
-            compile(r"Changes not staged for commit:"):
+            compile(r"(Changes not staged for commit:|尚未暂存以备提交的变更：)"):
             lambda: setattr(self, 'file_type', 'not_staged'),
-            compile(r"Untracked files:"):
+            compile(r"(Untracked files:|未跟踪的文件:)"):
             lambda: setattr(self, 'file_type', 'untracted_files'),
-            compile(r"Changes to be committed:"):
+            compile(r"(Changes to be committed:|要提交的变更：)"):
             lambda: setattr(self, 'file_type', 'to_be_commited'),
             compile(r"\t(.*?:\s*)?(?P<file>.*)"):
             lambda file: getattr(self, self.file_type).append(file),
-            compile(r"nothing to commit"):
+            compile(r"(nothing to commit|无文件要提交，干净的工作区)"):
             lambda: setattr(self, 'is_clean', True)
         }
 
@@ -61,9 +61,13 @@ class VersionMgr:
                 self.verfile, ver = ver
                 self.ver = Ver(ver)
                 self.proc_git()
+                print(self.__dict__)
+                print('Untracted',self.untracted_files)
+                print('to be commit',self.to_be_commited)
+                print('not staged',self.not_staged)
 
     def write_version_file(self):
-        self.verfile.text = f'version = "{self.ver}"'
+        self.verfile.text = f'version = "{self.ver}"' .. mj,,,,, n78o6dc8fd日日日日日
 
     def show_version(self):     # 显示版本号与git状态
         if self.branch:
