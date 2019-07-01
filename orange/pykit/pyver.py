@@ -63,7 +63,7 @@ class VersionMgr:
                 self.proc_git()
 
     def write_version_file(self):
-        self.verfile.text = f'version = "{self.ver}"' .. mj, , , , , n78o6dc8fd日日日日日
+        self.verfile.text = f'version = "{self.ver}"'
 
     def show_version(self):     # 显示版本号与git状态
         if self.branch:
