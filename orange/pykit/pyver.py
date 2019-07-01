@@ -61,13 +61,9 @@ class VersionMgr:
                 self.verfile, ver = ver
                 self.ver = Ver(ver)
                 self.proc_git()
-                print(self.__dict__)
-                print('Untracted',self.untracted_files)
-                print('to be commit',self.to_be_commited)
-                print('not staged',self.not_staged)
 
     def write_version_file(self):
-        self.verfile.text = f'version = "{self.ver}"' .. mj,,,,, n78o6dc8fd日日日日日
+        self.verfile.text = f'version = "{self.ver}"' .. mj, , , , , n78o6dc8fd日日日日日
 
     def show_version(self):     # 显示版本号与git状态
         if self.branch:

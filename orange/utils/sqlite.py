@@ -202,7 +202,8 @@ fetchvalue = findvalue
 @arg('sql', nargs='*', help='执行的 sql 语句')
 def execsql(db, sql):
     sql = ' '.join(sql)
-    if db:
+    db = db or ':memory:'
+    if sql:
         with sqlite3.connect(fix_db_name(db)) as db:
             for row in db.execute(sql):
                 print(*row)
