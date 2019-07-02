@@ -26,7 +26,7 @@ def fix_db_name(database: str) -> str:
     if not str(database).startswith(':'):
         db = Path(database)
         if not db.root:
-            db = ROOT/db
+            db = ROOT / db
         database = str(db.with_suffix('.db'))
     return database
 
@@ -69,6 +69,7 @@ def transaction(func):
         execute(sql1)
         execute(sql2)
     '''
+
     @wraps(func)
     def _(*args, **kw):
         try:
@@ -78,6 +79,7 @@ def transaction(func):
         except Exception as e:
             conn.rollback()
             raise e
+
     return _
 
 
@@ -107,7 +109,11 @@ def executefile(pkg: str, filename: str):
     return executescript(data.decode())
 
 
-def insert(table: str, data: list, fields: list = None, method: str = 'insert', multi: bool = True) -> "Cursor":
+def insert(table: str,
+           data: list,
+           fields: list = None,
+           method: str = 'insert',
+           multi: bool = True) -> "Cursor":
     '''执行插入命令
     table:  插入的表名
     data:   插入的数据，
@@ -118,15 +124,18 @@ def insert(table: str, data: list, fields: list = None, method: str = 'insert', 
     data = tuple(data)
     if fields:
         fields = '(%s)' % (','.join(fields))
-        values = ','.join(['?']*len(fields))
+        values = ','.join(['?'] * len(fields))
     else:
         fields = ''
-        values = ','.join(['?']*len(data[0]if multi else data))
+        values = ','.join(['?'] * len(data[0] if multi else data))
     sql = f'{method} into {table}{fields} values({values})'
     return executemany(sql, data) if multi else execute(sql, data)
 
 
-def insertone(table: str, data: list, fields: list = None, method: str = 'insert') -> "Cursor":
+def insertone(table: str,
+              data: list,
+              fields: list = None,
+              method: str = 'insert') -> "Cursor":
     '插入一行数据'
     return insert(table, data, fields, method, multi=False)
 
@@ -146,7 +155,7 @@ def find(sql: str, params: list = [], multi=True):
     '执行一条 sql 语句，并取出所以查询结果'
     cur = execute(sql, params)
     with closing(cur):
-        return cur.fetchall()if multi else cur.fetchone()
+        return cur.fetchall() if multi else cur.fetchone()
 
 
 def findone(sql: str, params: list = []):
@@ -176,7 +185,8 @@ def __createtable():
 
 def loadcheck(func):
     '装饰器，对应的函数防目重复导入的功能。该函数的第一个参数必须为 filename '
-    need_create and __createtable()       # 第一次执行本函数时建表
+    need_create and __createtable()  # 第一次执行本函数时建表
+
     @transaction
     def _(filename, *args, **kw):
         file = Path(filename)
@@ -186,10 +196,12 @@ def loadcheck(func):
         is_imported = a and a >= file.mtime  # 判断是否已经导入
         if not is_imported:
             func(filename, *args, **kw)
-            execute('insert or replace into LoadFile values(?,?)',  # 保存记录
-                    [name, file.mtime])
+            execute(
+                'insert or replace into LoadFile values(?,?)',  # 保存记录
+                [name, file.mtime])
         else:
             print(f'{name} 已导入，忽略')
+
     return _
 
 
@@ -198,11 +210,10 @@ fetchone = findone
 fetchvalue = findvalue
 
 
-@arg('-d', '--db', nargs='?', help='连接的数据库')
+@arg('-d', '--db', default=':memory:', nargs='?', help='连接的数据库')
 @arg('sql', nargs='*', help='执行的 sql 语句')
 def execsql(db, sql):
     sql = ' '.join(sql)
-    db = db or ':memory:'
     if sql:
         with sqlite3.connect(fix_db_name(db)) as db:
             for row in db.execute(sql):
