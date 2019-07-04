@@ -79,7 +79,6 @@ def is_installed(file_name: str) -> bool:
         if POSIX:
             paths.append('/usr')
             '''
-        print(file_name)
         filename = Path(file_name).resolve()
         return any(x in filename.parts for x in ('bin', 'Scripts'))
 
