@@ -70,6 +70,7 @@ def is_installed(file_name: str) -> bool:
     确认指定的文件是否已被安装。
     '''
     if file_name:
+        '''
         from sysconfig import get_path
         paths = [
             str(Path(get_path(name)).resolve())
@@ -77,11 +78,10 @@ def is_installed(file_name: str) -> bool:
         ]
         if POSIX:
             paths.append('/usr')
-        cmdfile = Path(file_name).resolve()
-        if 'bin' in cmdfile.parts:
-            return True
-        else:
-            return any(map(str(cmdfile).startswith, paths))
+            '''
+        print(file_name)
+        filename = Path(file_name).resolve()
+        return any(x in filename.parts for x in ('bin', 'Scripts'))
 
 
 def is_dev(cmd: str = None) -> bool:
