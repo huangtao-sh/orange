@@ -16,7 +16,6 @@
 # 修改：2019-03-15 09:10 Path.iter_csv 增加 columns 参数
 # 修订：2019-03-19 14:00 优化 Path.pack、Path.zip 功能
 
-
 import pathlib
 import os
 import re
@@ -72,18 +71,23 @@ def is_installed(file_name: str) -> bool:
     '''
     if file_name:
         from sysconfig import get_path
-        paths = [str(Path(get_path(name)).resolve())
-                 for name in ('platlib', 'scripts')]
+        paths = [
+            str(Path(get_path(name)).resolve())
+            for name in ('platlib', 'scripts')
+        ]
         if POSIX:
             paths.append('/usr')
         cmdfile = Path(file_name).resolve()
-        return any(map(str(cmdfile).startswith, paths))
+        if 'bin' in cmdfile.parts:
+            return True
+        else:
+            return any(map(str(cmdfile).startswith, paths))
 
 
 def is_dev(cmd: str = None) -> bool:
     import sys
     cmd = cmd or sys.argv[0]
-    if('wsgi' in cmd):
+    if ('wsgi' in cmd):
         return False
     return 'test' in cmd or (not is_installed(cmd))
 
@@ -123,13 +127,13 @@ class Path(_Parent):
         if isinstance(path, str):
             if path.startswith('~'):  # 支持用户目录开头
                 path = os.path.expanduser(path)
-            elif path[0] in('%', '$'):  # 支持环境变量转义
+            elif path[0] in ('%', '$'):  # 支持环境变量转义
                 path = os.path.expandvars(path)
         return super().__new__(cls, path, *args, **kwargs)
 
     def read(self, *args, **kwargs):
         '''以指定的参数读取文件'''
-        with self.open(*args, **kwargs)as fn:
+        with self.open(*args, **kwargs) as fn:
             return fn.read()
 
     def ensure(self, parents: bool = True):
@@ -157,7 +161,11 @@ class Path(_Parent):
         '''按行写入文件'''
         self.write(lines)
 
-    def write(self, content=None, text=None, data=None, encoding='utf8',
+    def write(self,
+              content=None,
+              text=None,
+              data=None,
+              encoding='utf8',
               parents=False):
         '''写文件'''
         if parents:
@@ -166,10 +174,10 @@ class Path(_Parent):
         if isinstance(content, (tuple, list)):
             data = '\n'.join(content)
         if isinstance(data, str):
-            with self.open('w', encoding=encoding)as f:
+            with self.open('w', encoding=encoding) as f:
                 f.write(data)
         elif isinstance(data, bytes):
-            with self.open('wb')as f:
+            with self.open('wb') as f:
                 f.write(data)
 
     @property
@@ -197,8 +205,15 @@ class Path(_Parent):
         for index, sheet in enumerate(book.sheets()):
             yield index, sheet.name, sheet._cell_values
 
-    def iter_csv(self, encoding=None, errors=None, columns=None, dialect='excel',
-                 rows=0, _filter=None, converter=None, **kw):
+    def iter_csv(self,
+                 encoding=None,
+                 errors=None,
+                 columns=None,
+                 dialect='excel',
+                 rows=0,
+                 _filter=None,
+                 converter=None,
+                 **kw):
         '''读取 csv 数据
         encoding :  指定文件的编码
         errors:     指定编码解码错误时的处理策略
@@ -214,11 +229,15 @@ class Path(_Parent):
             with self.open(encoding=encoding, errors=errors) as f:
                 yield from f
 
-        data = csv.reader(reader()if encoding else self.lines,
-                          dialect=dialect, **kw)
+        data = csv.reader(reader() if encoding else self.lines,
+                          dialect=dialect,
+                          **kw)
         if any([columns, _filter, rows, converter]):
-            data = Data(data, rows=rows, filter=_filter,
-                        converter=converter, columns=columns)
+            data = Data(data,
+                        rows=rows,
+                        filter=_filter,
+                        converter=converter,
+                        columns=columns)
         return data
 
     @property
@@ -242,7 +261,7 @@ class Path(_Parent):
             yield from self.iter_sheets()
         elif suffix == '.xml':
             yield from self.xmlroot
-        elif suffix in('.del', '.csv'):
+        elif suffix in ('.del', '.csv'):
             yield from self.iter_csv()
 
     def extractall(self, path='.', password: str = None, members=None):
@@ -259,14 +278,14 @@ class Path(_Parent):
             sh > f'{cmd} {self} {members} {path}'
         elif any(map(name.endswith, ('.tar.gz', '.tgz', '.gz'))):
             import tarfile
-            with tarfile.open(str(self), 'r')as f:
+            with tarfile.open(str(self), 'r') as f:
                 members = conv_members(members, '/')
-                members = tuple(map(f.getmember, members)
-                                )if members else f.getmembers()
+                members = tuple(map(f.getmember,
+                                    members)) if members else f.getmembers()
                 f.extractall(path, members)
         elif name.endswith('.zip'):
             import zipfile
-            with zipfile.ZipFile(str(self))as f:
+            with zipfile.ZipFile(str(self)) as f:
                 members = conv_members(members, '/')
                 for fileinfo in f.filelist:
                     if not (fileinfo.flag_bits & 0x0800):
@@ -286,7 +305,7 @@ class Path(_Parent):
         '''
         import tarfile
         tarfilename = str(Path(tarfilename).with_suffix('.tgz'))
-        with tarfile.open(tarfilename, 'w:gz')as f:
+        with tarfile.open(tarfilename, 'w:gz') as f:
             if self.is_dir() and 'arcname' not in kw:
                 kw['arcname'] = '/'
             f.add(self, **kw)
@@ -297,10 +316,10 @@ class Path(_Parent):
         '''
         import zipfile
         with zipfile.ZipFile(zipfilename, 'w', zipfile.ZIP_DEFLATED, 5) as z:
-            if self.is_dir():   # 如为目录则打包整个文件夹
+            if self.is_dir():  # 如为目录则打包整个文件夹
                 for file in self.rglob('*.*'):
-                    z.write(file, file-self)
-            else:               # 如为文件则只打包当前文件
+                    z.write(file, file - self)
+            else:  # 如为文件则只打包当前文件
                 z.write(self, self.name)
 
     @property
@@ -317,6 +336,7 @@ class Path(_Parent):
         '''删除整个目录'''
         import shutil
         shutil.rmtree(str(self))
+
     deltree = rmtree
 
     def chdir(self):
@@ -326,15 +346,19 @@ class Path(_Parent):
     def __sub__(self, other):
         return self.relative_to(other)
 
-    def write_xlsx(self, *args, force: bool = False, formats: dict = None,
-                   writer=None, **kw):
+    def write_xlsx(self,
+                   *args,
+                   force: bool = False,
+                   formats: dict = None,
+                   writer=None,
+                   **kw):
         if self and not force:
             s = input('%s 已存在，请确认是否覆盖，Y or N?\n' % self.name)
             if s.upper() != 'Y':
                 return
         from orange.xlsx import Book
         if callable(writer):
-            with Book(str(self), formats=formats)as book:
+            with Book(str(self), formats=formats) as book:
                 writer(book, *args, **kw)
         else:
             return Book(str(self), formats=formats, **kw)
@@ -410,7 +434,7 @@ class Path(_Parent):
         '''文件访问时间'''
         return int(self.lstat().st_atime)
 
-    def write_tables(self, *tables,  **kw):
+    def write_tables(self, *tables, **kw):
         '''
         写入多张表格，支持以下参数：
         formats:预设格式
@@ -420,6 +444,7 @@ class Path(_Parent):
         data:数据
         sheet:表格名称
         '''
+
         def writer(book, *tables):
             for table in tables:
                 pos = table.pop('pos', 'A1')
@@ -469,12 +494,7 @@ def convert(files):
 
 
 def clean_trash():
-    Patterns = ('._.DS_Store',
-                '.DS_Store',
-                '._*',
-                '~$*',
-                'Thumbs.db',
-                '*.tmp',
+    Patterns = ('._.DS_Store', '.DS_Store', '._*', '~$*', 'Thumbs.db', '*.tmp',
                 'Icon?')
     print('开始清查系统垃圾文件！')
     ROOT = HOME / 'OneDrive/工作'
@@ -503,13 +523,13 @@ def add_music_lib(path=None):
     for path in src:
         if path.lsuffix in ('.flac', '.ape', '.mp3', '.m4a', '.wav'):
             path.music_tag.fixtags()
-            if path.lsuffix in ('.mp3', '.m4a'):        # 无需转码的音乐文件
-                path.rename(dest / path.name)           # 直接修改文件名
+            if path.lsuffix in ('.mp3', '.m4a'):  # 无需转码的音乐文件
+                path.rename(dest / path.name)  # 直接修改文件名
                 print(f'copy 文件 {path.name}')
-            else:                                       # 无损音乐转成 .m4a 格式
+            else:  # 无损音乐转成 .m4a 格式
                 destname = (dest / path.name).with_suffix('.m4a')
                 if not destname:
                     # 进行转码
                     sh > f'ffmpeg -i "{path}" -acodec alac "{destname}"'
                 if destname:
-                    path.unlink()                       # 目标文件建立成功，删除源文件
+                    path.unlink()  # 目标文件建立成功，删除源文件
