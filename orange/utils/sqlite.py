@@ -124,14 +124,22 @@ def insert(table: str,
     multi:  是否插入多行数据
     '''
     #data = tuple(data)
-    if fields:
-        fields = '(%s)' % (','.join(fields))
+    if fields:  # 参数中有字段列表
         values = ','.join(['?'] * len(fields))
-    else:
+        fields = '(%s)' % (','.join(fields))
+    else:  # 参数中无字段列表
         fields = ''
-        if not fieldcount:
-
-        values = ','.join(['?']*fieldcount)
+        if not fieldcount:  # 参数中如有字段数量
+            if not multi:
+                fieldcount = len(data)
+            elif hasattr(data, '__getitem__'):  # 数据为 tuple 或 list
+                fieldcount = len(data[0])
+            else:
+                data = iter(data)  # 将数据转换成 iter
+                firstobj = next(data)  # 取第一条数据
+                fieldcount = len(firstobj)  # 取得字段长度
+                data = chain([firstobj], data)  # 恢复原数据
+        values = ','.join(['?'] * fieldcount)
         #    values = ','.join(['?'] * len(data[0] if multi else data))
     # else:
     #    fields = ''
@@ -143,9 +151,10 @@ def insert(table: str,
 def insertone(table: str,
               data: list,
               fields: list = None,
+              fieldcount: int = 0,
               method: str = 'insert') -> "Cursor":
     '插入一行数据'
-    return insert(table, data, fields, method, multi=False)
+    return insert(table, data, fields, fieldcount, method, multi=False)
 
 
 def attach(filename: Path, name: str):

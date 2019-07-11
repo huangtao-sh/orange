@@ -1,4 +1,0 @@
-dbpath = {dbpath}
-logpath = {logpath}/mongodb.log
-logappend = true
-directoryperdb = true
