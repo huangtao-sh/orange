@@ -11,7 +11,6 @@ import sqlite3
 from contextlib import contextmanager, closing
 from orange import is_dev, decode, Path, arg
 from functools import wraps
-from itertools import chain
 
 ROOT = Path('~/OneDrive') / ('testdb' if is_dev() else 'db')
 _conn = None
@@ -111,9 +110,8 @@ def executefile(pkg: str, filename: str):
 
 
 def insert(table: str,
-           data: 'iterable',
+           data: list,
            fields: list = None,
-           fieldcount: int = 0,
            method: str = 'insert',
            multi: bool = True) -> "Cursor":
     '''执行插入命令
@@ -123,19 +121,13 @@ def insert(table: str,
     method: 插入的方法，默认为 insert 可以为： insert or replace ,insert or ignore 等
     multi:  是否插入多行数据
     '''
-    #data = tuple(data)
+    data = tuple(data)
     if fields:
         fields = '(%s)' % (','.join(fields))
         values = ','.join(['?'] * len(fields))
     else:
         fields = ''
-        if not fieldcount:
-
-        values = ','.join(['?']*fieldcount)
-        #    values = ','.join(['?'] * len(data[0] if multi else data))
-    # else:
-    #    fields = ''
-    #    values = ','.join(['?'] * len(data[0] if multi else data))
+        values = ','.join(['?'] * len(data[0] if multi else data))
     sql = f'{method} into {table}{fields} values({values})'
     return executemany(sql, data) if multi else execute(sql, data)
 
