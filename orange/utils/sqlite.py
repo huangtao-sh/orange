@@ -84,6 +84,9 @@ def transaction(func):
     return _
 
 
+tran = transaction  # 起个别名，以简化编程
+
+
 def execute(sql: str, params: list = []):
     '执行一条 sql 语句'
     return connect().execute(sql, params)
@@ -123,7 +126,6 @@ def insert(table: str,
     method: 插入的方法，默认为 insert 可以为： insert or replace ,insert or ignore 等
     multi:  是否插入多行数据
     '''
-    #data = tuple(data)
     if fields:  # 参数中有字段列表
         values = ','.join(['?'] * len(fields))
         fields = '(%s)' % (','.join(fields))
@@ -140,10 +142,6 @@ def insert(table: str,
                 fieldcount = len(firstobj)  # 取得字段长度
                 data = chain([firstobj], data)  # 恢复原数据
         values = ','.join(['?'] * fieldcount)
-        #    values = ','.join(['?'] * len(data[0] if multi else data))
-    # else:
-    #    fields = ''
-    #    values = ','.join(['?'] * len(data[0] if multi else data))
     sql = f'{method} into {table}{fields} values({values})'
     return executemany(sql, data) if multi else execute(sql, data)
 
