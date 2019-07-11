@@ -149,7 +149,7 @@ def insert(table: str,
 
 
 def insertone(table: str,
-              data: list,
+              data: 'iterable',
               fields: list = None,
               fieldcount: int = 0,
               method: str = 'insert') -> "Cursor":
