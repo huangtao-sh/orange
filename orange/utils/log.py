@@ -29,7 +29,7 @@ def set_debug():
 
 
 def set_verbose(fmt='%(message)s'):
-    if logger.level > logging.INFO:
+    if logger.level =0 or logger.level> logging.INFO:
         logger.setLevel(logging.INFO)
     handler = logging.StreamHandler(sys.stdout)
     handler.setLevel(logging.INFO)
