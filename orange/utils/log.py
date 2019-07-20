@@ -19,20 +19,20 @@ warning = logger.warning
 error = logger.error
 fatal = logger.fatal
 
+logging.basicConfig(format='%(asctime)s %(levelname)-8s: %(message)s',
+                    filename=str(path),
+                    datefmt='%F %T')
 
-def set_debug(fmt='%(asctime)s %(levelname)s:\t%(message)s', datefmt='%F %T'):
+
+def set_debug():
     logger.setLevel(logging.DEBUG)
-    handler = logging.StreamHandler(logging.FileHandler(str(path)))
-    handler.setLevel(logging.DEBUG)
-    formatter = logging.Formatter(fmt=fmt, datefmt=datefmt)
-    handler.setFormatter(formatter)
-    logger.addHandler(handler)
 
 
-def set_verbose(fmt='%(message)s', datefmt=None):
-    logger.setLevel(logging.DEBUG)
+def set_verbose(fmt='%(message)s'):
+    if logger.level > logging.INFO:
+        logger.setLevel(logging.INFO)
     handler = logging.StreamHandler(sys.stdout)
-    handler.setLevel(logging.DEBUG)
-    formatter = logging.Formatter(fmt=fmt, datefmt=datefmt)
+    handler.setLevel(logging.INFO)
+    formatter = logging.Formatter(fmt=fmt)
     handler.setFormatter(formatter)
     logger.addHandler(handler)
