@@ -22,7 +22,7 @@ fatal = logger.fatal
 
 def set_debug(fmt='%(asctime)s %(levelname)s:\t%(message)s', datefmt='%F %T'):
     logger.setLevel(logging.DEBUG)
-    handler = logging.StreamHandler(str(path))
+    handler = logging.StreamHandler(logging.FileHandler(str(path)))
     handler.setLevel(logging.DEBUG)
     formatter = logging.Formatter(fmt=fmt, datefmt=datefmt)
     handler.setFormatter(formatter)
