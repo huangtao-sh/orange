@@ -185,7 +185,7 @@ class Path(_Parent):
         with xlrd.open_workbook(filename=str(self)) as book:
             return book.sheets()
 
-    def sheets(self, index=None):
+    def sheets(self, index=None, *pipelines, header=None):
         ''' 提供读取指定worksheet的功能，其中index可以为序号，
             也可以为表的名称。'''
         import xlrd
@@ -194,7 +194,11 @@ class Path(_Parent):
             sheet = book.sheet_by_index(index)
         elif isinstance(index, str):
             sheet = book.sheet_by_name(index)
-        return sheet and sheet._cell_values
+        if sheet:
+            data = sheet._cell_values
+            if pipelines or header:
+                data = Data(data, *pipelines, header=header)
+            return data
 
     def iter_sheets(self):
         '''如果指定的文件为excel文件，则可以迭代读取本文件的数据。
