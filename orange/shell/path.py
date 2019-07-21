@@ -205,10 +205,10 @@ class Path(_Parent):
             yield index, sheet.name, sheet._cell_values
 
     def iter_csv(self,
+                 *pilelines,
                  encoding=None,
                  errors=None,
                  columns=None,
-                 *pilelines=[],
                  dialect='excel',
                  rows=0,
                  _filter=None,
