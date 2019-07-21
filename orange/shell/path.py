@@ -205,7 +205,7 @@ class Path(_Parent):
             yield index, sheet.name, sheet._cell_values
 
     def iter_csv(self,
-                 *pilelines,
+                 *pipelines,
                  encoding=None,
                  errors=None,
                  columns=None,
