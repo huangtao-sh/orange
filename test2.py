@@ -1,50 +1,24 @@
-from functools import wraps
-from orange import now
-from pymongo import MongoClient
+from orange.utils.data import *
+
+a = [
+    [1, 2, 3],
+    [4, 5, 6],
+    [7, 8, 9]
+]
 
 
-def timeit(func):
-    @wraps(func)
-    def _(*args, **kw):
-        start = now()
-        func(*args, **kw)
-        print(f'耗时：{now()-start}')
-
-    return _
+@filterer
+def _fil(row):
+    return row[0] > 4
 
 
-client = MongoClient(port=27017)
-db = client.test
-collection = db.test
 
-collection.drop()
-
-times = 1000000
-
-
-@timeit
-def testa():
-    data = []
-    for i in range(times):
-        data.append({'a': f'abc{i}', 'b': i})
-    collection.insert_many(data)
+data = Data(a, itemgetter(1, 2), _fil,
+            converter({
+                0: lambda x: x+10,
+                1: float
+            }))
 
 
-testa()
-
-client = MongoClient(port=27018)
-db = client.test
-collection = db.test
-
-collection.drop()
-
-
-@timeit
-def testb():
-    data = []
-    for i in range(times):
-        data.append({'a': f'abc{i}', 'b': i})
-    collection.insert_many(data)
-
-
-testb()
+for r in data:
+    print(*r)

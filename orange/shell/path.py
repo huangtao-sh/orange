@@ -208,6 +208,7 @@ class Path(_Parent):
                  encoding=None,
                  errors=None,
                  columns=None,
+                 *pilelines=[],
                  dialect='excel',
                  rows=0,
                  _filter=None,
@@ -231,8 +232,9 @@ class Path(_Parent):
         data = csv.reader(reader() if encoding else self.lines,
                           dialect=dialect,
                           **kw)
-        if any([columns, _filter, rows, converter]):
+        if any([columns, pipelines, _filter, rows, converter]):
             data = Data(data,
+                        *pipelines,
                         rows=rows,
                         filter=_filter,
                         converter=converter,

@@ -9,7 +9,35 @@ from functools import partial
 from .htutil import split, tprint
 
 
-def _convert(converter):
+def filterer(func: 'function'):
+    def _(data):
+        return filter(func, data)
+    return _
+
+
+def mapper(func: 'function'):
+    def _(data):
+        return map(func, data)
+    return _
+
+
+def converter(converter):
+    @mapper
+    def _(row):
+        for idx, conv in converter.items():
+            row[idx] = conv(row[idx])
+        return row
+    return _
+
+
+def itemgetter(*columns: 'Iterable'):
+    @mapper
+    def _(row):
+        return [row[col]for col in columns]
+    return _
+
+
+def _convert(converter: dict):
     '''数据转换'''
     def _(row):
         for idx, conv in converter.items():
@@ -18,21 +46,15 @@ def _convert(converter):
     return _
 
 
-def itemgetter(columns: 'iterable') -> 'func':
-    '获取提定对象的指定列'
-    'columns 为 tuple 或者 list'
-    def _(row):
-        return [row[col]for col in columns]
-    return _
-
-
 class Data():
     __slots__ = '_data', "_rows"
 
-    def __init__(self, data, header=None, rows=0, **kw):
+    def __init__(self, data, *pipelines, header=None, rows=0, **kw):
         self._data = iter(data)
         if header:
             self.header(header)
+        for proc in pipelines:
+            self._data = proc(self._data)
         for k, v in kw.items():
             getattr(self, k)(v)
         self._rows = rows
@@ -58,7 +80,7 @@ class Data():
 
     def columns(self, columns):
         if columns:
-            self._data = map(itemgetter(columns), self._data)
+            self._data = itemgetter(*columns)(self._data)
 
     def __iter__(self):
         if self._rows:
