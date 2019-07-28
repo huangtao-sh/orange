@@ -12,12 +12,14 @@ from .htutil import split, tprint
 def filterer(func: 'function'):
     def _(data):
         return filter(func, data)
+
     return _
 
 
 def mapper(func: 'function'):
     def _(data):
         return map(func, data)
+
     return _
 
 
@@ -27,22 +29,26 @@ def converter(converter):
         for idx, conv in converter.items():
             row[idx] = conv(row[idx])
         return row
-    return _
+
+    return mapper(converter) if callable(converter) else _
 
 
 def itemgetter(*columns: 'Iterable'):
     @mapper
     def _(row):
-        return [row[col]for col in columns]
+        return [row[col] for col in columns]
+
     return _
 
 
 def _convert(converter: dict):
     '''数据转换'''
+
     def _(row):
         for idx, conv in converter.items():
             row[idx] = conv(row[idx])
         return row
+
     return _
 
 
@@ -62,14 +68,18 @@ class Data():
     def header(self, header):
         for row in self._data:
             if all(x in row for x in header):
-                self.columns([row.index(title)for title in header])
+                self.columns([row.index(title) for title in header])
                 if isinstance(header, dict):
-                    self.converter(
-                        {idx: conv for idx, conv in enumerate(header.values())if conv})
+                    self.converter({
+                        idx: conv
+                        for idx, conv in enumerate(header.values()) if conv
+                    })
                 break
+        return self
 
     def filter(self, filter_):
         self._data = filter(filter_, self._data)
+        return self
 
     def converter(self, converter):
         if converter:
@@ -77,10 +87,12 @@ class Data():
                 self._data = map(converter, self._data)
             else:
                 self._data = map(_convert(converter), self._data)
+        return self
 
     def columns(self, columns):
         if columns:
             self._data = itemgetter(*columns)(self._data)
+        return self
 
     def __iter__(self):
         if self._rows:
