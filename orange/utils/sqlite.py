@@ -210,12 +210,13 @@ def loadcheck(func):
                        [name])  # 查询是否已导入
         is_imported = a and a >= file.mtime  # 判断是否已经导入
         if not is_imported:
-            func(filename, *args, **kw)
+            result = func(filename, *args, **kw)
             execute(
                 'insert or replace into LoadFile values(?,?)',  # 保存记录
                 [name, file.mtime])
         else:
             print(f'{name} 已导入，忽略')
+        return result
 
     return _
 
