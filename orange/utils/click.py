@@ -12,11 +12,11 @@ from functools import partial
 
 class _Command(object):
     kwargs = {}            # ArgumentParser 的参数，由command函数生成
-    allow_empty = False  # 是否允许参数为空，如允许则argv为None的情况下也调用执行函数
+    allow_empty = False    # 是否允许参数为空，如允许则argv为None的情况下也调用执行函数
 
     def __init__(self, run):
-        self.run = run        # 可执行函数，命令行解析成功时调用
-        self.args = []        # 参数列表
+        self.run = run         # 可执行函数，命令行解析成功后调用
+        self.args = []         # 参数列表
         self.subcommands = []  # 子命令列表
 
     @classmethod
