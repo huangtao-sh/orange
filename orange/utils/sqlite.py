@@ -48,6 +48,7 @@ class Connection(sqlite3.Connection):
         super().__init__(**kw)
 
     def execute(self, sql: str, params: list = []):
+        '执行 sql 语句'
         return super().execute(sql, params)
 
     def executemany(self, sql: str, params: list = []):
@@ -78,6 +79,54 @@ class Connection(sqlite3.Connection):
         '执行一条 sql 语句，并取出第一行第一列的值'
         row = self.fetchone(sql, params)
         return row and row[0]
+
+    def insert(self,
+               table: str,
+               data: 'iterable',
+               fields: list = None,
+               fieldcount: int = 0,
+               method: str = 'insert',
+               multi: bool = True) -> "Cursor":
+        '''执行插入命令
+        table:  插入的表名
+        data:   插入的数据，
+        fields: 插入的字段列表
+        method: 插入的方法，默认为 insert 可以为： insert or replace ,insert or ignore 等
+        multi:  是否插入多行数据
+        '''
+        if fields:  # 参数中有字段列表
+            values = ','.join(['?'] * len(fields))
+            fields = '(%s)' % (','.join(fields))
+        else:  # 参数中无字段列表
+            fields = ''
+            if not fieldcount:  # 参数中如有字段数量
+                if not multi:
+                    fieldcount = len(data)
+                elif hasattr(data, '__getitem__'):  # 数据为 tuple 或 list
+                    fieldcount = len(data[0])
+                else:
+                    data = iter(data)  # 将数据转换成 iter
+                    firstobj = next(data)  # 取第一条数据
+                    fieldcount = len(firstobj)  # 取得字段长度
+                    data = chain([firstobj], data)  # 恢复原数据
+            values = ','.join(['?'] * fieldcount)
+        sql = f'{method} into {table}{fields} values({values})'
+        return self.executemany(sql, data) if multi else self.execute(
+            sql, data)
+
+    def insertone(self,
+                  table: str,
+                  data: 'iterable',
+                  fields: list = None,
+                  fieldcount: int = 0,
+                  method: str = 'insert') -> "Cursor":
+        '插入一行数据'
+        return self.insert(table,
+                           data,
+                           fields,
+                           fieldcount,
+                           method,
+                           multi=False)
 
 
 db_config = Connection.config
@@ -131,72 +180,25 @@ def transaction(func):
 tran = transaction  # 起个别名，以简化编程
 
 
-def execute(sql: str, params: list = []):
-    '执行一条 sql 语句'
-    return connect().execute(sql, params)
+def wrapper(name: str) -> 'function':
+    def _(*args, **kw):
+        return getattr(connect(), name)(*args, **kw)
+
+    return _
 
 
-def executemany(sql: str, params: list = []):
-    '执行多条 sql 语句'
-    return connect().executemany(sql, params)
-
-
-def executescript(sql: str):
-    '执行多条脚本'
-    return connect().executescript(sql)
-
-
-def executefile(pkg: str, filename: str):
-    '''
-    执行程序中附带的资源文件
-    pkg         : 所在包的名称
-    filename    : 相关于包的文件名，包括路径
-    '''
-    from pkgutil import get_data
-    data = get_data(pkg, filename)
-    return executescript(data.decode())
-
-
-def insert(table: str,
-           data: 'iterable',
-           fields: list = None,
-           fieldcount: int = 0,
-           method: str = 'insert',
-           multi: bool = True) -> "Cursor":
-    '''执行插入命令
-    table:  插入的表名
-    data:   插入的数据，
-    fields: 插入的字段列表
-    method: 插入的方法，默认为 insert 可以为： insert or replace ,insert or ignore 等
-    multi:  是否插入多行数据
-    '''
-    if fields:  # 参数中有字段列表
-        values = ','.join(['?'] * len(fields))
-        fields = '(%s)' % (','.join(fields))
-    else:  # 参数中无字段列表
-        fields = ''
-        if not fieldcount:  # 参数中如有字段数量
-            if not multi:
-                fieldcount = len(data)
-            elif hasattr(data, '__getitem__'):  # 数据为 tuple 或 list
-                fieldcount = len(data[0])
-            else:
-                data = iter(data)  # 将数据转换成 iter
-                firstobj = next(data)  # 取第一条数据
-                fieldcount = len(firstobj)  # 取得字段长度
-                data = chain([firstobj], data)  # 恢复原数据
-        values = ','.join(['?'] * fieldcount)
-    sql = f'{method} into {table}{fields} values({values})'
-    return executemany(sql, data) if multi else execute(sql, data)
-
-
-def insertone(table: str,
-              data: 'iterable',
-              fields: list = None,
-              fieldcount: int = 0,
-              method: str = 'insert') -> "Cursor":
-    '插入一行数据'
-    return insert(table, data, fields, fieldcount, method, multi=False)
+execute = wrapper('execute')
+executemany = wrapper('executemany')
+executescript = wrapper('executescript')
+executefile = wrapper('executefile')
+insert = wrapper('insert')
+insertone = wrapper('insertone')
+fetch = wrapper('fetch')
+fetchone = wrapper('fetchone')
+fetchvalue = wrapper('fetchvalue')
+find = fetch
+findone = fetchone
+findvalue = fetchvalue
 
 
 def attach(filename: Path, name: str):
@@ -208,24 +210,6 @@ def attach(filename: Path, name: str):
 def detach(name: str):
     ''' 分离数据库 '''
     return execute(f'detach database {name}')
-
-
-def find(sql: str, params: list = [], multi=True):
-    '执行一条 sql 语句，并取出所以查询结果'
-    cur = execute(sql, params)
-    with closing(cur):
-        return cur.fetchall() if multi else cur.fetchone()
-
-
-def findone(sql: str, params: list = []):
-    '执行一条 sql 语句， 并取出第一条记录'
-    return find(sql, params, multi=False)
-
-
-def findvalue(sql: str, params: list = []):
-    '执行一条 sql 语句，并取出第一行第一列的值'
-    row = findone(sql, params)
-    return row and row[0]
 
 
 need_create = True
@@ -262,11 +246,6 @@ def loadcheck(func):
             print(f'{name} 已导入，忽略')
 
     return _
-
-
-fetch = find
-fetchone = findone
-fetchvalue = findvalue
 
 
 @arg('-d', '--db', default=':memory:', nargs='?', help='连接的数据库')
