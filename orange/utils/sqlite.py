@@ -32,18 +32,62 @@ def fix_db_name(database: str) -> str:
     return database
 
 
-def db_config(database: str, **kw):
-    '配置数据库参数'
-    global _config
-    kw['database'] = str(fix_db_name(database))
-    _config = kw
+class Connection(sqlite3.Connection):
+    default_config = {}
+
+    @classmethod
+    def config(cls, database: str, **kw):
+        kw['database'] = str(fix_db_name(database))
+        cls.default_config = kw.copy()
+
+    def __init__(self, database: str = None, **kw) -> 'Connection':
+        if database:
+            kw['database'] = str(fix_db_name(database))
+        else:
+            kw = self.default_config
+        super().__init__(**kw)
+
+    def execute(self, sql: str, params: list = []):
+        return super().execute(sql, params)
+
+    def executemany(self, sql: str, params: list = []):
+        '执行多条 sql 语句'
+        return super().executemany(sql, params)
+
+    def executefile(self, pkg: str, filename: str):
+        '''
+        执行程序中附带的资源文件
+        pkg         : 所在包的名称
+        filename    : 相关于包的文件名，包括路径
+        '''
+        from pkgutil import get_data
+        data = get_data(pkg, filename)
+        return self.executescript(data.decode())
+
+    def fetch(self, sql: str, params: list = [], multi=True):
+        '执行一条 sql 语句，并取出所以查询结果'
+        cur = self.execute(sql, params)
+        with closing(cur):
+            return cur.fetchall() if multi else cur.fetchone()
+
+    def fetchone(self, sql: str, params: list = []):
+        '执行一条 sql 语句， 并取出第一条记录'
+        return self.fetch(sql, params, multi=False)
+
+    def fetchvalue(self, sql: str, params: list = []):
+        '执行一条 sql 语句，并取出第一行第一列的值'
+        row = self.fetchone(sql, params)
+        return row and row[0]
+
+
+db_config = Connection.config
 
 
 def connect():
     '根据事先配置好的文件连接数据库'
     global _conn
     if not _conn:
-        _conn = sqlite3.connect(**_config)
+        _conn = Connection()
         atexit.register(_conn.close)
     return _conn
 
