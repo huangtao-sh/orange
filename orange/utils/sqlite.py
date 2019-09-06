@@ -232,7 +232,7 @@ def execsql(db, sql):
     sql = ' '.join(sql)
     if sql:
         try:
-            with Connection(db) as db:
+            with connect(db) as db:
                 for row in db.execute(sql):
                     print(*row)
         except Exception as e:
