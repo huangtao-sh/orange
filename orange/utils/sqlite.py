@@ -128,6 +128,45 @@ class Connection(sqlite3.Connection):
                            method,
                            multi=False)
 
+    def tran(self, func):
+        '''装饰器，将一下函数里所有的操作封装成一个事务。使用方法如下：
+        @db.tran
+        def abc():
+            execute(sql1)
+            execute(sql2)
+        '''
+
+        @wraps(func)
+        def _(*args, **kw):
+            with self:
+                func(*args, **kw)
+
+        return _
+
+    def loadcheck(self, func: 'function'):
+        '装饰器，对应的函数防目重复导入的功能。该函数的第一个参数必须为 filename '
+        self.executescript('create table if not exists LoadFile( -- 文件重复检查表'
+                           'filename text primary key,       -- 文件名'
+                           'mtime int                        -- 修改时间'
+                           ');')
+
+        @self.tran
+        def _(filename, *args, **kw):
+            file = Path(filename)
+            name = file.name
+            a = self.fetchvalue('select mtime from LoadFile where filename=?',
+                                [name])  # 查询是否已导入
+            is_imported = a and a >= file.mtime  # 判断是否已经导入
+            if not is_imported:
+                func(filename, *args, **kw)
+                self.execute(
+                    'insert or replace into LoadFile values(?,?)',  # 保存记录
+                    [name, file.mtime])
+            else:
+                print(f'{name} 已导入，忽略')
+
+        return _
+
 
 db_config = Connection.config
 
@@ -139,45 +178,6 @@ def connect():
         _conn = Connection()
         atexit.register(_conn.close)
     return _conn
-
-
-@contextmanager
-def trans():
-    '''进入数据库sql 语句执行环境，使用方法：
-    with trans():
-        execute(sql)
-    '''
-    try:
-        conn = connect()
-        yield conn
-        conn.commit()
-    except Exception as e:
-        conn.rollback()
-        raise e
-
-
-def transaction(func):
-    '''装饰器，将一下函数里所有的操作封装成一个事务。使用方法如下：
-    @transaction
-    def abc():
-        execute(sql1)
-        execute(sql2)
-    '''
-
-    @wraps(func)
-    def _(*args, **kw):
-        try:
-            conn = connect()
-            func(*args, **kw)
-            conn.commit()
-        except Exception as e:
-            conn.rollback()
-            raise e
-
-    return _
-
-
-tran = transaction  # 起个别名，以简化编程
 
 
 def wrapper(name: str) -> 'function':
@@ -193,12 +193,12 @@ executescript = wrapper('executescript')
 executefile = wrapper('executefile')
 insert = wrapper('insert')
 insertone = wrapper('insertone')
-fetch = wrapper('fetch')
-fetchone = wrapper('fetchone')
-fetchvalue = wrapper('fetchvalue')
-find = fetch
-findone = fetchone
-findvalue = fetchvalue
+fetch = find = wrapper('fetch')
+fetchone = findone = wrapper('fetchone')
+fetchvalue = findvalue = wrapper('fetchvalue')
+trans = lambda: connect()
+tran = transaction = wrapper('tran')
+loadcheck = wrapper('loadcheck')
 
 
 def attach(filename: Path, name: str):
@@ -212,47 +212,16 @@ def detach(name: str):
     return execute(f'detach database {name}')
 
 
-need_create = True
-
-
-def __createtable():
-    global need_create
-    executescript('''
-    create table if not exists LoadFile( -- 文件重复检查表
-        filename text primary key,       -- 文件名
-        mtime int                        -- 修改时间
-    );
-    ''')
-    need_create = False
-
-
-def loadcheck(func):
-    '装饰器，对应的函数防目重复导入的功能。该函数的第一个参数必须为 filename '
-    need_create and __createtable()  # 第一次执行本函数时建表
-
-    @transaction
-    def _(filename, *args, **kw):
-        file = Path(filename)
-        name = file.name
-        a = fetchvalue('select mtime from LoadFile where filename=?',
-                       [name])  # 查询是否已导入
-        is_imported = a and a >= file.mtime  # 判断是否已经导入
-        if not is_imported:
-            func(filename, *args, **kw)
-            execute(
-                'insert or replace into LoadFile values(?,?)',  # 保存记录
-                [name, file.mtime])
-        else:
-            print(f'{name} 已导入，忽略')
-
-    return _
-
-
 @arg('-d', '--db', default=':memory:', nargs='?', help='连接的数据库')
 @arg('sql', nargs='*', help='执行的 sql 语句')
 def execsql(db, sql):
     sql = ' '.join(sql)
     if sql:
-        with sqlite3.connect(fix_db_name(db)) as db:
-            for row in db.execute(sql):
-                print(*row)
+        try:
+            with Connection(db) as db:
+                for row in db.execute(sql):
+                    print(*row)
+        except Exception as e:
+            print(e)
+        finally:
+            db.close()
