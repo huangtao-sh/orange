@@ -170,6 +170,7 @@ class Connection(sqlite3.Connection):
 
     def loadfile(self,
                  path: Path,
+                 data: 'iterable',
                  table: str,
                  fields: list = None,
                  drop: bool = True,
@@ -179,7 +180,7 @@ class Connection(sqlite3.Connection):
         def _(path: Path):
             if drop:
                 self.execute(f'delete from {table}')
-            self.insert(table, fields=fields, data=path, method=method)
+            self.insert(table, fields=fields, data=data, method=method)
             if callable(success):
                 success()
             print(f'{path.name} 导入成功')

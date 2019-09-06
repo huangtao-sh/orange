@@ -56,9 +56,9 @@ def get_installed_packages():
 
 def get_cached_pkgs():
     for path in PyLib.glob('*.*'):
-        print(path)
+        #print(path)
         verinfo = path.verinfo
-        print(verinfo)
+        #print(verinfo)
         if verinfo:
             name, ver, type_ = verinfo[:3]
             yield name, ver, type_, path
