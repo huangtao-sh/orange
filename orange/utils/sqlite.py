@@ -47,14 +47,6 @@ class Connection(sqlite3.Connection):
             kw = self.default_config
         super().__init__(**kw)
 
-    def execute(self, sql: str, params: list = []):
-        '执行 sql 语句'
-        return super().execute(sql, params)
-
-    def executemany(self, sql: str, params: list = []):
-        '执行多条 sql 语句'
-        return super().executemany(sql, params)
-
     def executefile(self, pkg: str, filename: str):
         '''
         执行程序中附带的资源文件
@@ -79,6 +71,15 @@ class Connection(sqlite3.Connection):
         '执行一条 sql 语句，并取出第一行第一列的值'
         row = self.fetchone(sql, params)
         return row and row[0]
+
+    def attach(self, filename: Path, name: str):
+        '''附加数据库'''
+        filename = fix_db_name(filename)
+        return self.execute(f'attach database "{filename}" as {name}')
+
+    def detach(self, name: str):
+        ''' 分离数据库 '''
+        return self.execute(f'detach database {name}')
 
     def insert(self,
                table: str,
@@ -145,9 +146,9 @@ class Connection(sqlite3.Connection):
 
     def loadcheck(self, func: 'function'):
         '装饰器，对应的函数防目重复导入的功能。该函数的第一个参数必须为 filename '
-        self.executescript('create table if not exists LoadFile( -- 文件重复检查表'
-                           'filename text primary key,       -- 文件名'
-                           'mtime int                        -- 修改时间'
+        self.executescript('create table if not exists LoadFile( -- 文件重复检查表 \n'
+                           'filename text primary key,       -- 文件名\n'
+                           'mtime int                        -- 修改时间\n'
                            ');')
 
         @self.tran
@@ -167,17 +168,38 @@ class Connection(sqlite3.Connection):
 
         return _
 
+    def loadfile(self,
+                 path: Path,
+                 table: str,
+                 fields: list = None,
+                 drop: bool = True,
+                 success: callable = None,
+                 method: str = 'insert'):
+        @self.loadcheck
+        def _(path: Path):
+            if drop:
+                self.execute(f'delete from {table}')
+            self.insert(table, fields=fields, data=path, method=method)
+            if callable(success):
+                success()
+            print(f'{path.name} 导入成功')
+
+        return _(path)
+
 
 db_config = Connection.config
 
 
-def connect():
+def connect(database: str = None, **kw) -> Connection:
     '根据事先配置好的文件连接数据库'
-    global _conn
-    if not _conn:
-        _conn = Connection()
-        atexit.register(_conn.close)
-    return _conn
+    if database:
+        return Connection(database, **kw)
+    else:
+        global _conn
+        if not _conn:
+            _conn = Connection()
+            atexit.register(_conn.close)
+        return _conn
 
 
 def wrapper(name: str) -> 'function':
@@ -199,17 +221,9 @@ fetchvalue = findvalue = wrapper('fetchvalue')
 trans = lambda: connect()
 tran = transaction = wrapper('tran')
 loadcheck = wrapper('loadcheck')
-
-
-def attach(filename: Path, name: str):
-    '''附加数据库'''
-    filename = fix_db_name(filename)
-    return execute(f'attach database "{filename}" as {name}')
-
-
-def detach(name: str):
-    ''' 分离数据库 '''
-    return execute(f'detach database {name}')
+loadfile = wrapper('loadfile')
+attach = wrapper('attach')
+detach = wrapper('detach')
 
 
 @arg('-d', '--db', default=':memory:', nargs='?', help='连接的数据库')
