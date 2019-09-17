@@ -230,13 +230,9 @@ detach = wrapper('detach')
 @arg('-d', '--db', default=':memory:', nargs='?', help='连接的数据库')
 @arg('sql', nargs='*', help='执行的 sql 语句')
 def execsql(db, sql):
+    from contextlib import closing
     sql = ' '.join(sql)
     if sql:
-        try:
-            with connect(db) as db:
-                for row in db.execute(sql):
-                    print(*row)
-        except Exception as e:
-            print(e)
-        finally:
-            db.close()
+        with closing(connect(db)) as db:
+            for row in db.fetch(sql):
+                print(*row)
