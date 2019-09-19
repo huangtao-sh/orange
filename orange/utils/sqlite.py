@@ -87,6 +87,7 @@ class Connection(sqlite3.Connection):
                fields: list = None,
                fieldcount: int = 0,
                method: str = 'insert',
+               drop: bool = True,
                multi: bool = True) -> "Cursor":
         '''执行插入命令
         table:  插入的表名
@@ -95,6 +96,8 @@ class Connection(sqlite3.Connection):
         method: 插入的方法，默认为 insert 可以为： insert or replace ,insert or ignore 等
         multi:  是否插入多行数据
         '''
+        if drop:  # 删除原数据
+            self.execute(f'delete from {table}')
         if fields:  # 参数中有字段列表
             values = ','.join(['?'] * len(fields))
             fields = '(%s)' % (','.join(fields))
