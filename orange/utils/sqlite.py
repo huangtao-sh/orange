@@ -177,6 +177,8 @@ class Connection(sqlite3.Connection):
                  drop: bool = True,
                  success: callable = None,
                  method: str = 'insert'):
+        '将文导入数据库中'
+
         @self.loadcheck
         def _(path: Path):
             if drop:
@@ -195,7 +197,7 @@ _conn = None
 
 
 def connect(database: str = None, **kw) -> Connection:
-    '根据事先配置好的文件连接数据库'
+    '打开指定的数据库，如未指定根据事先配置好的文件连接数据库'
     if database:
         return Connection(database, **kw)
     else:
@@ -207,7 +209,8 @@ def connect(database: str = None, **kw) -> Connection:
 
 
 @contextmanager
-def tmpdb(database, **kw) -> Connection:
+def db(database, **kw) -> Connection:
+    '打开数据库，用完自动关闭'
     db = Connection(database, **kw)
     with closing(db):
         yield db
@@ -237,11 +240,11 @@ attach = wrapper('attach')
 detach = wrapper('detach')
 
 
-@arg('-d', '--db', default=':memory:', nargs='?', help='连接的数据库')
+@arg('-d', '--db',dest='_db' default=':memory:', nargs='?', help='连接的数据库')
 @arg('sql', nargs='*', help='执行的 sql 语句')
-def execsql(db, sql):
+def execsql(_db, sql):
     sql = ' '.join(sql)
     if sql:
-        with tmpdb(db) as db:
+        with db(db) as db:
             for row in db.fetch(sql):
                 print(*row)
