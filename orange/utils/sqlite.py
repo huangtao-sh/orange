@@ -14,8 +14,6 @@ from functools import wraps
 from itertools import chain
 
 ROOT = Path('~/OneDrive') / ('testdb' if is_dev() else 'db')
-_conn = None
-_config = {}
 
 __all__ = 'db_config', 'connect', 'execute', 'executemany', 'executescript', 'executefile',\
     'find', 'findone', 'findvalue', 'trans', 'fetch', 'fetchone', 'fetchvalue', 'transaction',\
@@ -193,6 +191,8 @@ class Connection(sqlite3.Connection):
 
 db_config = Connection.config
 
+_conn = None
+
 
 def connect(database: str = None, **kw) -> Connection:
     '根据事先配置好的文件连接数据库'
@@ -204,6 +204,13 @@ def connect(database: str = None, **kw) -> Connection:
             _conn = Connection()
             atexit.register(_conn.close)
         return _conn
+
+
+@contextmanager
+def tmpdb(database, **kw) -> Connection:
+    db = Connection(database, **kw)
+    with closing(db):
+        yield db
 
 
 def wrapper(name: str) -> 'function':
@@ -235,6 +242,6 @@ detach = wrapper('detach')
 def execsql(db, sql):
     sql = ' '.join(sql)
     if sql:
-        with closing(connect(db)) as db:
+        with tmpdb(db) as db:
             for row in db.fetch(sql):
                 print(*row)
