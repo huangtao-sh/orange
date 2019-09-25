@@ -7,7 +7,6 @@
 # 修改：2018-09-09 新增 tprint 功能
 # 修改：2018-09-12 10:19 新增 shell、cformat、tprint 功能
 
-
 import os
 import warnings
 from functools import wraps
@@ -47,11 +46,14 @@ def deprecate(func):
     def _(fn):
         @wraps(fn)
         def new_func(*args, **kw):
-            warnings.warn(
-                '%s will be deprecated, Please use %s replaced!' % (
-                    fn.__name__, func), DeprecationWarning, stacklevel=2)
+            warnings.warn('%s will be deprecated, Please use %s replaced!' %
+                          (fn.__name__, func),
+                          DeprecationWarning,
+                          stacklevel=2)
             return fn(*args, **kw)
+
         return new_func
+
     return _
 
 
@@ -63,16 +65,16 @@ def deprecation(func, replace=''):
     warnings.warn(message, DeprecationWarning, stacklevel=2)
 
 
-_Digit = R/r'\d+'
+_Digit = R / r'\d+'
 
 
 def cformat(value, format_spec=''):
     '''对字符串进行格式化，
     解决设定宽度后，汉字无法对齐的问题'''
-    if isinstance(value, str)and _Digit/format_spec:
+    if isinstance(value, str) and _Digit / format_spec:
         d = int(tuple(_Digit/format_spec)[0]) - \
             sum(1 for x in value if ord(x) > 127)
-        format_spec = _Digit/format_spec % str(d)
+        format_spec = _Digit / format_spec % str(d)
     return format(value, format_spec)
 
 
@@ -87,16 +89,16 @@ def cstr(arg, width=None, align='left'):
     if width:
         align = align.lower()
         s = s.strip()
-        x = width-wlen(s)
+        x = width - wlen(s)
         if x > 0:
             if align == 'right':
-                s = ' '*x+s
+                s = ' ' * x + s
             elif align == 'left':
-                s += ' '*x
+                s += ' ' * x
             else:
-                l = x//2
-                r = x-l
-                s = ' '*l+s+' '*r
+                l = x // 2
+                r = x - l
+                s = ' ' * l + s + ' ' * r
     return s
 
 
@@ -109,16 +111,20 @@ def tprint(data, format_spec={}, sep=' '):
     '''
     if isinstance(format_spec, (tuple, list)):
         for row in data:
-            x = sep.join(cformat(k, f)for k, f in zip(row, format_spec))
+            x = sep.join(cformat(k, f) for k, f in zip(row, format_spec))
             print(x)
     elif isinstance(format_spec, dict):
         for row in data:
-            x = sep.join(cformat(k, format_spec.get(i, ''))
-                         for i, k in enumerate(row))
+            x = sep.join(
+                cformat(k, format_spec.get(i, '')) for i, k in enumerate(row))
             print(x)
 
 
-def desensitize(s: str, start: int = 0, stop: int = 0, width: int = 0, chr: str = '*') -> str:
+def desensitize(s: str,
+                start: int = 0,
+                stop: int = 0,
+                width: int = 0,
+                chr: str = '*') -> str:
     '''对指定的数据进行脱敏处理'
     s:     需要脱敏的字符串
     start: 脱敏的起始位置，可以为负数
@@ -130,11 +136,11 @@ def desensitize(s: str, start: int = 0, stop: int = 0, width: int = 0, chr: str 
     if start:
         parts.append(s[:start])
     if not stop and width:
-        stop = start+width
+        stop = start + width
     if stop:
-        parts.extend([chr*len(s[start:stop]), s[stop:]])
+        parts.extend([chr * len(s[start:stop]), s[stop:]])
     else:
-        parts.append(chr*len(s[start:]))
+        parts.append(chr * len(s[start:]))
     return "".join(parts)
 
 
@@ -194,7 +200,7 @@ class _Shell():
 
     def __call__(self, cmd, input=None):
         mode = 'w' if input else 'r'
-        with os.popen(cmd, mode)as f:
+        with os.popen(cmd, mode) as f:
             if input:
                 if isinstance(input, (tuple, list)):
                     input = '\n'.join(input)
@@ -228,7 +234,7 @@ def read_shell(cmd):
     '''
     执行系统命令，并将执行命令的结果通过管道读取。
     '''
-    with os.popen(cmd)as fn:
+    with os.popen(cmd) as fn:
         k = fn.read()
     return k.splitlines()
 
@@ -242,7 +248,7 @@ def write_shell(cmd, lines):
         if isinstance(lines, str):
             fn.write(lines)
         elif isinstance(lines, (tuple, list)):
-            [fn.write('%s\n' % (x))for x in lines]
+            [fn.write('%s\n' % (x)) for x in lines]
 
 
 @deprecate('shell')
@@ -278,7 +284,7 @@ def encrypt(pwd):
     可逆加密程序。
     '''
     b = __get_des().encrypt(pwd)
-    return "".join(['%02X' % (x)for x in b])
+    return "".join(['%02X' % (x) for x in b])
 
 
 def decrypt(code):
@@ -290,6 +296,11 @@ def decrypt(code):
 
 
 generator = type(x for x in 'hello world.')
+
+
+def limit(data: "iterable", count: int = 100):
+    for row, _ in zip(data, range(count)):
+        yield row
 
 
 def split(data: 'iterable', size: int = 1000) -> 'iterable':
