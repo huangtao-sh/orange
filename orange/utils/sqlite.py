@@ -229,7 +229,11 @@ insertone = wrapper('insertone')
 fetch = find = wrapper('fetch')
 fetchone = findone = wrapper('fetchone')
 fetchvalue = findvalue = wrapper('fetchvalue')
-trans = lambda: connect()
+
+
+def trans(): return connect()
+
+
 tran = transaction = wrapper('tran')
 loadcheck = wrapper('loadcheck')
 loadfile = wrapper('loadfile')
@@ -242,6 +246,6 @@ detach = wrapper('detach')
 def execsql(_db, sql):
     sql = ' '.join(sql)
     if sql:
-        with db(db) as db:
-            for row in db.fetch(sql):
+        with db(db) as __db:
+            for row in __db.fetch(sql):
                 print(*row)
