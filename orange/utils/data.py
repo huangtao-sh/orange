@@ -104,3 +104,10 @@ class Data():
 
     def print(self, format_spec, sep=' '):
         tprint(self._data, format_spec=format_spec, sep=sep)
+
+    def groupby(self, key: "function") -> 'iterable':
+        from collections import defaultdict
+        data = defaultdict(lambda: [])
+        for row in self:
+            data[key[row]].append(row)
+        return data.items()
