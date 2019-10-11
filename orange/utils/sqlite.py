@@ -246,6 +246,6 @@ detach = wrapper('detach')
 def execsql(_db, sql):
     sql = ' '.join(sql)
     if sql:
-        with db(db) as __db:
+        with db(_db) as __db:
             for row in __db.fetch(sql):
                 print(*row)
