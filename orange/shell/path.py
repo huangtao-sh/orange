@@ -165,6 +165,7 @@ class Path(_Parent):
               text=None,
               data=None,
               encoding='utf8',
+              errors=None,
               parents=False):
         '''写文件'''
         if parents:
@@ -173,11 +174,9 @@ class Path(_Parent):
         if isinstance(content, (tuple, list)):
             data = '\n'.join(content)
         if isinstance(data, str):
-            with self.open('w', encoding=encoding) as f:
-                f.write(data)
+            self.write_text(data, encoding, errors)
         elif isinstance(data, bytes):
-            with self.open('wb') as f:
-                f.write(data)
+            self.write_bytes(data)
 
     @property
     def worksheets(self):
@@ -485,6 +484,43 @@ class Path(_Parent):
         if name != self.name:
             print(self.name, '->', name)
             self.rename(self.with_name(name))
+
+    def read_data(self,
+                  encoding='GBK',
+                  errors='strict',
+                  sep=b'|',
+                  skip_header=True,
+                  columns=None,
+                  *args,
+                  **kwargs):
+        ''' 对金融科技部提供数据索取文件进行解析
+            一般采用 GBK 编码，采用 "|" 进行分割
+            columns 用于提取指定字段
+        '''
+
+        def _read(path: Path, encoding, errors, sep, skip_header):
+            if isinstance(sep, str):
+                sep = sep.encode(encoding)
+            with path.open('rb') as f:
+                if skip_header:
+                    next(f)
+                for line in f:
+                    cols = line.split(sep)
+                    if columns:
+                        cols = [cols[x] for x in columns]
+                    yield [
+                        col.decode(encoding, errors).strip() for col in cols
+                    ]
+
+        data = _read(self, encoding, errors, sep, skip_header)
+        if args or kwargs:
+            data = Data(data, *args, **kwargs)
+        return data
+
+    def rar(self, dest: Path, passwd=None):
+        '将本文件或文件打包成一个 Rar 文件'
+        passwd = f"-p{passwd}" if passwd else ""
+        os.system(f'rar a -ep {passwd} "{dest}" "{self}"')
 
 
 HOME = Path.home()
