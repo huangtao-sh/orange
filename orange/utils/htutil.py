@@ -310,13 +310,17 @@ def split(data: 'iterable', size: int = 1000) -> 'iterable':
     while row:
         yield row
         row = tuple(islice(data, size))
-    '''
-    if isinstance(data, generator):
-        data = tuple(data)
-    length = len(data)
-    i = 0
-    for i in range(size, length, size):
-        yield data[i - size:i]
-    else:
-        yield data[i:]
-        '''
+
+
+def groupby(data: 'Iterable', key: 'function'):
+    '对数据进行分组，key 可以为列数，也可以是函数'
+    from collections import defaultdict
+    result = defaultdict(lambda: [])
+    if callable(key):
+        for row in data:
+            result[key(row)].appned(row)
+    elif isinstance(key, int):
+        for row in data:
+            result[row[key]].append(row)
+
+    return result.items()
