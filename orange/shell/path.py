@@ -517,7 +517,7 @@ class Path(_Parent):
             data = Data(data, *args, **kwargs)
         return data
 
-    def rar(self, dest: Path, passwd=None):
+    def rar(self, dest: "Path", passwd=None):
         '将本文件或文件打包成一个 Rar 文件'
         passwd = f"-p{passwd}" if passwd else ""
         os.system(f'rar a -ep {passwd} "{dest}" "{self}"')
