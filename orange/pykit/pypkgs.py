@@ -20,7 +20,7 @@ PyLib = ROOT/'pylib'
 
 
 DefaultConfig = {
-    'Local': ['orange_kit', 'gmono', 'glemon', 'lzbg', 'pygui'],
+    'Local': ['orange_kit', 'gmono', 'glemon', 'lzbg', 'pygui','fxq'],
     'Wheel': [],
     'Source': []
 }
