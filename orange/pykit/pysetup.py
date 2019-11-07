@@ -47,7 +47,7 @@ def pysdist(*args):
 ver = sysconfig._PY_VERSION_SHORT_NO_DOT
 BINARY_PARAMS = {
     'implementation': 'cp',
-    'platform': 'win32',
+    'platform': 'win_amd64',
     'python-version': ver,
     'abi': f'cp{ver}m',
     'only-binary': ':all:',
