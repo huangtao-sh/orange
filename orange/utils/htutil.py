@@ -13,6 +13,19 @@ from functools import wraps
 from .regex import R
 from contextlib import suppress
 from itertools import islice
+from orange import datetime
+from functools import wraps
+
+
+def timeit(func):
+    @wraps(func)
+    def _(*args, **kw):
+        start_time = datetime.now()
+        print('开始时间：', start_time % ('%T.%f'))
+        result = func(*args, **kw)
+        print('耗时：', datetime.now()-start_time)
+        return result
+    return _
 
 
 def first(iterable):
