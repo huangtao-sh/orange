@@ -23,7 +23,7 @@ def timeit(func):
         start_time = datetime.now()
         print('开始时间：', start_time % ('%T.%f'))
         result = func(*args, **kw)
-        print('耗时：', datetime.now()-start_time)
+        print('耗时    ：', datetime.now()-start_time)
         return result
     return _
 
