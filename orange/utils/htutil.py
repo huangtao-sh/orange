@@ -13,7 +13,7 @@ from functools import wraps
 from .regex import R
 from contextlib import suppress
 from itertools import islice
-from orange import datetime
+from .datetime_ import datetime
 from functools import wraps
 
 
