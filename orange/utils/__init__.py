@@ -10,7 +10,7 @@ from .datetime_ import UTC, LOCAL, now, datetime, FixedOffset, ONEDAY,\
     ONESECOND, date_add, LTZ
 from .regex import R, convert_cls_name, extract
 from .pinyin import get_py, PY
-from .htutil import first, last, _any, _all, desensitize, limit, groupby, timit
+from .htutil import first, last, _any, _all, desensitize, limit, groupby, timeit
 from .hz import Ordinal
 from .data import Data, mapper, filterer, itemgetter, converter
 
