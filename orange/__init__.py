@@ -13,7 +13,7 @@ from orange.mail import sendmail, tsendmail, Mail, MailClient
 from orange.utils import command, arg, datetime, LOCAL, UTC, date_add, ONEDAY,\
     LTZ, ONESECOND, now, R, extract, convert_cls_name, PY, get_py,\
     first, last, _any, _all, desensitize, Data, mapper, filterer, itemgetter, converter,\
-    limit,groupby,timit
+    limit,groupby,timeit
 from orange.shell import sh, POSIX, is_dev, is_installed, Path, decode, HOME,\
     tempdir, tempfile
 from orange.utils.config import YamlConfig
