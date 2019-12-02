@@ -77,7 +77,7 @@ class Book(Workbook):
     ''' 对Xlsxwriter模块进一步进行封装'''
 
     def __init__(self, filename=None, formats=None, **kw):
-        if isinstance(filename,(Path, str)):
+        if isinstance(filename, (Path, str)):
             filename = str(Path(filename))
         super().__init__(filename, **kw)
         self._worksheet = None  # 设置当前的工作表为空

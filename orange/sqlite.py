@@ -42,7 +42,7 @@ class Connection():
         if not str(database).startswith(':'):
             db = Path(database)
             if not db.root:
-                db = ROOT/db
+                db = ROOT / db
             db = db.with_suffix('.db')
             database = str(db)
         self._db = database
@@ -96,9 +96,11 @@ class Connection():
             with closing(cursor):
                 return getattr(cursor, fetch)()
         else:
+
             async def _():
                 async with cls.execute(sql, params) as cursor:
                     return await getattr(cursor, fetch)()
+
             return _()
 
     @classmethod
@@ -146,10 +148,10 @@ class Connection():
         data = tuple(data)
         if fields:
             fields = '(%s)' % (','.join(fields))
-            values = ','.join(['?']*len(fields))
+            values = ','.join(['?'] * len(fields))
         else:
             fields = ''
-            values = ','.join(['?']*len(data[0]))
+            values = ','.join(['?'] * len(data[0]))
         sql = f'{oper} into {table}{fields} values({values})'
         return cls.executemany(sql, data)
 
@@ -162,8 +164,7 @@ executescript = Connection.executescript
 executefile = Connection.executefile
 find = Connection.find
 findone = Connection.findone
-findvalue= Connection.findvalue
+findvalue = Connection.findvalue
 droptable = Connection.droptable
 createtable = Connection.createtable
 insert = Connection.insert
-

@@ -1,4 +1,3 @@
-
 # 项目：标准程序库
 # 模块：发送电子邮件
 # 作者：黄涛
@@ -7,7 +6,6 @@
 # 创建：2016-10-26 10:25
 # 修改：2019-02-14 15:54 对部分代码进行修订
 # 修改：2019-12-02 12:18 优化 Mail.post 功能，不送服务器也可以发送
-
 
 from email.mime.text import MIMEText, Charset
 from email.mime.base import MIMEBase
@@ -61,7 +59,7 @@ class MailClient(smtplib.SMTP):
     '''构造邮件客户端，使用方法如下：
        client=MailClient(host,user,passwd)
     '''
-    config = {}   # 用于配置发送邮件的想着参数，如：host,user,passwd
+    config = {}  # 用于配置发送邮件的想着参数，如：host,user,passwd
 
     def __init__(self, host=None, user=None, passwd=None, *args, **kw):
         host = host or self.config.get('host')
@@ -90,8 +88,12 @@ MIMETYPE = (
     ('.bmp', 'image/bmp'),
     ('.c', 'text/plain'),
     ('.css', 'text/css'),
-    ('.dotx', 'application/vnd.openxmlformats-officedocument.wordprocessingml.template'),
-    ('.docx', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'),
+    ('.dotx',
+     'application/vnd.openxmlformats-officedocument.wordprocessingml.template'
+     ),
+    ('.docx',
+     'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+     ),
     ('.doc', 'application/msword'),
     ('.dot', 'application/msword'),
     ('.exe', 'application/octet-stream'),
@@ -124,7 +126,9 @@ MIMETYPE = (
     ('.ppm', 'image/x-portable-pixmap'),
     ('.pps', 'application/vnd.ms-powerpoint'),
     ('.ppt', 'application/vnd.ms-powerpoint'),
-    ('.pptx', 'application/vnd.openxmlformats-officedocument.presentationml.presentation'),
+    ('.pptx',
+     'application/vnd.openxmlformats-officedocument.presentationml.presentation'
+     ),
     ('.ps', 'application/postscript'),
     ('.pub', 'application/x-mspublisher'),
     ('.qt', 'video/quicktime'),
@@ -145,7 +149,8 @@ MIMETYPE = (
     ('.wav', 'audio/x-wav'),
     ('.xlm', 'application/vnd.ms-excel'),
     ('.xls', 'application/vnd.ms-excel'),
-    ('.xlsx', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'),
+    ('.xlsx',
+     'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'),
     ('.xlt', 'application/vnd.ms-excel'),
     ('.xlw', 'application/vnd.ms-excel'),
     ('.z', 'application/x-compress'),
@@ -164,8 +169,14 @@ class Mail:
     mail.post(client)
     '''
 
-    def __init__(self, sender=None, to=None, subject=None, body=None,
-                 cc=None, bcc=None, client=None):
+    def __init__(self,
+                 sender=None,
+                 to=None,
+                 subject=None,
+                 body=None,
+                 cc=None,
+                 bcc=None,
+                 client=None):
         '''初始化邮件'''
         self.attachments = []
         self.inline_attachments = []
@@ -182,13 +193,13 @@ class Mail:
         '''获取邮件的MESSAGE属性'''
         body = self.body
         subtype = 'html' if body.startswith('<html>') else 'plain'  # 设置正文类型
-        msg = MIMEText(body, subtype, 'utf-8')             # 构建邮件正文
-        if self.inline_attachments:                        # 合并内嵌附件
+        msg = MIMEText(body, subtype, 'utf-8')  # 构建邮件正文
+        if self.inline_attachments:  # 合并内嵌附件
             msg = combine('related', msg, *self.inline_attachments)
-        if self.attachments:                               # 合并附件
+        if self.attachments:  # 合并附件
             msg = combine('mixed', msg, *self.attachments)
-        msg.add_header('Subject', self.Subject)            # 设置标题
-        for name in ('Sender', 'To', 'Cc', 'Bcc'):         # 设置收件人及发件人
+        msg.add_header('Subject', self.Subject)  # 设置标题
+        for name in ('Sender', 'To', 'Cc', 'Bcc'):  # 设置收件人及发件人
             val = getattr(self, name)
             if val:
                 msg.add_header(name, fmtaddr(val))
@@ -200,15 +211,15 @@ class Mail:
     def add_fp(self, fp, filename):
         self.attach(filename, writer=fp)
 
-    def attach(self, filename, cid=None, data=None, writer=None):    # 添加附件
+    def attach(self, filename, cid=None, data=None, writer=None):  # 添加附件
         '''
         filename: 文件名
         cid：     内嵌资源编号，如设置则不出现在附件列表中
         writer:   内容生成，如设置，则通过 writer(fn)的形式来获取数据
         '''
         file = Path(filename)
-        msg = MIMEBase(*MIMETYPES.get(
-            file.suffix.lower(), 'application/octet-stream').split('/'))
+        msg = MIMEBase(*MIMETYPES.get(file.suffix.lower(),
+                                      'application/octet-stream').split('/'))
         if callable(writer):
             with io.BytesIO() as fp:
                 writer(fp)
@@ -218,7 +229,8 @@ class Mail:
             data = file.read_bytes()
         msg.set_payload(data)
         encoders.encode_base64(msg)
-        msg.add_header('Content-Disposition', 'inline' if cid else 'attachment',
+        msg.add_header('Content-Disposition',
+                       'inline' if cid else 'attachment',
                        filename=encode(file.name))
         if cid:
             msg.add_header('Content-ID', f'<{cid}>')
@@ -235,7 +247,7 @@ class Mail:
         if mailclient:
             mailclient.send_message(self.message)
         elif MailClient.config:
-            with MailClient()as client:
+            with MailClient() as client:
                 client.send_message(self.message)
         else:
             print('邮件发送失败，无可用发送服务器')
@@ -248,13 +260,14 @@ if __name__ == '__main__':
     <img src="cid:fengche"/>
     </body></html>'''
 
-    mail_config(host='zhmail.czbank.com', user='huangtao',
-                passwd='Huangtao78')
+    mail_config(host='zhmail.czbank.com', user='huangtao', passwd='Huangtao78')
     with MailClient() as client:
-        s = client.Mail(sender='黄涛 <huangtao@czbank.com>',
-                        to='张三 <huang.t@live.cn> , 李四 <huangtao.sh@icloud.com> , 李起 <hunto@163.com>',
-                        subject='天空之城',
-                        body=body)
+        s = client.Mail(
+            sender='黄涛 <huangtao@czbank.com>',
+            to=
+            '张三 <huang.t@live.cn> , 李四 <huangtao.sh@icloud.com> , 李起 <hunto@163.com>',
+            subject='天空之城',
+            body=body)
         s.attach('d:/邮件测试.xlsx')
         s.attach('d:/测试邮件.docx')
         s.add_image('d:/沙漠.jpg', cid='fengche')
