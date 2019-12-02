@@ -6,6 +6,7 @@
 # Email:huangtao.sh@icloud.com
 # 创建：2016-10-26 10:25
 # 修改：2019-02-14 15:54 对部分代码进行修订
+# 修改：2019-12-02 12:18 优化 Mail.post 功能，不送服务器也可以发送
 
 
 from email.mime.text import MIMEText, Charset
@@ -199,7 +200,7 @@ class Mail:
     def add_fp(self, fp, filename):
         self.attach(filename, writer=fp)
 
-    def attach(self, filename, cid=None, writer=None):    # 添加附件
+    def attach(self, filename, cid=None, data=None, writer=None):    # 添加附件
         '''
         filename: 文件名
         cid：     内嵌资源编号，如设置则不出现在附件列表中
@@ -213,7 +214,7 @@ class Mail:
                 writer(fp)
                 fp.seek(0)
                 data = fp.read()
-        else:
+        elif not data:
             data = file.read_bytes()
         msg.set_payload(data)
         encoders.encode_base64(msg)
@@ -233,6 +234,11 @@ class Mail:
         mailclient = mailclient or self.client
         if mailclient:
             mailclient.send_message(self.message)
+        elif MailClient.config:
+            with MailClient()as client:
+                client.send_message(self.message)
+        else:
+            print('邮件发送失败，无可用发送服务器')
 
 
 if __name__ == '__main__':
