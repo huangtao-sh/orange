@@ -520,6 +520,11 @@ class Path(_Parent):
     def rar(self, dest: "Path", passwd=None):
         '将本文件或文件打包成一个 Rar 文件'
         passwd = f"-p{passwd}" if passwd else ""
+        dest = Path(dest)
+        if not dest:
+            raise Exception(f'目录 {dest} 不存在')
+        if dest.is_dir() and self.is_dir():
+            dest = dest / f'{self.name}.rar'
         os.system(f'rar a -ep {passwd} "{dest}" "{self}"')
 
 
