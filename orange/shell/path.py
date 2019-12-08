@@ -519,6 +519,7 @@ class Path(_Parent):
 
     def rar(self, dest: "Path", passwd=None):
         '将本文件或文件打包成一个 Rar 文件'
+        '如果当前路径为目录，并且目标路径也为目录的话，把当前文件夹打包后的压缩文件存在放在指定目录下'
         passwd = f"-p{passwd}" if passwd else ""
         dest = Path(dest)
         if not dest:
