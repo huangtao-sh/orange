@@ -5,6 +5,7 @@
 # Email:huangtao.sh@icloud.com
 # 创建：2016-11-19 10:18
 # 修订：2018-10-25 重写安装程序
+# 修订：2019-12-15 09:35 修改写配置文件功能
 
 from orange.pykit.pyver import Ver, get_cur_ver
 from orange import sh, Path
@@ -38,7 +39,7 @@ def win_deploy():
     if not result[0]:
         sh > 'sc stop {SERVERNAME}'
         print('停止 MongoDb 服务')
-    config_file.text = MONGOCONFIG.format(**config)
+    config_file.write_bytes(MONGOCONFIG.format(**config).encode())
     prg_path = Path('%PROGRAMFILES%/MongoDB').find('bin')
     print(f'最新版程序安装路径为：{prg_path}')
     dest = Path('%windir%')
