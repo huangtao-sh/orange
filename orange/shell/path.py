@@ -526,7 +526,11 @@ class Path(_Parent):
             raise Exception(f'目录 {dest} 不存在')
         if dest.is_dir() and self.is_dir():
             dest = dest / f'{self.name}.rar'
-        os.system(f'rar a -ep {passwd} "{dest}" "{self}"')
+        if self.is_dir():
+            self.chdir()
+            os.system(f'rar a {passwd} "{dest}" .')
+        else:
+            os.system(f'rar a -ep {passwd} "{dest}" "{self}"')
 
 
 HOME = Path.home()
