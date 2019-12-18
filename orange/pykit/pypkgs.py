@@ -15,17 +15,16 @@ from orange.pykit import pip, Ver
 from collections import defaultdict
 from orange.shell import HOME, Path
 from .pysetup import pydownload
-ROOT = HOME/'OneDrive'
-PyLib = ROOT/'pylib'
-
+ROOT = HOME / 'OneDrive'
+PyLib = ROOT / 'pylib'
 
 DefaultConfig = {
-    'Local': ['orange_kit', 'gmono', 'glemon', 'lzbg', 'pygui','fxq'],
+    'Local': ['orange_kit', 'gmono', 'glemon', 'lzbg', 'pygui', 'fxq'],
     'Wheel': [],
     'Source': []
 }
 
-ConfFile = HOME / 'OneDrive/conf/pypkgs.yaml'    # 配置文件路径
+ConfFile = HOME / 'OneDrive/conf/pypkgs.yaml'  # 配置文件路径
 
 excludes = set(['green-mongo', 'orange-kit', 'coco', 'glemon', 'lzbg'])
 
@@ -43,10 +42,11 @@ def is_connected(url=None):
 
 
 def batch_download(config):
+    libpath = '~/OneDrive/pylib'
     for pkg in config['Wheel']:
-        pydownload(pkg, source=False)
+        pip('download', *pkgs, '-d', str(libpath), '--no-deps')
     for pkg in config['Source']:
-        pydownload(pkg, source=True)
+        pip('download', *pkgs, '-d', str(libpath), '--no-deps')
 
 
 def get_installed_packages():
@@ -116,15 +116,14 @@ def main(download=False, upgrade=False, install=False, **options):
 
     if install:
         if is_connected():
-            pkgs = config['Wheel']+config['Source']
+            pkgs = config['Wheel'] + config['Source']
             for pkg in pkgs:
                 pip('install', pkg)
         else:
             r = input('未连接互联网，请确认是否安装, Y or N?')
             if r.lower() == 'y':
                 for pkg in get_cached_pkgs():
-                    pip('install', '--no-deps', '--ignore-installed',
-                        pkg[-1])
+                    pip('install', '--no-deps', '--ignore-installed', pkg[-1])
 
     if options['clean']:
         cleanlib()
