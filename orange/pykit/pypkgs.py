@@ -44,9 +44,9 @@ def is_connected(url=None):
 def batch_download(config):
     libpath = '~/OneDrive/pylib'
     for pkg in config['Wheel']:
-        pip('download', *pkg, '-d', str(libpath), '--no-deps')
+        pip('download', pkg, '-d', str(libpath), '--no-deps')
     for pkg in config['Source']:
-        pip('download', *pkg, '-d', str(libpath), '--no-deps')
+        pip('download', pkg, '-d', str(libpath), '--no-deps')
 
 
 def get_installed_packages():
