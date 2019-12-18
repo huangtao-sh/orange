@@ -527,8 +527,8 @@ class Path(_Parent):
         if dest.is_dir() and self.is_dir():
             dest = dest / f'{self.name}.rar'
         if self.is_dir():
-            self.chdir()
-            os.system(f'rar a {passwd} "{dest}" .')
+            self.parent.chdir()
+            os.system(f'rar a {passwd} "{dest}" "{self.name}"')
         else:
             os.system(f'rar a -ep {passwd} "{dest}" "{self}"')
 
