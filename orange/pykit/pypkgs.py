@@ -26,7 +26,7 @@ DefaultConfig = {
 
 ConfFile = HOME / 'OneDrive/conf/pypkgs.yaml'  # 配置文件路径
 
-excludes = set(['green-mongo', 'orange-kit', 'coco', 'glemon', 'lzbg'])
+excludes = set(['green-mongo', 'orange-kit', 'coco', 'glemon', 'lzbg', 'fxq'])
 
 
 def is_connected(url=None):
