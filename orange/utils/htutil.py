@@ -23,8 +23,9 @@ def timeit(func):
         start_time = datetime.now()
         print('开始时间：', start_time % ('%T.%f'))
         result = func(*args, **kw)
-        print('耗时    ：', datetime.now()-start_time)
+        print('耗时    ：', datetime.now() - start_time)
         return result
+
     return _
 
 
@@ -322,7 +323,7 @@ def split(data: 'iterable', size: int = 1000) -> 'iterable':
     row = tuple(islice(data, size))
     while row:
         yield row
-        row = tuple(islice(data, size))
+        row = list(islice(data, size))
 
 
 def groupby(data: 'Iterable', key: 'function'):
