@@ -28,4 +28,6 @@ def win_deploy():
     print(config_file.read_bytes())
 
 
-win_deploy()
+#win_deploy()
+from sysconfig import get_python_version
+print(get_python_version())
