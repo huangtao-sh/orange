@@ -320,7 +320,7 @@ def limit(data: "iterable", count: int = 100):
 def split(data: 'iterable', size: int = 1000) -> 'iterable':
     '''拆分数据，其中datas应为list,size为每批数据的数量'''
     data = iter(data)
-    row = tuple(islice(data, size))
+    row = list(islice(data, size))
     while row:
         yield row
         row = list(islice(data, size))
@@ -332,7 +332,7 @@ def groupby(data: 'Iterable', key: 'function'):
     result = defaultdict(lambda: [])
     if callable(key):
         for row in data:
-            result[key(row)].appned(row)
+            result[key(row)].append(row)
     elif isinstance(key, int):
         for row in data:
             result[row[key]].append(row)
