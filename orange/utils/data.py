@@ -43,7 +43,6 @@ def itemgetter(*columns: 'Iterable'):
 
 def _convert(converter: dict):
     '''数据转换'''
-
     def _(row):
         for idx, conv in converter.items():
             row[idx] = conv(row[idx])
@@ -77,6 +76,14 @@ class Data():
                 break
         return self
 
+    def exclude(self, columns):
+        columns = set(columns)
+
+        def _(row):
+            return [col for i, col in enumerate(row) if i not in columns]
+
+        self._data = map(_, self._data)
+
     def filter(self, filter_):
         self._data = filter(filter_, self._data)
         return self
@@ -89,10 +96,12 @@ class Data():
                 self._data = map(_convert(converter), self._data)
         return self
 
-    def columns(self, columns):
+    def include(self, columns):
         if columns:
             self._data = itemgetter(*columns)(self._data)
         return self
+
+    columns = include
 
     def __iter__(self):
         if self._rows:
