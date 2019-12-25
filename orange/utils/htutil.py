@@ -316,10 +316,8 @@ def limit(data: "iterable", count: int = 100):
 def split(data: 'iterable', size: int = 1000) -> 'iterable':
     '''拆分数据，其中datas应为list,size为每批数据的数量'''
     data = iter(data)
-    row = list(islice(data, size))
-    while row:
+    while row := list(islice(data, size)):
         yield row
-        row = list(islice(data, size))
 
 
 def groupby(data: 'Iterable', key: 'function'):
