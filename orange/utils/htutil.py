@@ -168,7 +168,6 @@ class classproperty:
     A.name
     A().name
     '''
-
     def __init__(self, getter):
         self.getter = getter
 
@@ -186,7 +185,6 @@ class cachedproperty:
     A.name
     A().name
     '''
-
     def __init__(self, getter):
         self.getter = getter
         self.cache = {}
@@ -208,7 +206,6 @@ class _Shell():
       result = shell('dir')
       这里返回的是 dir 执行的输出
     '''
-
     def __gt__(self, cmd):
         return os.system(cmd)
 
@@ -313,8 +310,7 @@ generator = type(x for x in 'hello world.')
 
 
 def limit(data: "iterable", count: int = 100):
-    for row, _ in zip(data, range(count)):
-        yield row
+    return islice(data, count)
 
 
 def split(data: 'iterable', size: int = 1000) -> 'iterable':
