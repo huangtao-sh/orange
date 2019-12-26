@@ -8,16 +8,17 @@
 import logging
 import sys
 import os
-from orange import Path
+from orange import Path, datetime
+today = datetime.now() % '%F'
 
 name = sys.argv[0] or 'test'
 
 logger = logging.getLogger(name)
 
 if os.name == 'nt':
-    path = Path('%localappdata%/logs')
+    path = Path(f'%localappdata%/logs/{today}')
 else:
-    path = Path('~/.logs')
+    path = Path('~/.logs/{today}')
 
 path.ensure()
 path = (path / name.split(os.sep)[-1]).with_suffix('.log')
