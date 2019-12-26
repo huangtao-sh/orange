@@ -233,14 +233,15 @@ class Path(_Parent):
             with self.open(encoding=encoding, errors=errors) as f:
                 yield from f
 
+        filter = filer or _filter
         data = csv.reader(reader() if encoding else self.lines,
                           dialect=dialect,
                           **kw)
-        if any([columns, pipelines, _filter, rows, converter]):
+        if any([columns, pipelines, filter, rows, converter]):
             data = Data(data,
                         *pipelines,
                         rows=rows,
-                        filter=_filter or filter,
+                        filter=filter,
                         converter=converter,
                         columns=columns)
         return data
