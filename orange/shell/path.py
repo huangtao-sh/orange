@@ -233,7 +233,7 @@ class Path(_Parent):
             with self.open(encoding=encoding, errors=errors) as f:
                 yield from f
 
-        filter = filer or _filter
+        filter = filter or _filter
         data = csv.reader(reader() if encoding else self.lines,
                           dialect=dialect,
                           **kw)
