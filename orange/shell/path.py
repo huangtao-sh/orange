@@ -215,6 +215,7 @@ class Path(_Parent):
                  dialect='excel',
                  rows=0,
                  _filter=None,
+                 filter=None,
                  converter=None,
                  **kw):
         '''读取 csv 数据
@@ -239,7 +240,7 @@ class Path(_Parent):
             data = Data(data,
                         *pipelines,
                         rows=rows,
-                        filter=_filter,
+                        filter=_filter or filter,
                         converter=converter,
                         columns=columns)
         return data
@@ -448,7 +449,6 @@ class Path(_Parent):
         data:数据
         sheet:表格名称
         '''
-
         def writer(book, *tables):
             for table in tables:
                 pos = table.pop('pos', 'A1')
@@ -497,7 +497,6 @@ class Path(_Parent):
             一般采用 GBK 编码，采用 "|" 进行分割
             columns 用于提取指定字段
         '''
-
         def _read(path: Path, encoding, errors, sep, skip_header):
             if isinstance(sep, str):
                 sep = sep.encode(encoding)
