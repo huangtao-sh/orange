@@ -8,7 +8,8 @@
 import logging
 import sys
 import os
-from orange import Path, datetime
+from orange import Path
+from .datetime_ import datetime
 today = datetime.now() % '%F'
 
 name = sys.argv[0] or 'test'
