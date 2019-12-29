@@ -18,7 +18,7 @@ logger = logging.getLogger(name)
 if os.name == 'nt':
     path = Path(f'%localappdata%/logs/{today}')
 else:
-    path = Path('~/.logs/{today}')
+    path = Path(f'~/.logs/{today}')
 
 path.ensure()
 path = (path / name.split(os.sep)[-1]).with_suffix('.log')
@@ -37,8 +37,8 @@ logging.basicConfig(format='%(asctime)s %(levelname)-8s: %(message)s',
                     datefmt='%F %T')
 
 
-def set_debug():
-    logger.setLevel(logging.DEBUG)
+def set_debug(level=logging.DEBUG):
+    logger.setLevel(level)
 
 
 def set_verbose(fmt='%(message)s'):

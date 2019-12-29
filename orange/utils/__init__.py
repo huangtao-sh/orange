@@ -13,6 +13,7 @@ from .pinyin import get_py, PY
 from .htutil import first, last, _any, _all, desensitize, limit, groupby, timeit
 from .hz import Ordinal
 from .data import Data, mapper, filterer, itemgetter, converter
+from .log import set_debug, set_verbose, debug, error, info, warning, fatal
 
 
 @arg('module', nargs='?', help='指定模块')
