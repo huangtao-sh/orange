@@ -6,6 +6,7 @@
 # 创建：2016-10-12 08:24
 # 修订：2018-05-25 修改add_table的参数格式
 # 修订：2019-03-16 21:38 新增 Header 函数
+# 修订：2019-12-29 22:00 为 add_table 新增默认值
 
 from orange import R, Path
 from xlsxwriter import Workbook
@@ -75,7 +76,6 @@ Balance = partial(Header, 18, format='currency')
 
 class Book(Workbook):
     ''' 对Xlsxwriter模块进一步进行封装'''
-
     def __init__(self, filename=None, formats=None, **kw):
         if isinstance(filename, (Path, str)):
             filename = str(Path(filename))
@@ -104,7 +104,10 @@ class Book(Workbook):
     def set_widths(self, widths):
         [self.set_columns(col, width=width) for col, width in widths.items()]
 
-    def set_columns(self, *columns, width=None, cell_format=None,
+    def set_columns(self,
+                    *columns,
+                    width=None,
+                    cell_format=None,
                     options=None):
         ''' 设置当前工作表的列属性，允许同时设置多个，使用方法如下：
         book.set_columns('A:C','E:D','G:H',width=12)
@@ -283,7 +286,8 @@ class Book(Workbook):
             for c in range(first_col, last_col + 1)
         ]
 
-    def add_table(self, pos, sheet=None, worksheet=None, data=None, **kw):
+    def add_table(self, pos="A1", sheet=None, worksheet=None, data=None, **kw):
+        pos = pos.upper()
         worksheet = sheet or worksheet
         self._add_table(pos, worksheet=worksheet, data=data, **kw)
 
