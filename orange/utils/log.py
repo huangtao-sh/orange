@@ -8,6 +8,7 @@
 import logging
 import sys
 import os
+from pathlib import Path
 
 from .datetime_ import datetime
 today = datetime.now() % '%F'
@@ -17,20 +18,16 @@ name = sys.argv[0] or 'test'
 logger = logging.getLogger(name)
 
 
-def _init():
-    from orange import Path
-    if os.name == 'nt':
-        path = Path(f'%localappdata%/logs/{today}')
-    else:
-        path = Path(f'~/.logs/{today}')
-    path.ensure()
-    path = (path / name.split(os.sep)[-1]).with_suffix('.log')
-    logging.basicConfig(format='%(asctime)s %(levelname)-8s: %(message)s',
-                        filename=str(path),
-                        datefmt='%F %T')
-
-
-_init()
+if os.name == 'nt':
+    path = Path(os.path.expandvars(f'%localappdata%/logs/{today}'))
+else:
+    path = Path(os.path.expanduser(f'~/.logs/{today}'))
+if not os.path.exists(path):
+    os.mkdir(path)
+path = (path / name.split(os.sep)[-1]).with_suffix('.log')
+logging.basicConfig(format='%(asctime)s %(levelname)-8s: %(message)s',
+                    filename=str(path),
+                    datefmt='%F %T')
 log = logger.log
 debug = logger.debug
 info = logger.info
