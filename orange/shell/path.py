@@ -104,6 +104,15 @@ def decode(d: bytes) -> str:
     raise UnicodeDecodeError
 
 
+def unquote(s: str, quote='"') -> str:
+    '删除字符串的引号'
+    return s[1:-1] if s.startswith(quote)and s.endswith(quote)else s
+
+
+def unquote_row(row: 'iterable', quote='"') -> list:
+    return [unquote(x)for x in row]
+
+
 _Parent = pathlib.WindowsPath if os.name == 'nt' else pathlib.PosixPath
 
 
@@ -492,6 +501,7 @@ class Path(_Parent):
                   sep=b'|',
                   skip_header=True,
                   columns=None,
+                  quote=None,
                   *args,
                   **kwargs):
         ''' 对金融科技部提供数据索取文件进行解析
@@ -508,11 +518,11 @@ class Path(_Parent):
                     cols = line.split(sep)
                     if columns:
                         cols = [cols[x] for x in columns]
-                    yield [
-                        col.decode(encoding, errors).strip() for col in cols
-                    ]
+                    yield [col.decode(encoding, errors).strip() for col in cols]
 
         data = _read(self, encoding, errors, sep, skip_header)
+        if quote:
+            data = map(unquote_row, data, quote)
         if args or kwargs:
             data = Data(data, *args, **kwargs)
         return data
