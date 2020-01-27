@@ -7,3 +7,4 @@
 
 from .testcmd import unittest, TestVer
 from .testsqlite import TestSqlite
+from .testdata import TestData
