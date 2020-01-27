@@ -497,16 +497,16 @@ class Path(_Parent):
             self.rename(self.with_name(name))
 
     def read_data(self,
-                  encoding='GBK',
-                  errors='strict',
-                  skip_header=True,
-                  offsets=None,
-                  sep=b'|',
-                  columns=None,
-                  include=None,
-                  quote=None,
-                  *args,
-                  **kwargs):
+                  encoding='GBK',    # 数据的编码格式
+                  errors='strict',   # 解码过程中出现错误的解决方式
+                  skip_header=True,  # 是否跳过标题行
+                  offsets=None,      # 按位置拆分，格式为 (0,11,21...)
+                  sep=b'|',          # 按数据拆分
+                  columns=None,      # 仅包含哪列
+                  include=None,      # 仅包含哪些列
+                  quote=None,        # 引用符号
+                  *args,             # 其他 Data 支持的位置参数
+                  **kwargs):         # 其他 Data 支持的关键词参数
         ''' 对金融科技部提供数据索取文件进行解析
             一般采用 GBK 编码，采用 "|" 进行分割
             columns 用于提取指定字段
