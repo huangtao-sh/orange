@@ -15,6 +15,7 @@
 # 修改：2019-03-04 14:21 增加修复网络下载文件名的功能
 # 修改：2019-03-15 09:10 Path.iter_csv 增加 columns 参数
 # 修订：2019-03-19 14:00 优化 Path.pack、Path.zip 功能
+# 修订：2020-01-27 14:24 增加 size 属性，read_data 函数新增 quote 功能
 
 import pathlib
 import os
@@ -107,10 +108,6 @@ def decode(d: bytes) -> str:
 def unquote(s: str, quote='"') -> str:
     '删除字符串的引号'
     return s[1:-1] if s.startswith(quote)and s.endswith(quote)else s
-
-
-def unquote_row(row: 'iterable', quote='"') -> list:
-    return [unquote(x)for x in row]
 
 
 _Parent = pathlib.WindowsPath if os.name == 'nt' else pathlib.PosixPath
@@ -389,6 +386,10 @@ class Path(_Parent):
         return int(self.lstat().st_ctime)
 
     @property
+    def size(self):
+        return self.lstat().st_size
+
+    @property
     def uri(self):
         '''统一网址'''
         ur = self.resolve().as_uri()
@@ -498,9 +499,11 @@ class Path(_Parent):
     def read_data(self,
                   encoding='GBK',
                   errors='strict',
-                  sep=b'|',
                   skip_header=True,
+                  offsets=None,
+                  sep=b'|',
                   columns=None,
+                  include=None,
                   quote=None,
                   *args,
                   **kwargs):
@@ -508,24 +511,39 @@ class Path(_Parent):
             一般采用 GBK 编码，采用 "|" 进行分割
             columns 用于提取指定字段
         '''
-        def _read(path: Path, encoding, errors, sep, skip_header):
+        from orange.utils.data import filterer, mapper, itemgetter
+
+        def _read(path: Path):  # , encoding, errors, sep, skip_header):
+            with path.open('rb')as f:
+                yield from f
+        data = _read(self)
+        if skip_header:
+            next(data)
+        if offsets:
+            def _split(row):
+                start = offsets[0]
+                d = []
+                for end in [*offsets[1:], None]:
+                    d.append(row[start:end])
+                    start = end
+                return d
+        else:
             if isinstance(sep, str):
                 sep = sep.encode(encoding)
-            with path.open('rb') as f:
-                if skip_header:
-                    next(f)
-                for line in f:
-                    cols = line.split(sep)
-                    if columns:
-                        cols = [cols[x] for x in columns]
-                    yield [col.decode(encoding, errors).strip() for col in cols]
 
-        data = _read(self, encoding, errors, sep, skip_header)
+            def _split(row):
+                return row.split(sep)
+        data = map(_split, data)
+        pipelines = []
+        columns = columns or include
+        if columns:
+            pipelines.append(itemgetter(*columns))
+        pipelines.append(
+            mapper(lambda row: [x.decode(encoding, errors).strip()for x in row]))
         if quote:
-            data = map(unquote_row, data, quote)
-        if args or kwargs:
-            data = Data(data, *args, **kwargs)
-        return data
+            pipelines.append(
+                mapper(lambda row: [unquote(x, quote)for x in row]))
+        return Data(data, *pipelines, *args, **kwargs)
 
     def rar(self, dest: "Path", passwd=None):
         '将本文件或文件打包成一个 Rar 文件'
