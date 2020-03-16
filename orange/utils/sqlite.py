@@ -20,6 +20,11 @@ __all__ = 'db_config', 'connect', 'execute', 'executemany', 'executescript', 'ex
     'loadcheck'
 
 
+def Values(count):
+    '''提供 sql 语句的占符  用法： f"insert into test(a,b,c) Values(3)" '''
+    return f'values({",".join(["?"]*count)})'
+
+
 def fix_db_name(database: str) -> str:
     '''修复数据库文件名'''
     if not str(database).startswith(':'):
