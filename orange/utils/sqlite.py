@@ -17,12 +17,12 @@ ROOT = Path('~/OneDrive') / ('testdb' if is_dev() else 'db')
 
 __all__ = 'db_config', 'connect', 'execute', 'executemany', 'executescript', 'executefile',\
     'find', 'findone', 'findvalue', 'trans', 'fetch', 'fetchone', 'fetchvalue', 'transaction',\
-    'loadcheck'
+    'loadcheck', 'Values'
 
 
 def Values(count):
     '''提供 sql 语句的占符  用法： f"insert into test(a,b,c) Values(3)" '''
-    return f'values({",".join(["?"]*count)})'
+    return f'VALUES({",".join("?"*count)})'
 
 
 def fix_db_name(database: str) -> str:
