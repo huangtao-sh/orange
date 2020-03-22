@@ -84,6 +84,14 @@ class Connection(sqlite3.Connection):
         ''' 分离数据库 '''
         return self.execute(f'detach database {name}')
 
+    def fprint(self, sql: str, params: list = None):
+        for row in self.fetch(sql, params):
+            print(*row)
+
+    def fprintf(self, fmt: str, sql: str, params: list = None):
+        for row in self.fetch(sql, params):
+            print(fmt.format(row))
+
     def insert(self,
                table: str,
                data: 'iterable',
@@ -234,6 +242,8 @@ insertone = wrapper('insertone')
 fetch = find = wrapper('fetch')
 fetchone = findone = wrapper('fetchone')
 fetchvalue = findvalue = wrapper('fetchvalue')
+fprint = wrapper('fprint')
+fprintf = wrapper('fprintf')
 
 
 def trans(): return connect()
