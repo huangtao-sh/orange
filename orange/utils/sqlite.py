@@ -84,11 +84,11 @@ class Connection(sqlite3.Connection):
         ''' 分离数据库 '''
         return self.execute(f'detach database {name}')
 
-    def fprint(self, sql: str, params: list = None):
+    def fprint(self, sql: str, params: list = []):
         for row in self.fetch(sql, params):
             print(*row)
 
-    def fprintf(self, fmt: str, sql: str, params: list = None):
+    def fprintf(self, fmt: str, sql: str, params: list = []):
         for row in self.fetch(sql, params):
             print(fmt.format(row))
 
