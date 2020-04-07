@@ -90,7 +90,7 @@ class Connection(sqlite3.Connection):
 
     def fprintf(self, fmt: str, sql: str, params: list = []):
         for row in self.fetch(sql, params):
-            print(fmt.format(row))
+            print(fmt.format(*row))
 
     def insert(self,
                table: str,
