@@ -233,8 +233,16 @@ def wrapper(name: str) -> 'function':
     return _
 
 
-execute = wrapper('execute')
-executemany = wrapper('executemany')
+def execute(sql: str, parameters: list = []):
+    '''执行 sql 语句 '''
+    return connect().execute(sql, parameters)
+
+
+def executemany(sql: str, seq_of_parameters: list):
+    ''' 执行一条sql 语句多次'''
+    return connect().executemany(sql, seq_of_parameters)
+
+
 executescript = wrapper('executescript')
 executefile = wrapper('executefile')
 insert = wrapper('insert')
