@@ -17,7 +17,7 @@ ROOT = Path('~/OneDrive') / ('testdb' if is_dev() else 'db')
 
 __all__ = 'db_config', 'connect', 'execute', 'executemany', 'executescript', 'executefile',\
     'find', 'findone', 'findvalue', 'trans', 'fetch', 'fetchone', 'fetchvalue', 'transaction',\
-    'loadcheck', 'Values'
+    'loadcheck', 'Values', 'tran', 'fprint', 'fprintf'
 
 
 def Values(count):
@@ -90,7 +90,7 @@ class Connection(sqlite3.Connection):
 
     def fprintf(self, fmt: str, sql: str, params: list = []):
         for row in self.fetch(sql, params):
-            print(fmt.format(row))
+            print(fmt.format(*row))
 
     def insert(self,
                table: str,
