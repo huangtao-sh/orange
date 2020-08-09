@@ -24,7 +24,8 @@ console_scripts = [
     'repare=orange.shell.path:repare_filename',
     'aml=orange.shell.path:add_music_lib',
     'sql=orange.utils.sqlite:execsql',
-    'py=orange.utils:py'
+    'py=orange.utils:py',
+    'pack=orange.tools.pack:main',
 ]
 
 scripts = ['scripts/pytest.py']
