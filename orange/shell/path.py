@@ -306,21 +306,16 @@ class Path(_Parent):
                         f.NameToInfo[fileinfo.filename] = fileinfo
                 f.extractall(path, members)
 
-    def pack(self, tarfilename: str, **kw):
+    def pack(self, dest: str, passwd: str=None):
         '''
-        把指定的文件或目录打包成一个压缩文件，
-        文件格式为： .tgz
-        其中: kw 为 add 参数，可以为：
-        arcname=None, specifies an alternative name for the file in the archive.
-        recursive=True, 是否包括子目录
-        filter=None ，一个函数，过滤不需要的文件
+        把当前目录打包，按子目录打包
         '''
-        import tarfile
-        tarfilename = str(Path(tarfilename).with_suffix('.tgz'))
-        with tarfile.open(tarfilename, 'w:gz') as f:
-            if self.is_dir() and 'arcname' not in kw:
-                kw['arcname'] = '/'
-            f.add(self, **kw)
+        dest=Path(dest)
+        dest.ensure()
+        for path in self:
+            if path.is_dir():
+                path.rar(dest,passwd=passwd)
+
 
     def zip(self, zipfilename: str) -> None:
         '''
