@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import os
+import setuptools
 from orange.pykit.setup import setup
 
 console_scripts = [

@@ -10,6 +10,7 @@
 
 import os
 import sys
+import setuptools
 from orange import Path, R, sh
 from orange.utils import arg
 from .version import Ver
@@ -125,10 +126,10 @@ class VersionMgr:
         if not self.is_clean and self.upgrade in ('d', 'dev',):
             raise Exception('错误：当前工作区有待提交的更改')
 
-        if self.upgrade in ('d', 'dev')and ver.prerelease is None:
+        if self.upgrade in ('d', 'dev') and ver.prerelease is None:
             raise Exception('错误：已经是最终版本')
 
-        if self.upgrade not in ('d', 'dev')and ver.prerelease:
+        if self.upgrade not in ('d', 'dev') and ver.prerelease:
             raise Exception('错误：当前版本非最终版')
 
         if self.ver:
