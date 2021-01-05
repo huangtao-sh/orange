@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 import os
-from orange import setup
+from orange.pykit.setup import setup
 
 console_scripts = [
     'conv=orange.utils.path:convert',

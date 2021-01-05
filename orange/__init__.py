@@ -4,7 +4,7 @@
 # 创建：2015-9-2
 # 修订：2018-2-2 新增 __version__
 
-from orange.pykit.setup import get_path, setup
+# from orange.pykit.setup import get_path, setup
 from orange.utils.debug import decorator, trace, config_log, ensure, info, fprint, verbose, debug
 from orange.utils.htutil import classproperty, cachedproperty, read_shell, write_shell, wlen, encrypt, \
     decrypt,  exec_shell, split, deprecation, generator, cstr, deprecate, tprint,\
