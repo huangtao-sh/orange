@@ -5,9 +5,8 @@
 # Email:huangtao.sh@icloud.com
 # 创建：2016-03-12 18:05
 
-
-import distutils.core
 import setuptools
+import distutils.core
 from orange.shell import Path, POSIX
 from orange.utils import R
 from collections import ChainMap
