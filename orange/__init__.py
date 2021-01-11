@@ -21,9 +21,9 @@ from orange.__version__ import version
 
 Config = YamlConfig
 
-__all__ = 'Path', 'get_path', 'HOME',\
+__all__ = 'Path', 'HOME',\
     'first', 'last', 'decode',\
-    'setup', 'decorator', 'trace', 'config_log', 'ensure', 'info',\
+    'decorator', 'trace', 'config_log', 'ensure', 'info',\
     'classproperty', 'is_installed', 'is_dev', 'cachedproperty',\
     'read_shell', 'write_shell', 'exec_shell', 'wlen',\
     'encrypt', 'decrypt', 'get_py', 'split', 'deprecation',\
