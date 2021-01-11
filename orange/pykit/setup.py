@@ -94,7 +94,9 @@ def setup(after_install=None,
     kwargs = ChainMap(kwargs,
                       find_package(exclude=('testing', 'scripts')),
                       DEFAULT)
+    setuptools.setup(**kwargs)
 
+    '''
     # 安装程序
     import distutils.core
     dist = distutils.core.setup(**kwargs)
@@ -110,3 +112,4 @@ def setup(after_install=None,
                 script_name.replace(script_name.with_suffix(''))
     if 'install' in dist.have_run and after_install:
         after_install(dist)
+        '''
