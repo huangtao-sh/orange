@@ -14,6 +14,8 @@ from orange import Path, R, sh
 from orange.utils import arg
 from .version import Ver
 
+VerPattern = R/r'version\s*=\s*"(.*?)"'
+
 
 def get_pkg_ver():
     for path in Path('.').rglob('__version__.py'):
