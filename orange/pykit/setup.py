@@ -5,6 +5,7 @@
 # Email:huangtao.sh@icloud.com
 # 创建：2016-03-12 18:05
 
+import distutils
 import setuptools
 import distutils.core
 from orange.shell import Path, POSIX
