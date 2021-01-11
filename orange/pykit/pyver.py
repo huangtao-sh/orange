@@ -13,7 +13,14 @@ import sys
 from orange import Path, R, sh
 from orange.utils import arg
 from .version import Ver
-from .setup import get_pkg_ver
+
+
+def get_pkg_ver():
+    for path in Path('.').rglob('__version__.py'):
+        for line in path.lines:
+            g = VerPattern.match(line)
+            if g:
+                return path, g.group(1)
 
 
 class VersionMgr:
