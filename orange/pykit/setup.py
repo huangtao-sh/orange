@@ -5,7 +5,6 @@
 # Email:huangtao.sh@icloud.com
 # 创建：2016-03-12 18:05
 
-import setuptools
 from orange.shell import Path, POSIX
 from orange.utils import R
 from collections import ChainMap
@@ -83,6 +82,7 @@ def find_package(path='.', exclude=None):
 def setup(after_install=None,
           cscripts=None, gscripts=None,
           **kwargs):
+    import setuptools
     if cscripts or gscripts:
         entry_points = kwargs.get('entry_points', {})
         if cscripts:
