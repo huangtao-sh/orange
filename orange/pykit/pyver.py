@@ -10,7 +10,6 @@
 
 import os
 import sys
-import setuptools
 from orange import Path, R, sh
 from orange.utils import arg
 from .version import Ver
