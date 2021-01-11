@@ -5,9 +5,7 @@
 # Email:huangtao.sh@icloud.com
 # 创建：2016-03-12 18:05
 
-import distutils
 import setuptools
-import distutils.core
 from orange.shell import Path, POSIX
 from orange.utils import R
 from collections import ChainMap
@@ -98,6 +96,7 @@ def setup(after_install=None,
                       DEFAULT)
 
     # 安装程序
+    import distutils.core
     dist = distutils.core.setup(**kwargs)
     # 处理脚本
     scripts = kwargs.get('scripts', None)
