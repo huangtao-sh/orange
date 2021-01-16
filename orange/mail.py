@@ -285,7 +285,9 @@ class Mail:
 @arg('-p', '--passwd', nargs='?', help='密码')
 def config_mail(**conf):
     try:
-        config(**conf)
+        con = get_conf()
+        con.update(conf)
+        config(**con)
         print('配置邮箱服务器成功')
     except:
         print('登录服务器失败')
