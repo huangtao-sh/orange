@@ -271,11 +271,12 @@ class Mail:
         mailclient = mailclient or self.client
         if mailclient:
             mailclient.send_message(self.message)
-        elif MailClient.config:
-            with MailClient() as client:
-                client.send_message(self.message)
         else:
-            print('邮件发送失败，无可用发送服务器')
+            try:
+                with MailClient() as client:
+                    client.send_message(self.message)
+            except:
+                print('邮件发送失败，无可用发送服务器')
 
 
 if __name__ == '__main__':
