@@ -287,6 +287,7 @@ def config_mail(**conf):
     try:
         con = get_conf()
         con.update(conf)
+        print(con)
         config(**con)
         print('配置邮箱服务器成功')
     except:
