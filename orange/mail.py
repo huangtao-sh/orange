@@ -7,7 +7,7 @@
 # 修改：2019-02-14 15:54 对部分代码进行修订
 # 修改：2019-12-02 12:18 优化 Mail.post 功能，不送服务器也可以发送
 
-from orange import arg
+from orange.utils.click import arg
 from email.mime.text import MIMEText, Charset
 from email.mime.base import MIMEBase
 from email.mime.multipart import MIMEMultipart
