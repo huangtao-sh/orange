@@ -22,12 +22,9 @@ def config(**conf):
     from orange import encrypt, Path
     from json import dumps
     mail_config(**conf)
-    try:
-        MailClient()
-        conf['passwd'] = encrypt(conf['passwd'])
-        Path("~/mail.conf").text = dumps(conf)
-    except:
-        print('连接邮箱服务器失败')
+    MailClient()
+    conf['passwd'] = encrypt(conf['passwd'])
+    Path("~/mail.conf").text = dumps(conf)
 
 
 def get_conf():
@@ -39,7 +36,7 @@ def get_conf():
         conf['passwd'] = decrypt(conf['passwd'])
         return conf
     except:
-        ...
+        return {}
 
 
 def combine(type_: str = 'mixed', *subparts):
@@ -286,12 +283,13 @@ class Mail:
 def config_mail(**conf):
     try:
         con = get_conf()
-        con.update(conf)
-        print(con)
+        for k, v in conf.items():
+            if v:
+                con[k] = v
         config(**con)
         print('配置邮箱服务器成功')
     except:
-        print('登录服务器失败')
+        print('配置邮箱服务器失败')
 
 
 if __name__ == '__main__':
