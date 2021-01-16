@@ -27,6 +27,7 @@ console_scripts = [
     'sql=orange.utils.sqlite:execsql',
     'py=orange.utils:py',
     'pack=orange.tools.pack:main',
+    'mconf=orange.mail:config_mail'   # 配置邮箱服务器
 ]
 
 scripts = ['scripts/pytest.py']

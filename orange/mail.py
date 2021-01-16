@@ -7,6 +7,7 @@
 # 修改：2019-02-14 15:54 对部分代码进行修订
 # 修改：2019-12-02 12:18 优化 Mail.post 功能，不送服务器也可以发送
 
+from orange import arg
 from email.mime.text import MIMEText, Charset
 from email.mime.base import MIMEBase
 from email.mime.multipart import MIMEMultipart
@@ -277,6 +278,17 @@ class Mail:
                     client.send_message(self.message)
             except:
                 print('邮件发送失败，无可用发送服务器')
+
+
+@arg('-s', '--host', nargs='?', help='邮箱服务器')
+@arg('-u', '--user', nargs='?', help='登录账号')
+@arg('-p', '--passwd', nargs='?', help='密码')
+def config_mail(**conf):
+    try:
+        config(**conf)
+        print('配置邮箱服务器成功')
+    except:
+        print('登录服务器失败')
 
 
 if __name__ == '__main__':
