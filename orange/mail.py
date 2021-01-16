@@ -17,22 +17,23 @@ from orange.shell import Path
 import smtplib
 import io
 
+conf_path = Path("~/mail.conf")
+
 
 def config(**conf):
-    from orange import encrypt, Path
+    from orange import encrypt
     from json import dumps
     mail_config(**conf)
     MailClient()
     conf['passwd'] = encrypt(conf['passwd'])
-    Path("~/mail.conf").text = dumps(conf)
+    conf_path.text = dumps(conf, indent=4)
 
 
 def get_conf():
-    from orange import decrypt, Path
+    from orange import decrypt
     from json import loads
-    path = Path('~/mail.conf')
     try:
-        conf = loads(path.text)
+        conf = loads(conf_path.text)
         conf['passwd'] = decrypt(conf['passwd'])
         return conf
     except:
