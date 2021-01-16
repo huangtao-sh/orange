@@ -17,6 +17,30 @@ import smtplib
 import io
 
 
+def config(**conf):
+    from orange import encrypt, Path
+    from json import dumps
+    mail_config(**conf)
+    try:
+        MailClient()
+        conf['passwd'] = encrypt(conf['passwd'])
+        Path("~/mail.conf").text = dumps(conf)
+    except:
+        print('连接邮箱服务器失败')
+
+
+def get_conf():
+    from orange import decrypt, Path
+    from json import loads
+    path = Path('~/mail.conf')
+    try:
+        conf = loads(path.text)
+        conf['passwd'] = decrypt(conf['passwd'])
+        return conf
+    except:
+        ...
+
+
 def combine(type_: str = 'mixed', *subparts):
     '''合并邮件的各个部分，
     type_可以为以下几个值：
@@ -59,9 +83,10 @@ class MailClient(smtplib.SMTP):
     '''构造邮件客户端，使用方法如下：
        client=MailClient(host,user,passwd)
     '''
-    config = get_conf()  # 使用参数配置的
+    config = {}  # 使用参数配置的
 
     def __init__(self, host=None, user=None, passwd=None, *args, **kw):
+        self.config = self.config or get_conf()
         host = host or self.config.get('host')
         user = user or self.config.get('user')
         passwd = passwd or self.config.get('passwd')
@@ -251,30 +276,6 @@ class Mail:
                 client.send_message(self.message)
         else:
             print('邮件发送失败，无可用发送服务器')
-
-
-def config(**conf):
-    from orange import encrypt, Path
-    from json import dumps
-    mail_config(**conf)
-    try:
-        MailClient()
-        conf['passwd'] = encrypt(conf['passwd'])
-        Path("~/mail.conf").text = dumps(conf)
-    except:
-        print('连接邮箱服务器失败')
-
-
-def get_conf():
-    from orange import decrypt, Path
-    from json import loads
-    path = Path('~/mail.conf')
-    try:
-        conf = loads(path.text)
-        conf['passwd'] = decrypt(conf['passwd'])
-        return conf
-    except:
-        ...
 
 
 if __name__ == '__main__':
