@@ -26,7 +26,7 @@ def config(**conf):
     mail_config(**conf)
     MailClient()
     conf['passwd'] = encrypt(conf['passwd'])
-    conf_path.text = dumps(conf, indent=4)
+    conf_path.text = dumps(conf, indent=4, sort_keys=True)
 
 
 def get_conf():
