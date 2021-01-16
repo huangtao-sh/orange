@@ -12,7 +12,7 @@ from email.mime.base import MIMEBase
 from email.mime.multipart import MIMEMultipart
 from email.utils import getaddresses, formataddr
 from email import encoders
-from pathlib import Path
+from orange.shell import Path
 import smtplib
 import io
 
@@ -59,7 +59,7 @@ class MailClient(smtplib.SMTP):
     '''构造邮件客户端，使用方法如下：
        client=MailClient(host,user,passwd)
     '''
-    config = {}  # 用于配置发送邮件的想着参数，如：host,user,passwd
+    config = get_conf()  # 使用参数配置的
 
     def __init__(self, host=None, user=None, passwd=None, *args, **kw):
         host = host or self.config.get('host')
@@ -253,6 +253,30 @@ class Mail:
             print('邮件发送失败，无可用发送服务器')
 
 
+def config(**conf):
+    from orange import encrypt, Path
+    from json import dumps
+    mail_config(**conf)
+    try:
+        MailClient()
+        conf['passwd'] = encrypt(conf['passwd'])
+        Path("~/mail.conf").text = dumps(conf)
+    except:
+        print('连接邮箱服务器失败')
+
+
+def get_conf():
+    from orange import decrypt, Path
+    from json import loads
+    path = Path('~/mail.conf')
+    try:
+        conf = loads(path.text)
+        conf['passwd'] = decrypt(conf['passwd'])
+        return conf
+    except:
+        ...
+
+
 if __name__ == '__main__':
     body = '''<html>
     <body>你在快乐的跳吗？<br/>
@@ -264,8 +288,7 @@ if __name__ == '__main__':
     with MailClient() as client:
         s = client.Mail(
             sender='黄涛 <huangtao@czbank.com>',
-            to=
-            '张三 <huang.t@live.cn> , 李四 <huangtao.sh@icloud.com> , 李起 <hunto@163.com>',
+            to='张三 <huang.t@live.cn> , 李四 <huangtao.sh@icloud.com> , 李起 <hunto@163.com>',
             subject='天空之城',
             body=body)
         s.attach('d:/邮件测试.xlsx')
