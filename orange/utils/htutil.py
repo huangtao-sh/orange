@@ -167,6 +167,7 @@ class classproperty:
     A.name
     A().name
     '''
+
     def __init__(self, getter):
         self.getter = getter
 
@@ -184,6 +185,7 @@ class cachedproperty:
     A.name
     A().name
     '''
+
     def __init__(self, getter):
         self.getter = getter
         self.cache = {}
@@ -205,6 +207,7 @@ class _Shell():
       result = shell('dir')
       这里返回的是 dir 执行的输出
     '''
+
     def __gt__(self, cmd):
         return os.system(cmd)
 
@@ -315,11 +318,12 @@ def limit(data: "iterable", count: int = 100):
 def split(data: 'iterable', size: int = 1000) -> 'iterable':
     '''拆分数据，其中datas应为list,size为每批数据的数量'''
     data = iter(data)
-    while row := list(islice(data, size)):
+    while row:
+        = list(islice(data, size)):
         yield row
 
 
-def groupby(data: 'Iterable', key: 'function'):
+def groupby(data: 'Iterable', key: 'function') -> "Iterable: (key,data)":
     '对数据进行分组，key 可以为列数，也可以是函数'
     from collections import defaultdict
     result = defaultdict(lambda: [])
