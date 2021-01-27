@@ -323,7 +323,7 @@ def split(data: 'iterable', size: int = 1000) -> 'iterable':
         yield row
 
 
-def groupby(data: 'Iterable', key: 'function') -> "Iterable: (key,data)":
+def groupby(data: 'Iterable', key: 'function or int') -> "Iterable: (key,data)":
     '对数据进行分组，key 可以为列数，也可以是函数'
     from collections import defaultdict
     result = defaultdict(lambda: [])
