@@ -17,7 +17,7 @@ from orange.shell import Path
 import smtplib
 import io
 
-conf_path = Path("~/mail.conf")
+conf_path = Path("~/.mail.conf")
 
 
 def config(**conf):
